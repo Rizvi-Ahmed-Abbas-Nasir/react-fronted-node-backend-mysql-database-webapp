@@ -15,8 +15,4 @@ router.get('/event', eventController.getAllEvents)
 router.put('/event/:id', eventMiddleware, eventController.updateEvent)
 router.delete('/event/:id', eventController.deleteEvent)
 
-
-
-
-
 module.exports = router
