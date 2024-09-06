@@ -3,8 +3,8 @@ import React from 'react';
 
 const Header = () => {
   return (
-    <header className="bg-gray-800 header text-white py-4">
-      <div className="container mx-auto  flex justify-between items-center">
+    <header className="bg-gray-800 header text-white py-8">
+      <div className="container mx-auto  flex justify-between  items-center">
         <div className="text-lg font-bold logo">TPO Website</div>
         <nav>
           <ul className="flex nav-links space-x-4">
