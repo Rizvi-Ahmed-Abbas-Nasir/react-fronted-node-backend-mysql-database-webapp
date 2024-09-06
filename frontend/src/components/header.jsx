@@ -1,27 +1,18 @@
-// src/components/Header.js
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 const Header = () => {
   return (
     <header className="bg-gray-800 header text-white py-4">
-      <div className="container mx-auto  flex justify-between items-center">
+      <div className="container mx-auto flex justify-between items-center">
         <div className="text-lg font-bold logo">TPO Website</div>
         <nav>
           <ul className="flex nav-links space-x-4">
             <li>
-              <a href="#" className="hover:underline">Home</a>
+              <Link to="/" className="hover:underline">Events</Link>
             </li>
             <li>
-              <a href="#" className="hover:underline">Registered Companies</a>
-            </li>
-            <li>
-              <a href="#" className="hover:underline">Notification</a>
-            </li>
-            <li>
-              <a href="#" className="hover:underline">Aptitude Test</a>
-            </li>
-            <li>
-              <a href="#" className="hover:underline">Mock Interview History</a>
+              <Link to="/admin" className="hover:underline">Admin</Link>
             </li>
           </ul>
         </nav>
@@ -33,5 +24,4 @@ const Header = () => {
   );
 };
 
-export default Header
-
+export default Header;
