@@ -92,3 +92,18 @@ exports.deleteEvent = async (id)=> {
         throw new Error("Error Deleting event: " + error.message);
       }
 }
+
+exports.isPaid = async (id)=> {
+  try {
+    const [rows] = await connection.query(
+      `SELECT isPaid from tpo_events WHERE eventId = ?;`,
+      [id]
+
+    );
+    return rows[0].isPaid === 1
+
+  } catch (error) {
+    throw new Error("Error checking if event is paid: " + error.message);
+    
+  } 
+}
