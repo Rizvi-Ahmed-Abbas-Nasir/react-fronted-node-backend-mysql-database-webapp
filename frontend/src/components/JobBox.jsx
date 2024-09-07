@@ -1,4 +1,5 @@
 import React from 'react';
+import qr from "../Assest/qr.svg"
 
 const JobBox = ({ title, details, isOpen, onToggle, isOpenPay, onTogglePay }) => {
   return (
@@ -16,10 +17,10 @@ const JobBox = ({ title, details, isOpen, onToggle, isOpenPay, onTogglePay }) =>
       {/* Only render details when the box is open */}
       {isOpen && (
         <div className="mt-4">
-          <p><strong>CTC:</strong> {details.ctc}</p>
-          <p><strong>Registration Link:</strong> <a href={details.link} className="text-blue-500 hover:underline">Click here</a></p>
-          <p><strong>Deadline To Register:</strong> {details.deadline}</p>
-          <p><strong>Role:</strong> {details.role}</p>
+          <p><strong>data:</strong> {details.ctc}</p>
+          <p><strong>data Link:</strong> <a href={details.link} className="text-blue-500 hover:underline">Click here</a></p>
+          <p><strong>data :</strong> {details.deadline}</p>
+          <p><strong>data:</strong> {details.role}</p>
           </div>
            )}
           {/* Event Details */}
@@ -42,7 +43,7 @@ const JobBox = ({ title, details, isOpen, onToggle, isOpenPay, onTogglePay }) =>
               </p>
               {isOpenPay && (
                 <div>
-                  <h1>Payment Details</h1>
+                  <img src={qr} />
                 </div>
               )}
               <p><strong>Event ID:</strong> {details.eventDetails.eventId}</p>
