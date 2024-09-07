@@ -4,13 +4,14 @@ import JobBox from './JobBox';
 const EventCompo = () => {
   const [openBoxes, setOpenBoxes] = useState([false, false]); // Track which job boxes are open
   const [openPayBoxes, setOpenPayBoxes] = useState([false, false]); // Track which payment sections are open
+  const [registered, setRegistered] = useState([false, false]); // Track registration state for each job
 
   const jobs = [
     {
-      title: 'Desciption Details',
+      title: 'Description Details',
       details: {
         ctc: 'Details',
-        link: '#', // Replace with yourrr linkkk 
+        link: '#', // Replace with your link
         deadline: '01-12-2024',
         role: 'Details',
         eventDetails: {
@@ -26,10 +27,10 @@ const EventCompo = () => {
       },
     },
     {
-      title: 'Description Details ',
+      title: 'Description Details',
       details: {
         ctc: 'Details',
-        link: '#', // Replace with your link bro
+        link: '#', // Replace with your link
         deadline: '15-12-2024',
         role: 'Details',
         eventDetails: {
@@ -47,15 +48,21 @@ const EventCompo = () => {
   ];
 
   const handleToggle = (index) => {
-    const newOpenBoxes = [...openBoxes]; 
+    const newOpenBoxes = [...openBoxes];
     newOpenBoxes[index] = !newOpenBoxes[index];
     setOpenBoxes(newOpenBoxes);
   };
 
   const handleTogglePay = (index) => {
-    const newOpenPayBoxes = [...openPayBoxes]; 
+    const newOpenPayBoxes = [...openPayBoxes];
     newOpenPayBoxes[index] = !newOpenPayBoxes[index];
     setOpenPayBoxes(newOpenPayBoxes);
+  };
+
+  const handleRegister = (index) => {
+    const newRegistered = [...registered];
+    newRegistered[index] = true; // Mark the job as registered
+    setRegistered(newRegistered);
   };
 
   return (
@@ -69,6 +76,8 @@ const EventCompo = () => {
           onToggle={() => handleToggle(index)} 
           isOpenPay={openPayBoxes[index]} 
           onTogglePay={() => handleTogglePay(index)} 
+          isRegistered={registered[index]} // Pass registration status
+          onRegister={() => handleRegister(index)} // Handle register click
         />
       ))}
     </div>

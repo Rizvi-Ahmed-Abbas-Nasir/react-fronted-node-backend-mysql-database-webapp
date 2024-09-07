@@ -1,8 +1,12 @@
 import React from 'react'
+import AdminHeader from '../components/AdminHeader'
 
 function createevent() {
   return (
-    <div>createevent</div>
+    <div>
+      <AdminHeader />
+      
+    </div>
   )
 }
 
