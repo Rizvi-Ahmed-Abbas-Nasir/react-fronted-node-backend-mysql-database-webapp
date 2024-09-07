@@ -1,5 +1,5 @@
 import React from 'react';
-import qr from "../Assets/qr.svg"
+import qr from "../assets/qrcodedemo.png"
 
 const JobBox = ({ title, details, isOpen, onToggle, isOpenPay, onTogglePay }) => {
   return (
@@ -25,7 +25,7 @@ const JobBox = ({ title, details, isOpen, onToggle, isOpenPay, onTogglePay }) =>
            )}
           {/* Event Details */}
           {details.eventDetails && (
-            <div className="mt-4 border-t pt-4 flex gap-2 flex-col" >
+            <div className="mt-4 border-t pt-4 flex gap-2 flex-col w-full" >
               <h4 className="font-semibold text-red-500 text-[1.5rem]">Event Details</h4>
               <p><strong>Event Name:</strong> {details.eventDetails.eventName}</p>
               <p><strong>Name of the Speaker:</strong> {details.eventDetails.speaker}</p>
@@ -46,7 +46,7 @@ const JobBox = ({ title, details, isOpen, onToggle, isOpenPay, onTogglePay }) =>
                   <img src={qr} />
                 </div>
               )}
-              <div className=' mt-5'>
+              <div className='w-full  mt-5'>
               <button className=" ml-2 w-40 text-white hover:underline py-1 px-2 bg-blue-600 rounded-lg">
                 Register
               </button>
