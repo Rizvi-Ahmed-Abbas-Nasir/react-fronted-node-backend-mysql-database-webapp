@@ -1,5 +1,5 @@
 import React from 'react';
-import qr from "../Assest/qr.svg"
+import qr from "../assets/qrcodedemo.png"
 
 const JobBox = ({ title, details, isOpen, onToggle, isOpenPay, onTogglePay }) => {
   return (
