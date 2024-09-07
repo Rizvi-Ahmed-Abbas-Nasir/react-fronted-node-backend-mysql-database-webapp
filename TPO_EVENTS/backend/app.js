@@ -5,8 +5,8 @@ const router = require("./routes/router");
 
 
 const app = express();
-
-
+const hello = "world"
+ 
 //To access the data user inputs in form.
 app.use(express.urlencoded({ extended: false }));
 //just a boilerplate code, tells our express server to add the user submitted data to request object.
