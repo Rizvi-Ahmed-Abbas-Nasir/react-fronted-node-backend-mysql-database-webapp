@@ -1,2 +1,4 @@
-backend/.env
-.DS_Store
+backend/.env.local
+*.DS_Store
+*.zip
+*.svg

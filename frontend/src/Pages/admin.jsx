@@ -3,7 +3,7 @@ import Header from '../components/header'
 import AdminCompo from '../components/AdminCompo'
 function Admin() {
   return (
-    <div>
+    <div className='w-full h-[100vh]'>
         <Header />
         <AdminCompo/>
     </div>
