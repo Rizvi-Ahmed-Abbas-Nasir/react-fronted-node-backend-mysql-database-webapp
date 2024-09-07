@@ -8,7 +8,7 @@ const AdminHeader = () => {
         <nav className="w-full h-[100%]">
           <ul className="flex items-center justify-center gap-6 lg:gap-20 p-4 lg:p-8 w-full h-[100%] flex-col">
             <li>
-              <Link to="/createEvent" className="hover:bg-blue-300 p-4 lg:p-8 rounded-lg bg-blue-400 text-[1rem] lg:text-[1.2rem] whitespace-nowrap">
+              <Link to="/admin" className="hover:bg-blue-300 p-4 lg:p-8 rounded-lg bg-blue-400 text-[1rem] lg:text-[1.2rem] whitespace-nowrap">
                 Create
               </Link>
             </li>
