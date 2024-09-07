@@ -46,7 +46,12 @@ const JobBox = ({ title, details, isOpen, onToggle, isOpenPay, onTogglePay }) =>
                   <img src={qr} />
                 </div>
               )}
-              <p><strong>Event ID:</strong> {details.eventDetails.eventId}</p>
+              <div className=' mt-5'>
+              <button className=" ml-2 w-40 text-white hover:underline py-1 px-2 bg-blue-600 rounded-lg">
+                Register
+              </button>
+              </div>
+              {/* <p><strong>Event ID:</strong> {details.eventDetails.eventId}</p> */}
             </div>
           )}
    
