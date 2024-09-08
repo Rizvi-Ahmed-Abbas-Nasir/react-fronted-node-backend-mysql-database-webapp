@@ -27,7 +27,6 @@ exports.createTables = async () => {
       UNIQUE KEY clg_id (clg_id)
       );
 
-      
       CREATE TABLE tpo_event_registrations (
       reg_id INT PRIMARY KEY AUTO_INCREMENT,
       student_id INT,
