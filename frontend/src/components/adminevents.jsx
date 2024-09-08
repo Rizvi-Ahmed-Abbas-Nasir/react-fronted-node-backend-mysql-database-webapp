@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import JobBox from './JobBox';
 
-const EventCompo = () => {
+const AdminEvent = () => {
   const [openBoxes, setOpenBoxes] = useState([false, false]); // Track which job boxes are open
   const [openPayBoxes, setOpenPayBoxes] = useState([false, false]); // Track which payment sections are open
 

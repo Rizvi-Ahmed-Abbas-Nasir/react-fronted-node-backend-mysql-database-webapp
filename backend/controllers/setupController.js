@@ -15,3 +15,20 @@ exports.createTables = async (req,res)=> {
         
     }
 }
+
+exports.insertStudents = async (req,res)=> {
+    try {
+        const { email_id, first_name, middle_name, last_name, clg_id} = req.body;
+        const result = await Setup.createStudent(email_id, first_name, middle_name, last_name, clg_id)
+
+        if(result){
+            res.status(200).json({message: "Successfully registered student"})
+        } else {
+            res.status(500).json({message: "Error", result: result})
+        }
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({message: "Error registering student"})
+        
+    }
+}

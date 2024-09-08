@@ -9,10 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-<<<<<<< HEAD
-=======
     "backend": "file:",
->>>>>>> 2b822fce359eeb28edada12519fef0d95be4f2f0
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "mysql2": "^3.11.0",
