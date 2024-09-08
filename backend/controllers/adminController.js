@@ -97,3 +97,16 @@ exports.markAsAttended = async (req, res) => {
     res.status(400).json({ error: error.message });
   }
 }
+
+exports.deleteRegistration = async (req, res) => {
+  try {
+    const eventId = req.params.eventId;
+    const {student_id} = req.body
+    const result = await Admin.deleteRegistration(eventId, student_id);
+    res.status(200).json({message: "Successfully deleted ", result: result});
+  } catch (error) {
+    console.log(error);
+    res.status(400).json({ error: error.message });
+  }
+
+}
