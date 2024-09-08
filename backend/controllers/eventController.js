@@ -1,11 +1,26 @@
 const Event = require('../models/Event')
-
+const path = require('path')
 //runs after middleware data cleaning
 exports.createEvent = async (req, res) => {
-    const { eventName, nameOfSpeaker, date,category, time, department, eligibleYear, isPaid, cost} = req.body;
-    try {
-        const result = await Event.createEvent(eventName, nameOfSpeaker, date,category, time, department, eligibleYear, isPaid, cost);
-        res.status(201).json({ message: 'Event created successfully', result });
+  try {
+    
+    if (req.files.banner) {
+      console.log("Flie received, saving");
+      let file = req.files.banner;
+      let fileName = new Date().getTime().toString() + "-" + file.name;
+      const savePath = path.join(
+        __dirname,
+        "../public/assets/",
+        "banner",
+        fileName
+      );
+      await file.mv(savePath);
+      fileName = "assets/banner/"+fileName
+      req.body.banner = fileName;
+    }
+    const { eventName, nameOfSpeaker, date,category, time, department, eligibleYear, isPaid, cost, banner} = req.body;
+    const result = await Event.createEvent(eventName, nameOfSpeaker, date,category, time, department, eligibleYear, isPaid, cost, banner);
+    res.status(201).json({ message: 'Event created successfully', result });
     } catch (error) {
         res.status(400).json({ error: error.message });
     }

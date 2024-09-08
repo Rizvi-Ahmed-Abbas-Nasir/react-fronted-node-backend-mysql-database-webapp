@@ -1,11 +1,11 @@
 const express = require('express');
-
+const fileUpload = require('express-fileupload');
 const router = require("./routes/router");
 // const cors = require("cors");
 
 
 const app = express();
-const hello = "world"
+
  
 //To access the data user inputs in form.
 app.use(express.urlencoded({ extended: false }));
@@ -16,7 +16,21 @@ app.use(express.json());
 
 app.use(express.static("public"));
 
+// just for testing purposes start
+
+app.set("views", "views");
+app.set("view engine", "ejs");
+
+
+// just for testing purposes end
+
+
 // app.use(cors());
+app.use(
+  fileUpload({
+    createParentPath: true,
+  })
+);
 
 
 

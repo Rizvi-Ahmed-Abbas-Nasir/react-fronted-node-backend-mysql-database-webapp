@@ -12,6 +12,9 @@ router.get('/', (req, res)=> {
 })
 router.post('/setup',  setupController.createTables)
 router.post('/student', setupController.insertStudents)
+router.get('/createEvent', (req, res)=> {
+    res.render('test')
+})
 
 //event handlers
 router.post('/event', eventMiddleware,eventController.createEvent)

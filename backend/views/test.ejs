@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Event</title>
+</head>
+<body>
+    <h1>Create Event</h1>
+    <form action="/event" method="POST" enctype="multipart/form-data">
+        <!-- Event Name -->
+        <label for="eventName">Event Name:</label>
+        <input type="text" id="eventName" name="eventName" required><br><br>
+        
+        <!-- Name of Speaker -->
+        <label for="nameOfSpeaker">Name of Speaker:</label>
+        <input type="text" id="nameOfSpeaker" name="nameOfSpeaker" required><br><br>
+
+        <!-- Date -->
+        <label for="date">Date:</label>
+        <input type="date" id="date" name="date" required><br><br>
+
+        <!-- Category -->
+        <label for="category">Category:</label>
+        <input type="text" id="category" name="category" required><br><br>
+
+        <!-- Time -->
+        <label for="time">Time:</label>
+        <input type="time" id="time" name="time" required><br><br>
+
+        <!-- Department -->
+        <label for="department">Department:</label>
+        <input type="text" id="department" name="department" required><br><br>
+
+        <!-- Eligible Year -->
+        <label for="eligibleYear">Eligible Year:</label>
+        <input type="text" id="eligibleYear" name="eligibleYear" required><br><br>
+
+        <!-- Is Paid -->
+        <label for="isPaid">Is Paid:</label>
+        <input type="radio" id="paidYes" name="isPaid" value="true"> Yes
+        <input type="radio" id="paidNo" name="isPaid" value="false" checked> No<br><br>
+
+        <!-- Cost -->
+        <label for="cost">Cost (if paid):</label>
+        <input type="number" id="cost" name="cost" placeholder="Enter cost if paid"><br><br>
+
+        <!-- Banner (file upload) -->
+        <label for="banner">Banner (Upload):</label>
+        <input type="file" id="banner" name="banner" accept="image/*"><br><br>
+
+        <!-- Submit Button -->
+        <button type="submit">Create Event</button>
+    </form>
+</body>
+</html>
