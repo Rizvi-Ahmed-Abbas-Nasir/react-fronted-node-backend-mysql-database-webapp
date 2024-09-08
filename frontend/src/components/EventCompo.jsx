@@ -1,8 +1,7 @@
 import React, { useState ,useEffect} from 'react';
-
 import axios from 'axios';
 import JobBox2 from './JobBox2';
-import axios from 'axios';
+
 
 const EventCompo = () => {
   const [openBoxes, setOpenBoxes] = useState([false, false]); // Track which job boxes are open

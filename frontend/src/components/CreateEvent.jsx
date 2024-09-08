@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-
+import axios from 'axios';
 function CreateEvent() {
   const [formData, setFormData] = useState({
     eventName: '',
@@ -88,15 +88,14 @@ function CreateEvent() {
     };
 
     try {
-      const res = await fetch("http://localhost:8000/event", {
-        method: "POST",
-        body: JSON.stringify(dataToSubmit),
+      const res = await axios.post("http://localhost:8000/event",dataToSubmit, {
         headers: {
           "Content-Type": "application/json",
         },
       });
-
-      if (res.ok) {
+  
+      //res.status should be equal to the backend response status 
+      if (res.status === 201) {
         setFormData({
           eventName: '',
           nameOfSpeaker: '',
@@ -109,6 +108,7 @@ function CreateEvent() {
           cost: '',
         });
         alert("Event created successfully.");
+      
       } else {
         const data = await res.json();
         setError(data.error);
