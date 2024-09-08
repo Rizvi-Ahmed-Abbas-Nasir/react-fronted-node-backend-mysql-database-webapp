@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 
 const Header = () => {
   return (
-    <header className="bg-gray-800 header text-white  w-full py-8">
+    <header className="bg-gray-800 header text-white  w-full py-8 fixed">
       <div className="container mx-auto flex justify-between items-center">
         <div className="text-[1.2rem] font-bold logo">TPO Website</div>
         <nav>
