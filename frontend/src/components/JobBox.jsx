@@ -1,7 +1,23 @@
 import React from 'react';
 import qr from "../assets/qrcodedemo.png"
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+const JobBox = ({ eventId,title, details, isOpen, onToggle, isOpenPay, onTogglePay }) => {
+  const navigate = Navigate();
 
-const JobBox = ({ title, details, isOpen, onToggle, isOpenPay, onTogglePay }) => {
+  // Handler for navigating to the next page
+  const goToNextPage = () => {
+    // Define parameters to send to the next page
+    const params = {
+     eventId:eventId,
+    };
+
+    // Navigate to NextPage with parameters
+    navigate('/next', { state: params });
+  };
+
+
+
+
   return (
     <div className="bg-white border rounded-lg shadow-md p-4 w-full max-w-lg flex flex-col ">
       <div className="flex justify-between items-center  p-2 bg-blue-600 rounded-lg" >

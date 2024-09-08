@@ -1,5 +1,5 @@
 import React, { useState ,useEffect} from 'react';
-import JobBox from './JobBox';
+
 import axios from 'axios';
 import JobBox2 from './JobBox2';
 
@@ -9,47 +9,7 @@ const EventCompo = () => {
   const [data ,setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const jobs = [
-    {
-      title: 'Desciption Details',
-      details: {
-        ctc: 'Details',
-        link: '#', // Replace with yourrr linkkk 
-        deadline: '01-12-2024',
-        role: 'Details',
-        eventDetails: {
-          eventName: 'Tech Innovations 2026',
-          speaker: 'Rizvi Abbas',
-          date: '15-11-2024',
-          category: 'Placement',
-          department: 'Computer Science',
-          year: 'Second-year',
-          payment: 'Paid',
-          eventId: 'EV123456',
-        },
-      },
-    },
-    {
-      title: 'Description Details ',
-      details: {
-        ctc: 'Details',
-        link: '#', // Replace with your link bro
-        deadline: '15-12-2024',
-        role: 'Details',
-        eventDetails: {
-          eventName: 'Industry Connect 2026',
-          speaker: 'Abbas',
-          date: '20-11-2024',
-          category: 'Higher Studies',
-          department: 'Information Technology',
-          year: 'Final-year',
-          payment: 'Unpaid',
-          eventId: 'EV654321',
-        },
-      },
-    },
-  ];
-  
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -93,6 +53,7 @@ const EventCompo = () => {
           
              <JobBox2
           key={index}
+          eventId={data.eventId}
           eventName={data.eventName}
           nameOfSpeaker={data.nameOfSpeaker}
           date={data.date}
