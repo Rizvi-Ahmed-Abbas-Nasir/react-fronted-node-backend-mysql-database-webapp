@@ -4,7 +4,7 @@ const Event = require("../models/Event");
 exports.registerForEvent = async (req, res) => {
   try {
     //get event id from params
-    const event_id = req.params.id;
+    const event_id = req.params.event_id;
     //thinking about should we pass student_id through session here instead
     const { student_id , transaction_id} = req.body;
 

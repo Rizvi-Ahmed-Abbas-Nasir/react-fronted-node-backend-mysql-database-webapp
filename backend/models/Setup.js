@@ -13,7 +13,8 @@ exports.createTables = async () => {
       department varchar(45), 
       eligibleYear varchar(45), 
       isPaid bool DEFAULT NULL, 
-      cost int DEFAULT NULL
+      cost int DEFAULT NULL,
+      banner text
       );
 
       CREATE TABLE IF NOT EXISTS tpo_student_details (
@@ -38,7 +39,6 @@ exports.createTables = async () => {
       FOREIGN KEY (event_id) REFERENCES tpo_events(eventId),
       FOREIGN KEY (student_id) REFERENCES tpo_student_details(student_id)
       );
-      
       `
     );
     return result;

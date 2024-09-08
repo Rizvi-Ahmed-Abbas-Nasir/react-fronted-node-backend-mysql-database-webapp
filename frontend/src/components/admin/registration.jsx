@@ -15,7 +15,6 @@ function RegistrationPage() {
       try {
         const response = await axios.get(`http://localhost:8000/getAllRegistrations/${id}`);
         if (response.data && Array.isArray(response.data)) {
-          console.log(response.data);
           setRegistration(response.data);
         } else {
           setError("No registration found");
@@ -30,6 +29,27 @@ function RegistrationPage() {
     fetchRegistration();
   }, [id]);
 
+  const handleApprove = async (stdId) => {
+    try {
+     console.log(id, stdId);
+     const res = await axios.put(`http://localhost:8000/approveStudent/${id}`, {"student_id":stdId});
+     alert("Approve")
+     console.log(res.data);
+      setRegistration(registration.map(reg => reg.student_id === stdId ? { ...reg, isApproved: true } : reg));
+    } catch (err) {
+      setError("Failed to approve registration. Please try again.");
+    }
+  };
+
+  const handleDecline = async (regId) => {
+    try {
+      await axios.post(`http://localhost:8000/declineRegistration/${regId}`);
+    //   setRegistration(registration.filter(reg => reg.id !== regId));
+    } catch (err) {
+      setError("Failed to decline registration. Please try again.");
+    }
+  };
+
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error}</p>;
 
@@ -37,21 +57,54 @@ function RegistrationPage() {
     <>
       <Header />
       <AdminHeader />
-      <div className="flex flex-wrap gap-4 justify-start items-start ml-72 mt-32 w-[80%] ">
+      <div className="flex flex-col gap-4 justify-start items-start ml-72 mt-32 w-[80%]">
         <h1 className="text-2xl font-bold">Registration Details</h1>
         {registration.length > 0 ? (
-          registration.map((reg, index) => (
-            <div key={index} className="mt-4 p-4 border border-gray-300 rounded">
-              <p><strong>College ID:</strong> {reg.clg_id}</p>
-              <p><strong>Email ID:</strong> {reg.email_id}</p>
-              <p><strong>First Name:</strong> {reg.first_name}</p>
-              <p><strong>Middle Name:</strong> {reg.middle_name}</p>
-              <p><strong>Last Name:</strong> {reg.last_name}</p>
-              <p><strong>Registration ID:</strong> {reg.reg_id}</p>
-              <p><strong>Approved:</strong> {reg.isApproved ? 'Yes' : 'No'}</p>
-              <p><strong>Time of Attendance:</strong> {reg.timeOfAttendance || 'N/A'}</p>
-            </div>
-          ))
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">College ID</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Student ID</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email ID</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">First Name</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Last Name</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Transaction ID</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Approved</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {registration.map((reg) => (
+                <tr key={reg.id}>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{reg.clg_id}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{reg.student_id}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{reg.email_id}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{reg.first_name}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{reg.last_name}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{reg.transaction_id || '-'}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{reg.isApproved ? 'Yes' : 'No'}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {!reg.isApproved && (
+                      <>
+                        <button
+                          onClick={() => handleApprove(reg.student_id)}
+                          className="px-4 py-2 bg-green-500 text-white rounded mr-2"
+                        >
+                          Approve
+                        </button>
+                        <button
+                          onClick={() => handleDecline(reg.id)}
+                          className="px-4 py-2 bg-red-500 text-white rounded"
+                        >
+                          Decline
+                        </button>
+                      </>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         ) : (
           <p>No registration details available.</p>
         )}

@@ -5,6 +5,7 @@ exports.getAllRegistrations = async (eventId) => {
     const [result] = await connection.query(
       `SELECT
       er.reg_id,
+      sd.student_id,
       sd.clg_id,
       sd.email_id,
       sd.first_name,
@@ -12,7 +13,8 @@ exports.getAllRegistrations = async (eventId) => {
       sd.last_name,
       er.isApproved,
       er.attended,
-      er.timeOfAttendance
+      er.timeOfAttendance,
+      er.transaction_id
       FROM
       tpo_event_registrations er
       JOIN
@@ -35,7 +37,7 @@ exports.getApprovedRegistrations = async (eventId) => {
     const [result] = await connection.query(
       `SELECT
       er.reg_id,
-      er.student_id,
+      sd.student_id,
       er.event_id,
       sd.clg_id,
       sd.email_id,
@@ -44,7 +46,8 @@ exports.getApprovedRegistrations = async (eventId) => {
       sd.last_name,
       er.isApproved,
       er.attended,
-      er.timeOfAttendance
+      er.timeOfAttendance,
+      er.transaction_id
       FROM
       tpo_event_registrations er
       JOIN
@@ -68,16 +71,17 @@ exports.getAttendance = async (eventId) => {
     const [result] = await connection.query(
       `SELECT
       er.reg_id,
-      er.student_id,
       er.event_id,
       sd.clg_id,
+      sd.student_id,
       sd.email_id,
       sd.first_name,
       sd.middle_name,
       sd.last_name,
       er.isApproved,
       er.attended,
-      er.timeOfAttendance
+      er.timeOfAttendance,
+      er.transaction_id
       FROM
       tpo_event_registrations er
       JOIN
