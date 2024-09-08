@@ -41,10 +41,16 @@ function RegistrationPage() {
     }
   };
 
-  const handleDecline = async (regId) => {
+  const handleDecline = async (stdId) => {
     try {
-      await axios.post(`http://localhost:8000/declineRegistration/${regId}`);
-    //   setRegistration(registration.filter(reg => reg.id !== regId));
+      const res = await axios.delete(`http://localhost:8000/deleteRegistration/${id}`, {
+        data: { student_id: stdId },
+      });
+      
+      alert("Delete");
+      console.log(res.data);
+      
+      setRegistration(registration.filter(reg => reg.student_id !== stdId));
     } catch (err) {
       setError("Failed to decline registration. Please try again.");
     }
@@ -93,7 +99,7 @@ function RegistrationPage() {
                           Approve
                         </button>
                         <button
-                          onClick={() => handleDecline(reg.id)}
+                          onClick={() => handleDecline(reg.student_id)}
                           className="px-4 py-2 bg-red-500 text-white rounded"
                         >
                           Decline
