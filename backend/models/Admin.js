@@ -159,3 +159,17 @@ exports.markAsAttended = async (eventId, studentId) => {
     throw new Error("Error marking attendance of the student: " + error.message);
   }
 }
+
+exports.deleteRegistration = async (eventId, student_id) => {
+  try {
+    const [rows] = await connection.query(
+      `DELETE from tpo_event_registrations WHERE event_id = ? AND student_id= ?;`,
+      [eventId, student_id]
+    );
+    return rows;
+  } catch (error) {
+    throw new Error(
+      "Error deleting student registration: " + error.message
+    );
+  }
+}

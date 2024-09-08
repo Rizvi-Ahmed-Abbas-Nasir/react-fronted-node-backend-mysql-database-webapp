@@ -29,6 +29,7 @@ router.post('/userEventReg/:event_id', userController.registerForEvent ) //regis
 router.get('/getAllRegistrations/:eventId', adminController.getAllRegistrations)
 router.get('/getApprovedRegistrations/:eventId', adminController.getApprovedRegistrations)
 router.put('/approveStudent/:eventId', adminController.approveStudent)
+router.delete('/deleteRegistration/:eventId', adminController.deleteRegistration)
 router.put('/markAsAttended', adminController.markAsAttended)
 router.get('/getAttendance/:eventId', adminController.getAttendance)
 
