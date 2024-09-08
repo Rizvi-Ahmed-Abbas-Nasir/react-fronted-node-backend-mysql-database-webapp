@@ -20,12 +20,13 @@ router.put('/event/:id', eventMiddleware, eventController.updateEvent)
 router.delete('/event/:id', eventController.deleteEvent)
 
 //user handlers
-router.post('/userEventReg/:id', userController.registerForEvent ) //registers the user for a event
+router.post('/userEventReg/:event_id', userController.registerForEvent ) //registers the user for a event
 
 //admin handlers
-router.get('/getAllRegistrations/:id', adminController.getAllRegistrations)
-router.get('/getApprovedRegistrations/:id', adminController.getApprovedRegistrations)
+router.get('/getAllRegistrations/:eventId', adminController.getAllRegistrations)
+router.get('/getApprovedRegistrations/:eventId', adminController.getApprovedRegistrations)
 router.put('/approveStudent/:eventId', adminController.approveStudent)
 router.put('/markAsAttended', adminController.markAsAttended)
+router.get('/getAttendance/:eventId', adminController.getAttendance)
 
 module.exports = router
