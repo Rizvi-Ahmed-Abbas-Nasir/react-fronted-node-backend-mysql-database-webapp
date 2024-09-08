@@ -22,7 +22,7 @@ const AdminHeader = () => {
                   to="/admin/approve"
                   className="hover:text-black text-[1rem] lg:text-[1.2rem] whitespace-nowrap"
                 >
-                  Approve
+                  Validate student
                 </Link>
               </li>
               <li>
