@@ -74,7 +74,6 @@ function CreateEvent() {
 
     setError('');
 
-    // Prepare data for submission
     const dataToSubmit = {
       eventName: formData.eventName,
       nameOfSpeaker: formData.nameOfSpeaker,
@@ -88,6 +87,7 @@ function CreateEvent() {
     };
 
     try {
+
       const res = await fetch("http://localhost:8000/event", {
         method: "POST",
         body: JSON.stringify(dataToSubmit),
