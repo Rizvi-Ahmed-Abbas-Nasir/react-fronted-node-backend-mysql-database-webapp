@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import JobBox2 from './JobBox2';
+import React, { useState ,useEffect} from 'react';
 import axios from 'axios';
+import JobBox2 from './JobBox2';
+
 
 const EventCompo = () => {
   const [openBoxes, setOpenBoxes] = useState([false, false]); // Track which job boxes are open
@@ -51,13 +52,14 @@ const EventCompo = () => {
   };
 
   return (
-    <div className="flex flex-wrap gap-4 justify-start items-start py-12 pl-10">
+    <div className="flex flex-wrap gap-4 justify-start items-start py-12 pl-10 ">
       {data.map((data, index) => (
         <JobBox2
           key={index}
+          eventId={data.eventId}
           eventName={data.eventName}
           nameOfSpeaker={data.nameOfSpeaker}
-          date={data.date}
+          date={data.date.split('T')[0]}
           category={data.category}
           time={data.time}
           department={data.department}

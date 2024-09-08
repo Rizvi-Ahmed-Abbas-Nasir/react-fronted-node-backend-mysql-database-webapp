@@ -5,7 +5,7 @@ const Event = require("../models/Event");
 
 exports.getAllRegistrations = async (req, res) => {
   try {
-    const eventId = req.params.id;
+    const eventId = req.params.eventId;
     const result = await Admin.getAllRegistrations(eventId);
     if (result.length === 0) {
       res.status(200).json({ message: "No registrations for this event yet" });
@@ -21,7 +21,7 @@ exports.getAllRegistrations = async (req, res) => {
 //get only approved registrations
 exports.getApprovedRegistrations = async (req, res) => {
   try {
-    const eventId = req.params.id;
+    const eventId = req.params.eventId;
     const result = await Admin.getApprovedRegistrations(eventId);
     if (result.length === 0) {
       res.status(200).json({ message: "No approved registrations for this event yet" });
@@ -36,7 +36,7 @@ exports.getApprovedRegistrations = async (req, res) => {
 
 exports.getAttendance = async (req, res) => {
   try {
-    const eventId = req.params.id;
+    const eventId = req.params.eventId;
     const result = await Admin.getAttendance(eventId);
     if (result.length === 0) {
       res.status(200).json({ message: "No attendance record" });

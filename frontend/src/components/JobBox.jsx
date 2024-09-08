@@ -61,4 +61,4 @@ const JobBox = ({ title, details, isOpen, onToggle, isOpenPay, onTogglePay, isRe
   );
 };
 
-export default JobBox;
+// export default JobBox;

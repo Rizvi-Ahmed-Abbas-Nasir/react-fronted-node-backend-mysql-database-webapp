@@ -13,7 +13,8 @@ exports.createTables = async () => {
       department varchar(45), 
       eligibleYear varchar(45), 
       isPaid bool DEFAULT NULL, 
-      cost int DEFAULT NULL
+      cost int DEFAULT NULL,
+      banner text
       );
 
       CREATE TABLE IF NOT EXISTS tpo_student_details (
@@ -27,7 +28,6 @@ exports.createTables = async () => {
       UNIQUE KEY clg_id (clg_id)
       );
 
-      
       CREATE TABLE tpo_event_registrations (
       reg_id INT PRIMARY KEY AUTO_INCREMENT,
       student_id INT,

@@ -10,11 +10,13 @@ exports.createEvent = async (
   department,
   eligibleYear,
   isPaid,
-  cost
+  cost,
+  banner
 ) => {
   try {
+    
     const [result] = await connection.query(
-      "INSERT INTO tpo_events (eventName, nameOfSpeaker, date, category, time, department, eligibleYear, isPaid, cost) VALUES (?, ?, ?, ?, ?, ?, ?,?,?)",
+      "INSERT INTO tpo_events (eventName, nameOfSpeaker, date, category, time, department, eligibleYear, isPaid, cost, banner) VALUES (?, ?, ?, ?, ?, ?, ?,?,?,?)",
       [
         eventName,
         nameOfSpeaker,
@@ -25,6 +27,7 @@ exports.createEvent = async (
         eligibleYear,
         isPaid,
         cost,
+        banner
       ]
     );
     return result;
