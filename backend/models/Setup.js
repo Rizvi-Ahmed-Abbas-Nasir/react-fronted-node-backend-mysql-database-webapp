@@ -39,7 +39,6 @@ exports.createTables = async () => {
       FOREIGN KEY (event_id) REFERENCES tpo_events(eventId),
       FOREIGN KEY (student_id) REFERENCES tpo_student_details(student_id)
       );
-      
       `
     );
     return result;
