@@ -6,7 +6,7 @@ import RegistrationPage from './components/admin/registration';
 import Approve from './Pages/approve';
 import Scan from './Pages/scan';
 import Attendence from './Pages/attendence';
-
+import AttendanceScan from './components/admin/attendanceScan'
 function App() {
   return (
     <BrowserRouter>
@@ -16,6 +16,7 @@ function App() {
     <Route path="/admin/approve" element={<Approve/>} />
     <Route path="/admin/attendence" element={<Attendence/>} />
     <Route path="/admin/scan" element={<Scan/>} />
+    <Route path="/attendancescan/:id" element={<AttendanceScan/>} />
     <Route path="/registrations/:id" element={<RegistrationPage/>} />
     </Routes>
     </BrowserRouter>
