@@ -101,7 +101,7 @@ exports.updateEvent = async (req, res) => {
             console.log("File deleted successfully!");
           }
         });
-        // ------------------------ Cautious code begins ---------------------------------------
+        // ------------------------ Cautious code ends ---------------------------------------
 
       }
       else {
@@ -159,7 +159,7 @@ exports.updateEvent = async (req, res) => {
 
 exports.deleteEvent = async (req, res) => {
   try {
-    const id = req.params.id;
+    const id = req.params.eventId;
 
     //deleting the previous file
 
@@ -180,7 +180,7 @@ exports.deleteEvent = async (req, res) => {
           console.log("File deleted successfully!");
         }
       });
-      // ------------------------ Cautious code begins ---------------------------------------
+      // ------------------------ Cautious code ends ---------------------------------------
     }
 
     const result = await Event.deleteEvent(id);
