@@ -3,14 +3,13 @@ import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import Header from '../header';
 import AdminHeader from './AdminHeader';
-import QRCode from "qrcode";
+import QRCode from 'qrcode';
 
 function RegistrationPage() {
   const { id } = useParams();
   const [registration, setRegistration] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [src,setSrc] = useState('');
   
   useEffect(() => {
     async function fetchRegistration() {
@@ -27,22 +26,28 @@ function RegistrationPage() {
         setLoading(false);
       }
     }
- 
+
     fetchRegistration();
   }, [id]);
 
-
-
-
-  const handleApprove = async (stdId,email_id) => {
+  const handleApprove = async (stdId, email_id) => {
     try {
-     console.log(id, stdId);
-     const srccode = await QRCode.toDataURL(JSON.stringify({event_id:id,student_id:stdId})) ;
-     const res = await axios.put(`http://localhost:8000/approveStudent/${id}`, {"student_id":stdId });
-    //  await axios.post(`http://localhost:8000/sendAttendanceQrcode`, {"email":email_id,"src":srccode});
-     alert("Approve")
-     console.log(res.data);
-      setRegistration(registration.map(reg => reg.student_id === stdId ? { ...reg, isApproved: true } : reg));
+      const qrCodeData = JSON.stringify({ event_id: id, student_id: stdId });
+      const qrCodeUrl = await QRCode.toDataURL(qrCodeData);
+      
+      // Approve the student
+      await axios.put(`http://localhost:8000/approveStudent/${id}`, { student_id: stdId });
+      
+      // Send the QR code to the student's email
+      await axios.post(`http://localhost:8000/sendAttendanceQrcode`, { email: email_id, src: qrCodeUrl });
+      
+      // Update the local state
+      setRegistration(prevRegistrations =>
+        prevRegistrations.map(reg =>
+          reg.student_id === stdId ? { ...reg, isApproved: true } : reg
+        )
+      );
+      alert("Approved successfully!");
     } catch (err) {
       setError("Failed to approve registration. Please try again.");
     }
@@ -50,20 +55,22 @@ function RegistrationPage() {
 
   const handleDecline = async (stdId) => {
     try {
-      const res = await axios.delete(`http://localhost:8000/deleteRegistration/${id}`, {
+      await axios.delete(`http://localhost:8000/deleteRegistration/${id}`, {
         data: { student_id: stdId },
       });
       
-      alert("Delete");
-      console.log(res.data);
-      
-      setRegistration(registration.filter(reg => reg.student_id !== stdId));
+      // Update the local state
+      setRegistration(prevRegistrations =>
+        prevRegistrations.filter(reg => reg.student_id !== stdId)
+      );
+      alert("Declined successfully!");
     } catch (err) {
       setError("Failed to decline registration. Please try again.");
     }
   };
 
   if (loading) return <p>Loading...</p>;
+  if (error) return <p className="text-red-500">{error}</p>;
 
   return (
     <>
@@ -87,7 +94,7 @@ function RegistrationPage() {
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {registration.map((reg) => (
-                <tr key={reg.id}>
+                <tr key={reg.student_id}>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{reg.clg_id}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{reg.student_id}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{reg.email_id}</td>
@@ -99,7 +106,7 @@ function RegistrationPage() {
                     {!reg.isApproved && (
                       <>
                         <button
-                          onClick={ () =>  handleApprove(reg.student_id,reg.email_id)}
+                          onClick={() => handleApprove(reg.student_id, reg.email_id)}
                           className="px-4 py-2 bg-green-500 text-white rounded mr-2"
                         >
                           Approve
