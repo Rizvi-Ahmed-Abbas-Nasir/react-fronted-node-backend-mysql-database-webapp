@@ -23,22 +23,26 @@ function ApproveCode() {
     fetchRegistrations();
   }, []);
 
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error: {error}</p>;
+  if (loading) return <p className="text-center text-lg">Loading...</p>;
+  if (error) return <p className="text-center text-lg text-red-500">Error: {error}</p>;
 
   return (
-    <div className="flex flex-col flex-wrap gap-4 justify-start items-start ml-72 mt-32 w-[80%] ">
-      <h1>Events</h1>
-      <div className='flex flex-row justify-start'>
-      {events.map((event,index) => (
-        <div key={index} className="border p-4 rounded m-2">
-          <h2 className="text-xl font-bold">{event.eventName}</h2>
-          <p>{event.nameOfSpeaker}</p>
-          <Link to={`/registrations/${event.eventId}`} onClick={(eventId)=>{setEventid(eventId)}} className="text-blue-500">View Students</Link>
-          {/* Add more fields as needed */}
-
-        </div>
-      ))}
+    <div className="md:ml-72 md:mt-32 md:w-[80%] w-full mt-9 flex justify-center p-8 flex-col">
+      <h1 className="text-2xl font-bold mb-6 text-center lg:text-left">Events</h1>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {events.map((event, index) => (
+          <div key={index} className="border border-gray-300 shadow-md rounded-lg p-6 bg-white">
+            <h2 className="text-xl font-bold mb-2 text-gray-800">{event.eventName}</h2>
+            <p className="mb-4 text-gray-600">Speaker: {event.nameOfSpeaker}</p>
+            <Link 
+              to={`/registrations/${event.eventId}`} 
+              onClick={() => setEventid(event.eventId)} 
+              className="inline-block text-center px-4 py-2 bg-blue-500 text-white font-semibold rounded-lg shadow hover:bg-blue-600 transition duration-300"
+            >
+              View Students
+            </Link>
+          </div>
+        ))}
       </div>
     </div>
   );

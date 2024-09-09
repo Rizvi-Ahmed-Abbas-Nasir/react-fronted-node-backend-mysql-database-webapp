@@ -61,9 +61,9 @@ const EventCompo = () => {
   }
 
   return (
-    <div className="flex flex-wrap gap-4 justify-start items-start py-12 pl-10">
+    <div className="flex w-full flex-wrap gap-4 justify-start items-start py-12 pl-10">
       {data.map((event, index) => (
-        <div key={index} className="bg-white border rounded-lg shadow-md p-4 w-72 max-w-lg flex flex-col mt-16">
+        <div key={index} className="bg-white border rounded-lg shadow-md p-4 w-90 max-w-lg flex flex-col mt-16">
           <div className="flex justify-between items-center p-2 bg-blue-600 rounded-lg">
             <h3 className="text-white text-[1.2rem] font-semibold">
               <strong>Event:</strong> {event.eventName}
@@ -93,7 +93,7 @@ const EventCompo = () => {
             {openPayBoxes[index] && (
               <div>
                 <img src={qr} alt="QR Code for Payment" />
-                <p><strong>Cost:</strong> {event.cost}</p>
+                <p><strong>Cost:</strong> {event.cost}</p>tpo_event_registrations
               </div>
             )}
             <form onSubmit={(e) => registerClicked(e, event.eventId, event.isPaid)}>
