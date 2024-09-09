@@ -18,8 +18,10 @@ function Scan() {
     console.log('Scanned result:', result); // Log the result to the console
     setScannedData(result.data);
     const qrcodedata = JSON.parse(result.data);
-    console.log(qrcodedata);
-    // Example: axios.post(`http://localhost:8000/markAsAttended`, { student_id: qrcodedata.student_id, event_id: qrcodedata.event_id });
+    // console.log(qrcodedata);
+    const data = await axios.put(`http://localhost:8000/markAsAttended/`, { student_id: qrcodedata.student_id, event_id: qrcodedata.event_id });
+    // console.log(data.data.message);
+    alert(data.data.message)
   };
 
   // Handle scanning errors

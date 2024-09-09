@@ -94,7 +94,7 @@ exports.markAsAttended = async (req, res) => {
       res.status(200).json({ message: "Student has already attended" });
     }
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    res.status(400).json({ message: error.message });
   }
 }
 
