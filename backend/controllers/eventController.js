@@ -52,6 +52,7 @@ exports.updateEvent = async (req, res) => {
         eligibleYear,
         isPaid,
         cost,
+        banner
       } = req.body;
   
       const result = await Event.updateEvent(
@@ -64,7 +65,8 @@ exports.updateEvent = async (req, res) => {
         department,
         eligibleYear,
         isPaid,
-        cost
+        cost,
+        banner
       );
       res.status(200).json({ message: "Event Updated Successfully", result });
     } catch (error) {

@@ -39,7 +39,7 @@ function RegistrationPage() {
      console.log(id, stdId);
      const srccode = await QRCode.toDataURL(JSON.stringify({event_id:id,student_id:stdId})) ;
      const res = await axios.put(`http://localhost:8000/approveStudent/${id}`, {"student_id":stdId });
-     await axios.post(`http://localhost:8000/sendAttendanceQrcode`, {"email":email_id,"src":srccode});
+    //  await axios.post(`http://localhost:8000/sendAttendanceQrcode`, {"email":email_id,"src":srccode});
      alert("Approve")
      console.log(res.data);
       setRegistration(registration.map(reg => reg.student_id === stdId ? { ...reg, isApproved: true } : reg));
@@ -64,7 +64,6 @@ function RegistrationPage() {
   };
 
   if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error: {error}</p>;
 
   return (
     <>

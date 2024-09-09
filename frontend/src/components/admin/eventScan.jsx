@@ -28,13 +28,13 @@ function EventScan() {
 
   return (
     <div className="flex flex-col flex-wrap gap-4 justify-start items-start ml-72 mt-32 w-[80%] ">
-      <h1>Events</h1>
+      <h1>Scan Attendence for Events</h1>
       <div className='flex flex-row justify-start'>
       {events.map((event,index) => (
         <div key={index} className="border p-4 rounded m-2">
           <h2 className="text-xl font-bold">{event.eventName}</h2>
           <p>{event.nameOfSpeaker}</p>
-          <Link to={`/attendancescan/${event.eventId}`} onClick={(eventId)=>{setEventid(eventId)}} className="text-blue-500">View Students</Link>
+          <Link to={`/attendancescan/${event.eventId}`} onClick={(eventId)=>{setEventid(eventId)}} className="text-blue-500">View Scanner</Link>
           {/* Add more fields as needed */}
 
         </div>

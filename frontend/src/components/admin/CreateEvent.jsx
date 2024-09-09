@@ -9,9 +9,10 @@ function CreateEvent() {
     category: '',
     time: '',
     department: '',
-    eligibleYear: '',
+    eligibleYear: [],
     isPaid: false,
-    cost: null
+    cost: null,
+    banner: null, // For event banner
   });
 
   const [events, setEvents] = useState([]);
@@ -32,13 +33,26 @@ function CreateEvent() {
   };
 
   const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setFormData({
-      ...formData,
-      [name]: type === 'radio' ? (value === 'true') : (name === 'cost' ? parseFloat(value) || '' : value),
-    });
+    const { name, value, type, checked, files } = e.target;
+
+    if (type === 'file') {
+      setFormData({
+        ...formData,
+        banner: files[0],
+      });
+    } else if (name === 'eligibleYear') {
+      const updatedYears = checked
+        ? [...formData.eligibleYear, value]
+        : formData.eligibleYear.filter((year) => year !== value);
+      setFormData({ ...formData, eligibleYear: updatedYears });
+    } else {
+      setFormData({
+        ...formData,
+        [name]: type === 'radio' ? value === 'true' : value,
+      });
+    }
   };
-  
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.eventName || !formData.nameOfSpeaker || !formData.date) {
@@ -48,8 +62,20 @@ function CreateEvent() {
 
     try {
       const formattedDate = formatDate(formData.date);
-      const data = { ...formData, date: formattedDate };
-      console.log(data)
+      const data = new FormData();
+      data.append('eventName', formData.eventName);
+      data.append('nameOfSpeaker', formData.nameOfSpeaker);
+      data.append('date', formattedDate);
+      data.append('category', formData.category);
+      data.append('time', formData.time);
+      data.append('department', formData.department);
+      data.append('eligibleYear', formData.eligibleYear);
+      data.append('isPaid', formData.isPaid);
+      data.append('cost', formData.isPaid ? parseInt(formData.cost, 10) : null);
+      if (formData.banner) {
+        data.append('banner', formData.banner);
+      }
+
       if (editEventId) {
         await axios.put(`http://localhost:8000/event/${editEventId}`, data);
         setEditEventId(null);
@@ -64,9 +90,10 @@ function CreateEvent() {
         category: '',
         time: '',
         department: '',
-        eligibleYear: '',
+        eligibleYear: [],
         isPaid: false,
-        cost: '',
+        cost: null,
+        banner: null,
       });
       setError('');
       fetchEvents();
@@ -77,13 +104,13 @@ function CreateEvent() {
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
-    return date.toISOString().split('T')[0]; // Extract yyyy-MM-dd from yyyy-MM-ddTHH:mm:ss.sssZ
+    return date.toISOString().split('T')[0];
   };
 
   const handleEdit = (event) => {
     setFormData({
       ...event,
-      date: formatDate(event.date) // Ensure the date is formatted for editing
+      date: formatDate(event.date),
     });
     setEditEventId(event.eventId);
   };
@@ -183,18 +210,30 @@ function CreateEvent() {
 
         <div className="flex items-center">
           <label className="w-1/3 font-semibold">Year:</label>
-          <select
-            name="eligibleYear"
-            value={formData.eligibleYear}
+          <div className="w-2/3 space-x-4">
+            {['First Year', 'Second Year', 'Third Year', 'Final Year'].map((year) => (
+              <label key={year} className="inline-flex items-center">
+                <input
+                  type="checkbox"
+                  name="eligibleYear"
+                  value={year}
+                  checked={formData.eligibleYear.includes(year)}
+                  onChange={handleChange}
+                  className="mr-2"
+                />
+                {year}
+              </label>
+            ))}
+          </div>
+        </div>
+        <div className="flex items-center">
+          <label className="w-1/3 font-semibold">Banner:</label>
+          <input
+            type="file"
+            name="banner"
             onChange={handleChange}
             className="w-2/3 p-2 rounded-lg bg-gray-200 text-black border border-gray-400"
-          >
-            <option value="">Select Year</option>
-            <option value="First Year">First Year</option>
-            <option value="Second Year">Second Year</option>
-            <option value="Third Year">Third Year</option>
-            <option value="Final Year">Final Year</option>
-          </select>
+          />
         </div>
 
         <div className="flex items-center">
@@ -250,9 +289,7 @@ function CreateEvent() {
 
       {/* List of Events */}
       <h3 className="text-xl mt-8 mb-4">Existing Events</h3>
-      {events.length === 0 ? (
-        <p>No events found.</p>
-      ) : (
+      {events.length ? (
         <table className="table-auto w-full text-left">
           <thead>
             <tr className="bg-gray-700 text-white">
@@ -290,7 +327,9 @@ function CreateEvent() {
             ))}
           </tbody>
         </table>
-      )}
+      ):
+      <p>No events found.</p>
+    }
     </div>
   );
 }

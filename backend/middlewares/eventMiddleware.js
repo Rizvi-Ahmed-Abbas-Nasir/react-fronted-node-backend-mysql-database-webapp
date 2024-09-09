@@ -16,6 +16,10 @@ module.exports = (req, res, next) => {
   if (!isPaid && cost !== null) {
     cost = null;
   }
+  if(isPaid && typeof(cost) === 'string') {
+    console.log("cost is string, converting it in a number")
+    cost = Number(cost)
+  }
   console.log(typeof isPaid);
   console.log(typeof cost);
 
