@@ -20,7 +20,7 @@ router.get('/createEvent', (req, res)=> {
 //event handlers
 router.post('/event', eventMiddleware,eventController.createEvent)
 router.get('/event', eventController.getAllEvents)
-router.put('/event/:id', eventMiddleware, eventController.updateEvent)
+router.put('/event/:eventId', eventMiddleware, eventController.updateEvent)
 router.delete('/event/:id', eventController.deleteEvent)
 
 //user handlers

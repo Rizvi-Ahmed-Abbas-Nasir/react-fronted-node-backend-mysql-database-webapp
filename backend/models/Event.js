@@ -47,6 +47,18 @@ exports.getAllEvents = async () => {
   }
 };
 
+exports.getAEvent = async (eventId) => {
+  try {
+    const [result] = await connection.query(
+      "SELECT * FROM tpo_events WHERE eventId = ?",
+      [eventId]
+    );
+    return result;
+  } catch (error) {
+    throw new Error("Error getting the event: " + error.message);
+  }
+}
+
 exports.updateEvent = async (
   id,
   eventName,
@@ -57,11 +69,12 @@ exports.updateEvent = async (
   department,
   eligibleYear,
   isPaid,
-  cost
+  cost,
+  banner
 ) => {
   try {
     const [rows] = await connection.query(
-      `UPDATE tpo_events SET eventName = ?, nameOfSpeaker = ?, date = ?, category = ?, time = ?, department = ?, eligibleYear = ?, isPaid = ?, cost = ? WHERE eventId = ?;`,
+      `UPDATE tpo_events SET eventName = ?, nameOfSpeaker = ?, date = ?, category = ?, time = ?, department = ?, eligibleYear = ?, isPaid = ?, cost = ?, banner = ? WHERE eventId = ?;`,
       [
         eventName,
         nameOfSpeaker,
@@ -72,6 +85,7 @@ exports.updateEvent = async (
         eligibleYear,
         isPaid,
         cost,
+        banner,
         id,
       ]
     );
