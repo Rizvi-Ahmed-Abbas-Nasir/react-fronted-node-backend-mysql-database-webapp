@@ -17,7 +17,7 @@ const AdminHeader = () => {
             <ul className="lg:flex items-center justify-start gap-6 h-full hidden lg:flex-col">
               <li>
                 <NavLink
-                  to="/admin"
+                  to="/adminp"
                   className={({ isActive }) =>
                     isActive
                       ? 'p-2 text-[1.2rem] rounded text-white font-bold underline'

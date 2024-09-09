@@ -29,7 +29,7 @@ function EventScan() {
   return (
     <div className="md:ml-72 md:mt-32 md:w-[80%] w-full mt-9 flex justify-center p-8 flex-col">
       <h1 className="text-2xl font-bold mb-6 text-center lg:text-left">Scan Attendance for Events</h1>
-      
+      {events.length > 0 ? 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {events.map((event, index) => (
           <div key={index} className="border border-gray-300 shadow-md rounded-lg p-6 bg-white">
@@ -41,12 +41,13 @@ function EventScan() {
               to={`/attendancescan/${event.eventId}`}
               onClick={() => setEventid(event.eventId)}
               className="inline-block text-center px-4 py-2 bg-blue-500 text-white font-semibold rounded-lg shadow hover:bg-blue-600 transition duration-300"
-            >
+              >
               View Scanner
             </Link>
           </div>
         ))}
       </div>
+        : <p>No Event Record</p>}
     </div>
   );
 }

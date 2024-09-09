@@ -34,7 +34,7 @@ const Header = () => {
               </li>
               <li>
                 <NavLink
-                  to="/admin"
+                  to="/adminp"
                   className={({ isActive }) =>
                     isActive
                       ? 'bg-blue-500 text-[1.2rem] p-2 rounded'

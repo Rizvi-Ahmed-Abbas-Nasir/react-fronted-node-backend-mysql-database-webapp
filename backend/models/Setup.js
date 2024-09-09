@@ -30,7 +30,7 @@ exports.createTables = async () => {
 
       CREATE TABLE tpo_event_registrations (
       reg_id INT PRIMARY KEY AUTO_INCREMENT,
-      student_id INT UNIQUE,
+      student_id INT ,
       event_id INT,
       isApproved BOOLEAN DEFAULT false,
       transaction_id varchar(255) DEFAULT NULL,

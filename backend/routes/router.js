@@ -21,7 +21,7 @@ router.get('/createEvent', (req, res)=> {
 router.post('/event', eventMiddleware,eventController.createEvent)
 router.get('/event', eventController.getAllEvents)
 router.put('/event/:eventId', eventMiddleware, eventController.updateEvent)
-router.delete('/event/:id', eventController.deleteEvent)
+router.delete('/event/:eventId', eventController.deleteEvent)
 
 //user handlers
 router.post('/userEventReg/:event_id', userController.registerForEvent ) //registers the user for a event

@@ -27,6 +27,16 @@ function CreateEvent() {
   const fetchEvents = async () => {
     try {
       const response = await axios.get('http://localhost:8000/event');
+      console.log(response.data)
+      setEvents(response.data);
+    } catch (error) {
+      setError('Failed to fetch events.');
+    }
+  };
+  const fetchEventsReg = async () => {
+    try {
+      const response = await axios.get('http://localhost:8000/event');
+      console.log(response.data)
       setEvents(response.data);
     } catch (error) {
       setError('Failed to fetch events.');
@@ -291,26 +301,45 @@ function CreateEvent() {
 
       {/* Existing Events */}
       <h3 className="text-xl mt-8 mb-4">Existing Events</h3>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {events.map((event) => (
-          <div key={event.id} className="border border-gray-300 shadow-md rounded-lg p-6 bg-white text-gray-800">
-            <h2 className="text-xl font-bold mb-2">{event.eventName}</h2>
-            <p className="mb-4">Speaker: {event.nameOfSpeaker}</p>
-            <button
-              onClick={() => handleEdit(event)}
-              className="mr-4 bg-yellow-400 text-white px-4 py-2 rounded-lg hover:bg-yellow-500"
-            >
-              Edit
-            </button>
-            <button
-              onClick={() => handleDelete(event.id)}
-              className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600"
-            >
-              Delete
-            </button>
-          </div>
-        ))}
-      </div>
+      {events.length >0 ? 
+        <table className="table-auto w-full text-left">
+          <thead>
+            <tr className="bg-white text-black">
+              <th className="p-4">Event Name</th>
+              <th className="p-4">Speaker</th>
+              <th className="p-4">Date</th>
+              <th className="p-4">Paid</th>
+              <th className="p-4">Cost</th>
+              <th className="p-4">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {events.map((event) => (
+              <tr key={event.eventId} className="border-b border-gray-600">
+                <td className="p-4">{event.eventName}</td>
+                <td className="p-4">{event.nameOfSpeaker}</td>
+                <td className="p-4">{new Date(event.date).toLocaleDateString()}</td>
+                <td className="p-4">{event.isPaid? 'Paid' : 'Not Paid'}</td>
+                <td className="p-4">{event.cost ? event.cost : "Free"}</td>
+                <td className="p-4 flex space-x-4">
+                  <button
+                    onClick={() => handleEdit(event)}
+                    className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => handleDelete(event.eventId)}
+                    className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600"
+                  >
+                    Delete
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        : <p> No Event Record</p>}
     </div>
   );
 }
