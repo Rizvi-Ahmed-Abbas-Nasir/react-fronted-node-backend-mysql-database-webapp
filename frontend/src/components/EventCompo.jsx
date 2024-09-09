@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import qr from "../assets/qrcodedemo.png";
+import qr from "../assets/qrcodedemo.png"; // Example QR code image
 
 const EventCompo = () => {
   const [openBoxes, setOpenBoxes] = useState([false, false]); // Track which event boxes are open
@@ -14,6 +14,7 @@ const EventCompo = () => {
     const fetchData = async () => {
       try {
         const response = await axios.get('http://localhost:8000/event');
+        console.log(response.data)
         setData(response.data);
       } catch (err) {
         setError(err.message);
@@ -37,7 +38,7 @@ const EventCompo = () => {
     
     try {
       const response = await axios.post(`http://localhost:8000/userEventReg/${eventId}`, {
-        student_id: "3",
+        student_id: "14",
         transaction_id: transactionId
       });
 
@@ -70,6 +71,15 @@ const EventCompo = () => {
             </h3>
           </div>
           <div className="mt-4">
+            {
+              event.banner ?
+              <img 
+              src={`http://localhost:8000/${event.banner}`} 
+              alt="Event Banner" 
+              className="w-full h-48 object-cover rounded-md mb-4"
+              />
+              : null
+            }
             <p><strong>Speaker:</strong> {event.nameOfSpeaker}</p>
             <p><strong>Date:</strong> {event.date.split('T')[0]}</p>
             <p><strong>Time:</strong> {event.time}</p>
@@ -92,8 +102,8 @@ const EventCompo = () => {
 
             {openPayBoxes[index] && (
               <div>
-                <img src={qr} alt="QR Code for Payment" />
-                <p><strong>Cost:</strong> {event.cost}</p>tpo_event_registrations
+                <img src={qr} alt="QR Code for Payment" className="w-full h-32 object-contain" />
+                <p><strong>Cost:</strong> {event.cost}</p>
               </div>
             )}
             <form onSubmit={(e) => registerClicked(e, event.eventId, event.isPaid)}>
@@ -105,7 +115,7 @@ const EventCompo = () => {
                     required
                     value={transactionId}
                     onChange={(e) => setTransactionId(e.target.value)}
-                    className="border-2 border-black"
+                    className="border-2 border-black w-full p-2"
                     type="text"
                     placeholder="Enter Transaction Id"
                   />

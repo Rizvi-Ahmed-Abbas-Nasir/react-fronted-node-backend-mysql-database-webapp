@@ -1,54 +1,50 @@
-const nodemailer = require('nodemailer')
-//connect()
+const nodemailer = require('nodemailer');
 
 exports.sendAttendanceQrcode = async (req, res) => {
-   try{  
-     const {email, src}= req.body;
-    console.log(email,src);
-   //send verification mail
-   
+  try {
+    const { email, src } = req.body;
+    console.log(email, src);
+
+    // Create a transporter
     const transporter = nodemailer.createTransport({
-            service:"gmail",
-            secure:true,
-            port:465,
-            auth: {
-                user: process.env.NODEMAILER_EMAIL,
-                pass: process.env.NODEMAILER_EMAIL_PASS
-              },
-          
-          });
-           
-        console.log(email);
-        console.log(src);
-       const reciver = {
-        from: process.env.NODEMAILER_EMAIL, // sender address
-        to: email, // list of receivers
-        subject: 'attendance qr code ', // Subject line
-        text: "registered for event and this is your qr code", // plain text body
-        html: `<p>Click 
-               <br>
-                <img src="${email}" alt="QR Code" />
-                <h2>${email} </h2>
-            </p>
-            `, // html body
-        attachments: [
-                {
-                  filename: 'qr-code.png ',
-                  content: src.split('base64,')[1],
-                  encoding: 'base64',
-                },
-            ],     
-       }
-       const info = await transporter.sendMail(reciver);
-       return res.json({
-        message:"email send success",
-        success : true ,
-        
-       });
-   }
-   catch(error){
-    return res.json({errors: error.message},{status: 500})
+      service: 'gmail',
+      host : 'smtp.gmail.com',
+      secure: true,
+      port: 465,
+      auth: {
+        user: process.env.NODEMAILER_EMAIL,
+        pass: process.env.NODEMAILER_EMAIL_PASS
+      }
+    });
 
-   }
-}
+    const mailOptions = {
+      from: process.env.NODEMAILER_EMAIL, // Sender address
+      to: email, // Receiver
+      subject: 'Attendance QR Code', // Subject line
+      text: 'You are registered for the event, and this is your QR code.', // Plain text body
+      html: `<p>You are registered for the event. Here is your QR code:</p>
+             <img src="${src}" alt="QR Code" />`, // HTML body
+      attachments: [
+        {
+          filename: 'qr-code.png',
+          content: src.split('base64,')[1],
+          encoding: 'base64'
+        }
+      ]
+    };
 
+    // Send the email
+    await transporter.sendMail(mailOptions);
+
+    // Send a successful response
+    return res.status(200).json({
+      message: 'Email sent successfully',
+      success: true
+    });
+  } catch (error) {
+    console.error('Error sending email:', error.message);
+    return res.status(500).json({
+      errors: error.message
+    });
+  }
+};
