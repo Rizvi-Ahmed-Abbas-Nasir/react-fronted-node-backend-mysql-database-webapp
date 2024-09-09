@@ -18,8 +18,7 @@ function CreateEvent() {
   const [events, setEvents] = useState([]);
   const [editEventId, setEditEventId] = useState(null);
   const [error, setError] = useState('');
-  const [bannerPreview, setBannerPreview] = useState(null); 
-
+  const [bannerPreview, setBannerPreview] = useState(null);
 
   useEffect(() => {
     fetchEvents();
@@ -129,7 +128,7 @@ function CreateEvent() {
   };
 
   return (
-    <div className="lg:ml-72 lg:mt-32 w-full mt-10   lg:w-[80%] rounded-lg p-8 bg-gray-800 text-white">
+    <div className="lg:ml-72 lg:mt-32 w-full mt-10 lg:w-[80%]  p-8 border border-gray-300 shadow-md rounded-lg text-black">
       <h2 className="text-2xl mb-6 text-center">Event Management</h2>
       
       {/* Error Message */}
@@ -144,7 +143,7 @@ function CreateEvent() {
             name="eventName"
             value={formData.eventName}
             onChange={handleChange}
-            className="w-2/3 p-2 rounded-lg bg-gray-200 text-black border border-gray-400"
+            className="w-2/3 p-2 rounded-lg bg-gray-100 text-black border border-gray-300 focus:border-blue-400"
             required
           />
         </div>
@@ -156,7 +155,7 @@ function CreateEvent() {
             name="nameOfSpeaker"
             value={formData.nameOfSpeaker}
             onChange={handleChange}
-            className="w-2/3 p-2 rounded-lg bg-gray-200 text-black border border-gray-400"
+            className="w-2/3 p-2 rounded-lg bg-gray-100 text-black border border-gray-300 focus:border-blue-400"
             required
           />
         </div>
@@ -168,7 +167,7 @@ function CreateEvent() {
             name="date"
             value={formData.date}
             onChange={handleChange}
-            className="w-2/3 p-2 rounded-lg bg-gray-200 text-black border border-gray-400"
+            className="w-2/3 p-2 rounded-lg bg-gray-100 text-black border border-gray-300 focus:border-blue-400"
             required
           />
         </div>
@@ -180,7 +179,7 @@ function CreateEvent() {
             name="time"
             value={formData.time}
             onChange={handleChange}
-            className="w-2/3 p-2 rounded-lg bg-gray-200 text-black border border-gray-400"
+            className="w-2/3 p-2 rounded-lg bg-gray-100 text-black border border-gray-300 focus:border-blue-400"
           />
         </div>
 
@@ -190,7 +189,7 @@ function CreateEvent() {
             name="category"
             value={formData.category}
             onChange={handleChange}
-            className="w-2/3 p-2 rounded-lg bg-gray-200 text-black border border-gray-400"
+            className="w-2/3 p-2 rounded-lg bg-gray-100 text-black border border-gray-300 focus:border-blue-400"
           >
             <option value="">Select Category</option>
             <option value="Placement">Placement</option>
@@ -206,7 +205,7 @@ function CreateEvent() {
             name="department"
             value={formData.department}
             onChange={handleChange}
-            className="w-2/3 p-2 rounded-lg bg-gray-200 text-black border border-gray-400"
+            className="w-2/3 p-2 rounded-lg bg-gray-100 text-black border border-gray-300 focus:border-blue-400"
           />
         </div>
 
@@ -228,13 +227,14 @@ function CreateEvent() {
             ))}
           </div>
         </div>
+
         <div className="flex items-center">
           <label className="w-1/3 font-semibold">Banner:</label>
           <input
             type="file"
             name="banner"
             onChange={handleChange}
-            className="w-2/3 p-2 rounded-lg bg-gray-200 text-black border border-gray-400"
+            className="w-2/3 p-2 rounded-lg bg-gray-100 text-black border border-gray-300 focus:border-blue-400"
           />
         </div>
 
@@ -272,84 +272,45 @@ function CreateEvent() {
             <input
               type="number"
               name="cost"
-              value={formData.cost}
+              value={formData.cost || ''}
               onChange={handleChange}
-              className="w-2/3 p-2 rounded-lg bg-gray-200 text-black border border-gray-400"
-              min="0"
-              step="0.01"
+              className="w-2/3 p-2 rounded-lg bg-gray-100 text-black border border-gray-300 focus:border-blue-400"
             />
           </div>
-          
         )}
-  <div className="flex items-center">
-          <label className="w-1/3 font-semibold">Banner:</label>
-          <input
-            type="file"
-            name="banner"
-            accept="image/*"
-            onChange={handleChange}
-            className="w-2/3 p-2 rounded-lg bg-gray-200 text-black border border-gray-400"
-          />
-        </div>
 
-        {bannerPreview && (
-          <div className="mt-4">
-            <h4 className="font-semibold">Banner Preview:</h4>
-            <img src={bannerPreview} alt="Banner Preview" className="w-1/2 mt-2" />
-          </div>
-        )}
-        <button
-          type="submit"
-          className="w-full p-3 bg-blue-500 rounded-lg text-white hover:bg-blue-600"
-        >
-          {editEventId ? 'Update Event' : 'Create Event'}
-        </button>
+        <div className="text-center">
+          <button
+            type="submit"
+            className="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+          >
+            {editEventId ? 'Update Event' : 'Create Event'}
+          </button>
+        </div>
       </form>
 
+      {/* Existing Events */}
       <h3 className="text-xl mt-8 mb-4">Existing Events</h3>
-      {events.length ? (
-        <div className="overflow-x-auto">
-        <table className="table-auto w-full text-left">
-          <thead>
-            <tr className="bg-gray-700 text-white">
-              <th className="p-4">Event Name</th>
-              <th className="p-4">Speaker</th>
-              <th className="p-4">Date</th>
-              <th className="p-4">Is Paid</th>
-              <th className="p-4">Cost</th>
-              <th className="p-4">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {events.map((event) => (
-              <tr key={event.eventId} className="border-b border-gray-600">
-                <td className="p-4">{event.eventName}</td>
-                <td className="p-4">{event.nameOfSpeaker}</td>
-                <td className="p-4">{new Date(event.date).toLocaleDateString()}</td>
-                <td className="p-4">{event.isPaid ? "Paid" : "Free"}</td>
-                <td className="p-4">{event.cost ? event.cost : "NA"}</td>
-                <td className="p-4 flex space-x-4">
-                  <button
-                    onClick={() => handleEdit(event)}
-                    className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => handleDelete(event.eventId)}
-                    className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600"
-                  >
-                    Delete
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {events.map((event) => (
+          <div key={event.id} className="border border-gray-300 shadow-md rounded-lg p-6 bg-white text-gray-800">
+            <h2 className="text-xl font-bold mb-2">{event.eventName}</h2>
+            <p className="mb-4">Speaker: {event.nameOfSpeaker}</p>
+            <button
+              onClick={() => handleEdit(event)}
+              className="mr-4 bg-yellow-400 text-white px-4 py-2 rounded-lg hover:bg-yellow-500"
+            >
+              Edit
+            </button>
+            <button
+              onClick={() => handleDelete(event.id)}
+              className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600"
+            >
+              Delete
+            </button>
+          </div>
+        ))}
       </div>
-      ):
-      <p>No events found.</p>
-    }
     </div>
   );
 }

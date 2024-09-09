@@ -11,21 +11,21 @@ const Header = () => {
 
   return (
     <>
-      {/* Header */}
-      <header className="bg-gray-800 header text-white w-full py-8 px-5 fixed top-0 left-0 h-[10vh] z-10">
+      {/* Main Header */}
+      <header className="bg-gray-800 text-white w-full py-8 px-5 fixed top-0 left-0 h-[10vh] z-10">
         <div className="container mx-auto h-[100%] flex justify-between items-center">
           <div className="text-[1.2rem] font-bold logo">TPO Website</div>
 
           {/* Desktop Navigation */}
           <nav>
-            <ul className="hidden md:flex nav-links space-x-4">
+            <ul className="hidden md:flex space-x-4">
               <li>
                 <NavLink
                   to="/"
                   className={({ isActive }) =>
                     isActive
                       ? 'bg-blue-500 text-[1.2rem] p-2 rounded'
-                      : 'hover:bg-blue-500 text-[1.2rem] p-2 rounded'
+                      : 'text-[1.2rem] hover:bg-blue-500 p-2 rounded'
                   }
                   end
                 >
@@ -38,7 +38,7 @@ const Header = () => {
                   className={({ isActive }) =>
                     isActive
                       ? 'bg-blue-500 text-[1.2rem] p-2 rounded'
-                      : 'hover:bg-blue-500 text-[1.2rem] p-2 rounded'
+                      : 'text-[1.2rem] hover:bg-blue-500 p-2 rounded'
                   }
                 >
                   Admin
@@ -74,7 +74,7 @@ const Header = () => {
 
       {/* Mobile Menu */}
       <div
-        className={`md:hidden bg-gray-800 text-white transition-all duration-500 overflow-hidden ${activeMenu ? 'max-h-[400px] mt-[10vh]' : 'max-h-0'}`}
+        className={`md:hidden bg-gray-800 text-white transition-all duration-500 overflow-hidden ${activeMenu ? 'max-h-[500px] mt-[10vh]' : 'max-h-20'}`}
         style={{
           transitionTimingFunction: 'ease-in-out',
         }}
@@ -101,12 +101,6 @@ const Header = () => {
             </li>
           </ul>
         </nav>
-      </div>
-
-      <div className={`transition-all duration-500 ${activeMenu ? 'mt-[100px]' : 'mt-0'}`}>
-        <div className="p-4">
-          <h1 className="text-xl font-bold">Welcome to the TPO Website</h1>
-        </div>
       </div>
     </>
   );

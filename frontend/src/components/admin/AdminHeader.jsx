@@ -11,10 +11,8 @@ const AdminHeader = () => {
 
   return (
     <div>
-      {/* Sidebar */}
-      <header className="lg:bg-gray-800 bg-gray-900 text-white w-full  lg:w-64 lg:h-[89vh] md:fixed lg:bottom-0 lg:left-0 py-8 border border-black">
+      <header className="lg:bg-gray-800 bg-gray-900 text-white w-full lg:w-64 lg:h-[90vh] md:fixed lg:bottom-0 lg:left-0 py-8 border-t border-black">
         <div className="container mx-auto flex justify-between flex-col items-center h-full">
-          {/* Desktop Menu */}
           <nav className="h-full flex justify-center">
             <ul className="lg:flex items-center justify-start gap-6 h-full hidden lg:flex-col">
               <li>
@@ -22,8 +20,8 @@ const AdminHeader = () => {
                   to="/admin"
                   className={({ isActive }) =>
                     isActive
-                      ? 'bg-blue-500 p-2 text-[1.2rem] rounded text-white'
-                      : 'hover:text-black text-[1.2rem] whitespace-nowrap'
+                      ? 'p-2 text-[1.2rem] rounded text-white font-bold underline'
+                      : 'text-[1.2rem] text-gray-300 hover:bg-gray-700 hover:text-white p-2 rounded'
                   }
                 >
                   Create Event
@@ -34,8 +32,8 @@ const AdminHeader = () => {
                   to="/admin/approve"
                   className={({ isActive }) =>
                     isActive
-                      ? 'bg-blue-500 p-2 text-[1.2rem] rounded text-white'
-                      : 'hover:text-white hover:bg-blue-500 hover:p-2 rounded text-[1.2rem] whitespace-nowrap'
+                      ? 'p-2 text-[1.2rem] rounded text-white font-bold underline'
+                      : 'text-[1.2rem] text-gray-300 hover:bg-gray-700 hover:text-white p-2 rounded'
                   }
                 >
                   Validate Student
@@ -46,8 +44,8 @@ const AdminHeader = () => {
                   to="/admin/scan"
                   className={({ isActive }) =>
                     isActive
-                      ? 'bg-blue-500 p-2 text-[1.2rem] rounded text-white'
-                      : 'hover:text-white hover:bg-blue-500 hover:p-2 rounded text-[1.2rem] whitespace-nowrap'
+                      ? 'p-2 text-[1.2rem] rounded text-white font-bold underline'
+                      : 'text-[1.2rem] text-gray-300 hover:bg-gray-700 hover:text-white p-2 rounded'
                   }
                 >
                   Scan
@@ -58,8 +56,8 @@ const AdminHeader = () => {
                   to="/admin/attendance"
                   className={({ isActive }) =>
                     isActive
-                      ? 'bg-blue-500 p-2 text-[1.2rem] rounded text-white'
-                      : 'hover:text-white hover:bg-blue-500 hover:p-2 rounded text-[1.2rem] whitespace-nowrap'
+                      ? 'p-2 text-[1.2rem] rounded text-white font-bold underline'
+                      : 'text-[1.2rem] text-gray-300 hover:bg-gray-700 hover:text-white p-2 rounded'
                   }
                 >
                   Attendance
@@ -84,11 +82,8 @@ const AdminHeader = () => {
           </div>
 
           <div
-            className={`lg:hidden transition-all duration-500 overflow-hidden ${activeMenu ? 'max-h-[400px] mb-4' : 'max-h-0'
-              } w-full`}
-            style={{
-              transitionTimingFunction: 'ease-in-out',
-            }}
+            className={`lg:hidden transition-all duration-500 overflow-hidden ${activeMenu ? 'max-h-[400px] mb-4' : 'max-h-0'} w-full`}
+            style={{ transitionTimingFunction: 'ease-in-out' }}
           >
             <nav className="flex flex-col items-center bg-gray-800 w-full">
               <ul className="flex flex-col items-center gap-4 py-4">
@@ -96,7 +91,11 @@ const AdminHeader = () => {
                   <NavLink
                     to="/admin"
                     onClick={toggleMenu}
-                    className="text-white text-lg py-2 hover:bg-blue-500 rounded-lg px-4"
+                    className={({ isActive }) =>
+                      isActive
+                        ? 'text-white text-lg py-2 rounded-lg px-4 font-bold underline'
+                        : 'text-white text-lg py-2 hover:bg-gray-700 rounded-lg px-4'
+                    }
                   >
                     Create Event
                   </NavLink>
@@ -105,7 +104,11 @@ const AdminHeader = () => {
                   <NavLink
                     to="/admin/approve"
                     onClick={toggleMenu}
-                    className="text-white text-lg py-2 hover:bg-blue-500 rounded-lg px-4"
+                    className={({ isActive }) =>
+                      isActive
+                        ? 'text-white text-lg py-2 rounded-lg px-4 font-bold underline'
+                        : 'text-white text-lg py-2 hover:bg-gray-700 rounded-lg px-4'
+                    }
                   >
                     Validate Student
                   </NavLink>
@@ -114,7 +117,11 @@ const AdminHeader = () => {
                   <NavLink
                     to="/admin/scan"
                     onClick={toggleMenu}
-                    className="text-white text-lg py-2 hover:bg-blue-500 rounded-lg px-4"
+                    className={({ isActive }) =>
+                      isActive
+                        ? 'text-white text-lg py-2 rounded-lg px-4 font-bold underline'
+                        : 'text-white text-lg py-2 hover:bg-gray-700 rounded-lg px-4'
+                    }
                   >
                     Scan
                   </NavLink>
@@ -123,7 +130,11 @@ const AdminHeader = () => {
                   <NavLink
                     to="/admin/attendance"
                     onClick={toggleMenu}
-                    className="text-white text-lg py-2 hover:bg-blue-500 rounded-lg px-4"
+                    className={({ isActive }) =>
+                      isActive
+                        ? 'text-white text-lg py-2 rounded-lg px-4 font-bold underline'
+                        : 'text-white text-lg py-2 hover:bg-gray-700 rounded-lg px-4'
+                    }
                   >
                     Attendance
                   </NavLink>
