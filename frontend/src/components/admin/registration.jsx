@@ -3,13 +3,15 @@ import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import Header from '../header';
 import AdminHeader from './AdminHeader';
+import QRCode from "qrcode";
 
 function RegistrationPage() {
   const { id } = useParams();
   const [registration, setRegistration] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
+  const [src,setSrc] = useState('');
+  
   useEffect(() => {
     async function fetchRegistration() {
       try {
@@ -25,14 +27,19 @@ function RegistrationPage() {
         setLoading(false);
       }
     }
-
+ 
     fetchRegistration();
   }, [id]);
 
-  const handleApprove = async (stdId) => {
+
+
+
+  const handleApprove = async (stdId,email_id) => {
     try {
      console.log(id, stdId);
-     const res = await axios.put(`http://localhost:8000/approveStudent/${id}`, {"student_id":stdId});
+     const srccode = await QRCode.toDataURL(JSON.stringify({event_id:id,student_id:stdId})) ;
+     const res = await axios.put(`http://localhost:8000/approveStudent/${id}`, {"student_id":stdId });
+     await axios.post(`http://localhost:8000/sendAttendanceQrcode`, {"email":email_id,"src":srccode});
      alert("Approve")
      console.log(res.data);
       setRegistration(registration.map(reg => reg.student_id === stdId ? { ...reg, isApproved: true } : reg));
@@ -93,7 +100,7 @@ function RegistrationPage() {
                     {!reg.isApproved && (
                       <>
                         <button
-                          onClick={() => handleApprove(reg.student_id)}
+                          onClick={ () =>  handleApprove(reg.student_id,reg.email_id)}
                           className="px-4 py-2 bg-green-500 text-white rounded mr-2"
                         >
                           Approve

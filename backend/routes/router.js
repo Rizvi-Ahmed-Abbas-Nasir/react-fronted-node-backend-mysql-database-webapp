@@ -5,6 +5,7 @@ const setupController = require("../controllers/setupController")
 const eventController = require("../controllers/eventController")
 const userController = require("../controllers/userController")
 const adminController = require("../controllers/adminController")
+const qrCodeController = require("../controllers/qrCodeController")
 
 //test routes
 router.get('/', (req, res)=> {
@@ -32,5 +33,8 @@ router.put('/approveStudent/:eventId', adminController.approveStudent)
 router.delete('/deleteRegistration/:eventId', adminController.deleteRegistration)
 router.put('/markAsAttended', adminController.markAsAttended)
 router.get('/getAttendance/:eventId', adminController.getAttendance)
+//qrcode send handler
+router.post('/sendAttendanceQrcode',qrCodeController.sendAttendanceQrcode)
+
 
 module.exports = router
