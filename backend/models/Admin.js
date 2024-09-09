@@ -1,5 +1,5 @@
 const connection = require("../db");
-
+const Event = require("./Event");
 exports.getAllRegistrations = async (eventId) => {
   try {
     const [result] = await connection.query(
@@ -64,7 +64,7 @@ exports.getApprovedRegistrations = async (eventId) => {
       "Error fetching registered students of the event: " + error.message
     );
   }
-}
+};
 
 exports.getAttendance = async (eventId) => {
   try {
@@ -98,9 +98,7 @@ exports.getAttendance = async (eventId) => {
       "Error fetching attendance records of the event: " + error.message
     );
   }
-
-}
-
+};
 
 exports.isApproved = async (eventId, studentId) => {
   try {
@@ -140,11 +138,10 @@ exports.isAttended = async (eventId, studentId) => {
       "Error checking if the student has attended: " + error.message
     );
   }
-}
+};
 
 exports.markAsAttended = async (eventId, studentId) => {
   try {
-
     //update the attended column
     const [rows] = await connection.query(
       `UPDATE tpo_event_registrations SET attended = true WHERE event_id = ? AND student_id = ? ;`,
@@ -157,12 +154,13 @@ exports.markAsAttended = async (eventId, studentId) => {
       [eventId, studentId]
     );
 
-    return rows,rows1;
-
+    return rows, rows1;
   } catch (error) {
-    throw new Error("Error marking attendance of the student: " + error.message);
+    throw new Error(
+      "Error marking attendance of the student: " + error.message
+    );
   }
-}
+};
 
 exports.deleteRegistration = async (eventId, student_id) => {
   try {
@@ -172,8 +170,62 @@ exports.deleteRegistration = async (eventId, student_id) => {
     );
     return rows;
   } catch (error) {
-    throw new Error(
-      "Error deleting student registration: " + error.message
-    );
+    throw new Error("Error deleting student registration: " + error.message);
   }
-}
+};
+
+//get all attendance
+exports.getAllAttendance = async () => {
+  try {
+    const events = await Event.getAllEvents();
+    // console.log(events)
+
+    let selectColumns = events
+      .map(
+        (e) =>
+          `MAX(CASE WHEN e.eventId = ${e.eventId} THEN r.attended ELSE NULL END) AS \`${e.eventName}\``
+      )
+      .join(", ");
+
+    let query = `
+      SELECT 
+        s.student_id, 
+        s.clg_id,
+        s.first_name,
+        s.middle_name,
+        s.last_name,
+        ${selectColumns}
+      FROM tpo_event_registrations r
+      JOIN tpo_student_details s ON r.student_id = s.student_id
+      JOIN tpo_events e ON r.event_id = e.eventId
+      GROUP BY s.student_id, s.clg_id;
+    `;
+
+    const result = await connection.query(query);
+
+    // getting all the events in a events object for easy retrieval
+    // Transform the result to group event data under an "Events" key
+    const formattedResult = result[0].map((student) => {
+      const {
+        student_id,
+        clg_id,
+        first_name,
+        middle_name,
+        last_name,
+        ...events
+      } = student;
+
+      return {
+        student_id,
+        clg_id,
+        first_name,
+        middle_name,
+        last_name,
+        events: events,
+      };
+    });
+    return formattedResult;
+  } catch (error) {
+    console.log(error);
+  }
+};

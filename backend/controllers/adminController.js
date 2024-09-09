@@ -110,3 +110,14 @@ exports.deleteRegistration = async (req, res) => {
   }
 
 }
+
+exports.getAllAttendance = async (req, res) => {
+
+  try {
+   const data = await Admin.getAllAttendance()
+   res.status(200).json({ result: data});
+  } catch (error) {
+    console.log(error);
+    res.status(400).json({ message: error.message });
+  }
+}

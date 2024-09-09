@@ -33,6 +33,9 @@ router.put('/approveStudent/:eventId', adminController.approveStudent)
 router.delete('/deleteRegistration/:eventId', adminController.deleteRegistration)
 router.put('/markAsAttended', adminController.markAsAttended)
 router.get('/getAttendance/:eventId', adminController.getAttendance)
+router.get('/getAllAttendance', adminController.getAllAttendance)
+
+
 //qrcode send handler
 router.post('/sendAttendanceQrcode',qrCodeController.sendAttendanceQrcode)
 
