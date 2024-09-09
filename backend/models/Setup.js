@@ -10,8 +10,8 @@ exports.createTables = async () => {
       date date, 
       category varchar(255), 
       time time, 
-      department varchar(45), 
-      eligibleYear varchar(45), 
+      department varchar(255), 
+      eligibleYear varchar(255), 
       isPaid bool DEFAULT NULL, 
       cost int DEFAULT NULL,
       banner text
@@ -30,7 +30,7 @@ exports.createTables = async () => {
 
       CREATE TABLE tpo_event_registrations (
       reg_id INT PRIMARY KEY AUTO_INCREMENT,
-      student_id INT,
+      student_id INT UNIQUE,
       event_id INT,
       isApproved BOOLEAN DEFAULT false,
       transaction_id varchar(255) DEFAULT NULL,

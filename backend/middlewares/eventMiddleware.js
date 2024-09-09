@@ -17,11 +17,11 @@ module.exports = (req, res, next) => {
     cost = null;
   }
   if(isPaid && typeof(cost) === 'string') {
-    console.log("cost is string, converting it in a number")
+    // console.log("cost is string, converting it in a number")
     cost = Number(cost)
   }
-  console.log(typeof isPaid);
-  console.log(typeof cost);
+  // console.log("isPaid is of type: ", typeof isPaid);
+  // console.log("cost is of type: ",typeof cost);
 
   // Check if required fields are present
   if (

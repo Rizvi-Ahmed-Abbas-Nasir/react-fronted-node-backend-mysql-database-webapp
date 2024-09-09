@@ -8,15 +8,37 @@ exports.registerForEvent = async (req, res) => {
     //thinking about should we pass student_id through session here instead
     const { student_id , transaction_id} = req.body;
 
-    //register the student for the event
-    const result = await User.registerForEvent(event_id, student_id, transaction_id);
+    //check if student exists already ----------------------
+    const isRegistered = await User.checkIfRegistered(event_id, student_id);
+    if (isRegistered.length !== 0) {
+      console.log("User already registered")
+      res.status(400).json({ message: "Already Registered" });
+    } else {
+      const result = await User.registerForEvent(event_id, student_id, transaction_id);
+  
+      res
+        .status(201)
+        .json({ message: "You have registered successfully", result: result });
 
-    res
-      .status(201)
-      .json({ message: "You have registered successfully", result: result });
+    }
+
+    //register the student for the event
   } catch (error) {
     console.log(error);
     res.status(400).json({ error: error.message });
   }
 };
+
+// exports.checkIfRegistered = async (req, res) => {
+//   try {
+//     const isRegistered = await User.checkIfRegistered();
+//     if (isRegistered.length === 0) {
+//       res.status(200).json({ message: "Not yet Registered" });
+//     } else {
+//       res.status(200).json({ message: "Already Registered" });
+//     }
+//   } catch (error) {
+//     res.status(500).json({ error: error.message });
+//   }
+// }
 
