@@ -5,7 +5,7 @@ import CreateEvent from '../components/admin/CreateEvent'
 
 function createevent() {
   return (
-    <div>
+    <div className='flex flex-col '>
         <Header /> 
         <AdminHeader />
         <CreateEvent />
