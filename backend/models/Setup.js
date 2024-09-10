@@ -14,7 +14,8 @@ exports.createTables = async () => {
       eligibleYear varchar(255), 
       isPaid bool DEFAULT NULL, 
       cost int DEFAULT NULL,
-      banner text
+      banner text,
+      isDeleted bool DEFAULT false
       );
 
       CREATE TABLE IF NOT EXISTS tpo_student_details (
