@@ -175,57 +175,57 @@ exports.deleteRegistration = async (eventId, student_id) => {
 };
 
 //get all attendance
-// exports.getAllAttendance = async () => {
-//   try {
-//     const events = await Event.getAllEvents();
-//     // console.log(events)
+exports.getAllAttendance = async () => {
+  try {
+    const events = await Event.getAllEvents();
+    // console.log(events)
 
-//     let selectColumns = events
-//       .map(
-//         (e) =>
-//           `MAX(CASE WHEN e.eventId = ${e.eventId} THEN r.attended ELSE NULL END) AS \`${e.eventName}\``
-//       )
-//       .join(", ");
+    let selectColumns = events
+      .map(
+        (e) =>
+          `MAX(CASE WHEN e.eventId = ${e.eventId} THEN r.attended ELSE NULL END) AS \`${e.eventName}\``
+      )
+      .join(", ");
 
-//     let query = `
-//       SELECT 
-//         s.student_id, 
-//         s.clg_id,
-//         s.first_name,
-//         s.middle_name,
-//         s.last_name,
-//         ${selectColumns}
-//       FROM tpo_event_registrations r
-//       JOIN tpo_student_details s ON r.student_id = s.student_id
-//       JOIN tpo_events e ON r.event_id = e.eventId
-//       GROUP BY s.student_id, s.clg_id;
-//     `;
+    let query = `
+      SELECT 
+        s.student_id, 
+        s.clg_id,
+        s.first_name,
+        s.middle_name,
+        s.last_name,
+        ${selectColumns}
+      FROM tpo_event_registrations r
+      JOIN tpo_student_details s ON r.student_id = s.student_id
+      JOIN tpo_events e ON r.event_id = e.eventId
+      GROUP BY s.student_id, s.clg_id;
+    `;
 
-//     const result = await connection.query(query);
+    const result = await connection.query(query);
 
-//     // getting all the events in a events object for easy retrieval
-//     // Transform the result to group event data under an "Events" key
-//     const formattedResult = result[0].map((student) => {
-//       const {
-//         student_id,
-//         clg_id,
-//         first_name,
-//         middle_name,
-//         last_name,
-//         ...events
-//       } = student;
+    // getting all the events in a events object for easy retrieval
+    // Transform the result to group event data under an "Events" key
+    const formattedResult = result[0].map((student) => {
+      const {
+        student_id,
+        clg_id,
+        first_name,
+        middle_name,
+        last_name,
+        ...events
+      } = student;
 
-//       return {
-//         student_id,
-//         clg_id,
-//         first_name,
-//         middle_name,
-//         last_name,
-//         events: events,
-//       };
-//     });
-//     return formattedResult;
-//   } catch (error) {
-//     console.log(error);
-//   }
-// };
+      return {
+        student_id,
+        clg_id,
+        first_name,
+        middle_name,
+        last_name,
+        events: events,
+      };
+    });
+    return formattedResult;
+  } catch (error) {
+    console.log(error);
+  }
+};

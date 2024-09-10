@@ -114,7 +114,7 @@ exports.deleteRegistration = async (req, res) => {
 exports.getAllAttendance = async (req, res) => {
 
   try {
-   const data = await Attendance.getAllAttendance()
+   const data = await Admin.getAllAttendance()
    res.status(200).json({ result: data});
   } catch (error) {
     console.log(error);

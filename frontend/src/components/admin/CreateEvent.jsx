@@ -12,7 +12,7 @@ function CreateEvent() {
     eligibleYear: [],
     isPaid: false,
     cost: null,
-    banner: null, // For event banner
+    banner: null,
   });
 
   const [events, setEvents] = useState([]);
@@ -27,16 +27,6 @@ function CreateEvent() {
   const fetchEvents = async () => {
     try {
       const response = await axios.get('http://localhost:8000/event');
-      console.log(response.data)
-      setEvents(response.data);
-    } catch (error) {
-      setError('Failed to fetch events.');
-    }
-  };
-  const fetchEventsReg = async () => {
-    try {
-      const response = await axios.get('http://localhost:8000/event');
-      console.log(response.data)
       setEvents(response.data);
     } catch (error) {
       setError('Failed to fetch events.');
@@ -45,7 +35,6 @@ function CreateEvent() {
 
   const handleChange = (e) => {
     const { name, value, type, checked, files } = e.target;
-
     if (type === 'file') {
       setFormData({
         ...formData,
@@ -136,6 +125,18 @@ function CreateEvent() {
       }
     }
   };
+
+  const handleRemove = async (id) => {
+    if (window.confirm('Are you sure you want to mark this event as removed?')) {
+      try {
+        await axios.delete(`http://localhost:8000/removeEvent/${id}`,);
+        fetchEvents();
+      } catch (error) {
+        setError('Failed to remove the event.');
+      }
+    }
+  };
+
 
   return (
     <div className="lg:ml-72 lg:mt-32 w-full mt-10 lg:w-[80%]  p-8 border border-gray-300 shadow-md rounded-lg text-black">
@@ -301,7 +302,7 @@ function CreateEvent() {
 
       {/* Existing Events */}
       <h3 className="text-xl mt-8 mb-4">Existing Events</h3>
-      {events.length >0 ? 
+      {events.length > 0 ? 
         <table className="table-auto w-full text-left">
           <thead>
             <tr className="bg-white text-black">
@@ -314,12 +315,12 @@ function CreateEvent() {
             </tr>
           </thead>
           <tbody>
-            {events.map((event) => (
+            {events.map((event) => !event.isDeleted && (
               <tr key={event.eventId} className="border-b border-gray-600">
                 <td className="p-4">{event.eventName}</td>
                 <td className="p-4">{event.nameOfSpeaker}</td>
                 <td className="p-4">{new Date(event.date).toLocaleDateString()}</td>
-                <td className="p-4">{event.isPaid? 'Paid' : 'Not Paid'}</td>
+                <td className="p-4">{event.isPaid ? 'Paid' : 'Not Paid'}</td>
                 <td className="p-4">{event.cost ? event.cost : "Free"}</td>
                 <td className="p-4 flex space-x-4">
                   <button
@@ -334,12 +335,18 @@ function CreateEvent() {
                   >
                     Delete
                   </button>
+                  <button
+                    onClick={() => handleRemove(event.eventId)}
+                    className="bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-600"
+                  >
+                    Remove
+                  </button>
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
-        : <p> No Event Record</p>}
+        : <p>No Event Record</p>}
     </div>
   );
 }

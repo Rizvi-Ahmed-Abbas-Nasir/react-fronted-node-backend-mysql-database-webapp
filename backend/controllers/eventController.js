@@ -157,7 +157,8 @@ exports.updateEvent = async (req, res) => {
   }
 };
 
-exports.deleteEvent = async (req, res) => {
+//this controller flags the event as deleted, to not show in the admin UI, and removing the banner in the process for reducing server load
+exports.removeEvent = async (req, res)=> {
   try {
     const id = req.params.eventId;
 
@@ -167,6 +168,54 @@ exports.deleteEvent = async (req, res) => {
     const event = await Event.getAEvent(id);
     const prevFile = event[0].banner;
     if (prevFile) {
+      console.log("Deleting Previous file: ", prevFile);
+  
+      const prevPath = path.join(__dirname, "../public", prevFile);
+      // console.log(prevPath)
+  
+      // ------------------------ Cautious code begins ---------------------------------------
+      fs.unlink(prevPath, (err) => {
+        if (err) {
+          console.error("Error deleting the file:", err);
+        } else {
+          console.log("File deleted successfully!");
+        }
+      });
+      // ------------------------ Cautious code ends ---------------------------------------
+    }
+
+    const result = await Event.flagEventAsDeleted(id);
+    res.status(200).json({ message: "Event removed Successfully, you can undo this process but will have to include the banner again", result });
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+
+}
+
+exports.undoEvent = async (req, res)=> {
+  try {
+    const id = req.params.eventId;
+
+    const result = await Event.flagEventAsNotDeleted(id);
+    res.status(200).json({ message: "Successful undo of event details", result });
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+    
+  }
+}
+
+
+//this deletes the whole event, its related registration records, the attendance and the banner
+exports.deleteEvent = async (req, res) => {
+  try {
+    const id = req.params.eventId;
+
+    //deleting the previous file
+
+    //getting the previous filename from the db if present
+    const event = await Event.getAEvent(id);
+    const prevFile = event[0].banner;
+    if (prevFile) { // checks if the previous file is present to perform the deletion
       console.log("Deleting Previous file: ", prevFile);
   
       const prevPath = path.join(__dirname, "../public", prevFile);
