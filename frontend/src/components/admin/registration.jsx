@@ -76,7 +76,7 @@ function RegistrationPage() {
     <>
       <Header />
       <AdminHeader />
-      <div className="flex flex-col gap-4 justify-start items-start ml-72 mt-32 w-[80%]">
+      <div className="flex flex-col gap-4 justify-start items-start ml-72 mt-32 w-[80%] regisdata">
         <h1 className="text-2xl font-bold">Registration Details</h1>
         {registration.length > 0 ? (
           <table className="min-w-full divide-y divide-gray-200">
