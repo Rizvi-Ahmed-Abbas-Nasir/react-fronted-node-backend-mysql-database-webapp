@@ -1,23 +1,28 @@
 import './App.css';
 import Event from './Pages/event';
 import Createevent from './Pages/createevent';
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import RegistrationPage from './components/admin/registration';
 import Approve from './Pages/approve';
 import Scan from './Pages/scan';
-import Attendence from './Pages/attendence';
+import Attendance from './Pages/attendance'
 import AttendanceScan from './components/admin/attendanceScan'
+import HistoryEvents from './Pages/historyEvents';
+
 function App() {
   return (
     <BrowserRouter>
     <Routes>
     <Route index  path="/" element={<Event/>} />
-    <Route path="/admin" element={<Createevent/>} />
+    <Route path="/adminp" element={<Createevent/>} />
     <Route path="/admin/approve" element={<Approve/>} />
-    <Route path="/admin/attendence" element={<Attendence/>} />
+    <Route path="/admin/attendance" element={<Attendance/>} />
     <Route path="/admin/scan" element={<Scan/>} />
+    <Route path="/admin/eventhistory" element={<HistoryEvents/>} />
     <Route path="/attendancescan/:id" element={<AttendanceScan/>} />
     <Route path="/registrations/:id" element={<RegistrationPage/>} />
+    <Route path="/admin/history" element={<HistoryEvents/>} />
+
     </Routes>
     </BrowserRouter>
   );

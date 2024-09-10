@@ -6,7 +6,10 @@ exports.createTables = async () => {
       `CREATE TABLE IF NOT EXISTS tpo_events (
       eventId int auto_increment primary key, 
       eventName varchar(255),
+      eventDescription varchar(255),
       nameOfSpeaker varchar(255), 
+      organizationOfSpeaker varchar(255),
+      locationOfSpeaker varchar(255),
       date date, 
       category varchar(255), 
       time time, 
@@ -14,7 +17,9 @@ exports.createTables = async () => {
       eligibleYear varchar(255), 
       isPaid bool DEFAULT NULL, 
       cost int DEFAULT NULL,
-      banner text
+      banner text,
+      loaOfSpeaker text,
+      isDeleted bool DEFAULT false
       );
 
       CREATE TABLE IF NOT EXISTS tpo_student_details (
@@ -28,17 +33,29 @@ exports.createTables = async () => {
       UNIQUE KEY clg_id (clg_id)
       );
 
-      CREATE TABLE tpo_event_registrations (
+      CREATE TABLE IF NOT EXISTS tpo_event_registrations (
       reg_id INT PRIMARY KEY AUTO_INCREMENT,
-      student_id INT UNIQUE,
+      student_id INT ,
       event_id INT,
       isApproved BOOLEAN DEFAULT false,
       transaction_id varchar(255) DEFAULT NULL,
       attended BOOLEAN DEFAULT false,
       timeOfAttendance DATETIME DEFAULT NULL,
-      FOREIGN KEY (event_id) REFERENCES tpo_events(eventId),
+      FOREIGN KEY (event_id) REFERENCES tpo_events(eventId) ON DELETE CASCADE,
       FOREIGN KEY (student_id) REFERENCES tpo_student_details(student_id)
       );
+
+      CREATE TABLE IF NOT EXISTS attendance_records (
+      student_id INT,
+      clg_id VARCHAR(255),
+      first_name VARCHAR(255),
+      middle_name VARCHAR(255),
+      last_name VARCHAR(255),
+      PRIMARY KEY (student_id)
+      );
+
+
+
       `
     );
     return result;

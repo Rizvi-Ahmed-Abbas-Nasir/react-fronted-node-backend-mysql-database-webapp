@@ -4,118 +4,112 @@ import axios from 'axios';
 import Header from '../header';
 import AdminHeader from './AdminHeader';
 import QRCode from 'qrcode';
+import CircularProgress from '@mui/material/CircularProgress'; // Import CircularProgress from Material-UI
 
 function RegistrationPage() {
-  const { id } = useParams();
-  const [registration, setRegistration] = useState([]);
+  const { id: eventId } = useParams(); // Descriptive name for 'id'
+  const [registrations, setRegistrations] = useState([]); // Renamed to plural 'registrations'
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  
+  const [actionStatus, setActionStatus] = useState({}); // Tracks loading state for approve/decline buttons
+
+  // Fetch registrations on component load
   useEffect(() => {
-    async function fetchRegistration() {
+    const fetchRegistrations = async () => {
       try {
-        const response = await axios.get(`http://localhost:8000/getAllRegistrations/${id}`);
-        if (response.data && Array.isArray(response.data)) {
-          setRegistration(response.data);
-        } else {
-          setError("No registration found");
-        }
+        const response = await axios.get(`http://localhost:8000/getAllRegistrations/${eventId}`);
+        setRegistrations(response.data || []);
       } catch (err) {
-        setError("Failed to fetch registration details. Please try again.");
+        setError("Error fetching registration data");
       } finally {
         setLoading(false);
       }
-    }
+    };
 
-    fetchRegistration();
-  }, [id]);
+    fetchRegistrations();
+  }, [eventId]);
 
-  const handleApprove = async (stdId, email_id) => {
+  // Handle approving a student
+  const approveStudent = async (studentId, emailId) => {
+    setActionStatus({ ...actionStatus, [studentId]: 'approving' }); // Show loader for this student
     try {
-      const qrCodeData = JSON.stringify({ event_id: id, student_id: stdId });
+      const qrCodeData = JSON.stringify({ event_id: eventId, student_id: studentId });
       const qrCodeUrl = await QRCode.toDataURL(qrCodeData);
-      
-      // Approve the student
-      await axios.put(`http://localhost:8000/approveStudent/${id}`, { student_id: stdId });
-      
-      // Send the QR code to the student's email
-      await axios.post(`http://localhost:8000/sendAttendanceQrcode`, { email: email_id, src: qrCodeUrl });
-      
-      // Update the local state
-      setRegistration(prevRegistrations =>
-        prevRegistrations.map(reg =>
-          reg.student_id === stdId ? { ...reg, isApproved: true } : reg
-        )
-      );
-      alert("Approved successfully!");
+
+      await axios.put(`http://localhost:8000/approveStudent/${eventId}`, { student_id: studentId });
+      await axios.post(`http://localhost:8000/sendAttendanceQrcode`, { email: emailId, src: qrCodeUrl });
+
+      setRegistrations(registrations.map(reg =>
+        reg.student_id === studentId ? { ...reg, isApproved: true } : reg
+      ));
+      alert("Student approved successfully!");
     } catch (err) {
-      setError("Failed to approve registration. Please try again.");
+      setError("Error approving student");
+    } finally {
+      setActionStatus({ ...actionStatus, [studentId]: null }); // Reset loader
     }
   };
 
-  const handleDecline = async (stdId) => {
+  // Handle declining a student
+  const declineStudent = async (studentId) => {
+    setActionStatus({ ...actionStatus, [studentId]: 'declining' }); // Show loader for this student
     try {
-      await axios.delete(`http://localhost:8000/deleteRegistration/${id}`, {
-        data: { student_id: stdId },
-      });
-      
-      // Update the local state
-      setRegistration(prevRegistrations =>
-        prevRegistrations.filter(reg => reg.student_id !== stdId)
-      );
-      alert("Declined successfully!");
+      await axios.delete(`http://localhost:8000/deleteRegistration/${eventId}`, { data: { student_id: studentId } });
+      setRegistrations(registrations.filter(reg => reg.student_id !== studentId));
+      alert("Student declined successfully!");
     } catch (err) {
-      setError("Failed to decline registration. Please try again.");
+      setError("Error declining student");
+    } finally {
+      setActionStatus({ ...actionStatus, [studentId]: null }); // Reset loader
     }
   };
 
   if (loading) return <p>Loading...</p>;
-  if (error) return <p className="text-red-500">{error}</p>;
 
   return (
     <>
       <Header />
       <AdminHeader />
-      <div className="flex flex-col gap-4 justify-start items-start ml-72 mt-32 w-[80%] regisdata">
+      <div className="flex flex-col gap-4 justify-start items-start md:ml-72 md:mt-32 w-[80%]">
         <h1 className="text-2xl font-bold">Registration Details</h1>
-        {registration.length > 0 ? (
+        {registrations.length ? (
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">College ID</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Student ID</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email ID</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">First Name</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Last Name</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Transaction ID</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Approved</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                <th className="px-6 py-3">College ID</th>
+                {/* <th className="px-6 py-3">Student ID</th> */}
+                <th className="px-6 py-3">Email</th>
+                <th className="px-6 py-3">Name</th>
+                <th className="px-6 py-3">Approved</th>
+                <th className="px-6 py-3">Transaction Id</th>
+                <th className="px-6 py-3">Actions</th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {registration.map((reg) => (
-                <tr key={reg.student_id}>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{reg.clg_id}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{reg.student_id}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{reg.email_id}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{reg.first_name}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{reg.last_name}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{reg.transaction_id || '-'}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{reg.isApproved ? 'Yes' : 'No'}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {!reg.isApproved && (
+              {registrations.map(({ student_id, clg_id, email_id, first_name, last_name,transaction_id, isApproved }) => (
+                <tr key={student_id}>
+                  <td className="px-6 py-4">{clg_id}</td>
+                  {/* <td className="px-6 py-4">{student_id}</td> */}
+                  <td className="px-6 py-4">{email_id}</td>
+                  <td className="px-6 py-4">{first_name} {last_name}</td>
+                  <td className="px-6 py-4">{isApproved ? 'Yes' : 'No'}</td>
+                  <td className="px-6 py-4">{transaction_id}</td>
+                  <td className="px-6 py-4">
+                    {!isApproved && (
                       <>
                         <button
-                          onClick={() => handleApprove(reg.student_id, reg.email_id)}
+                          onClick={() => approveStudent(student_id, email_id)}
+                          disabled={actionStatus[student_id] === 'approving'}
                           className="px-4 py-2 bg-green-500 text-white rounded mr-2"
                         >
-                          Approve
+                          {actionStatus[student_id] === 'approving' ? <CircularProgress size={20} color="inherit" /> : 'Approve'}
                         </button>
                         <button
-                          onClick={() => handleDecline(reg.student_id)}
+                          onClick={() => declineStudent(student_id)}
+                          disabled={actionStatus[student_id] === 'declining'}
                           className="px-4 py-2 bg-red-500 text-white rounded"
                         >
-                          Decline
+                          {actionStatus[student_id] === 'declining' ? <CircularProgress size={20} color="inherit" /> : 'Decline'}
                         </button>
                       </>
                     )}

@@ -5,7 +5,7 @@ import CreateEvent from '../components/admin/CreateEvent'
 
 function createevent() {
   return (
-    <div className=' '>
+    <div className=''>
         <Header /> 
         <AdminHeader />
         <CreateEvent />

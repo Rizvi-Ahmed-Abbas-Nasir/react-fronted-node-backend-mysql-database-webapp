@@ -3,7 +3,10 @@ const connection = require("../db");
 //creates an event
 exports.createEvent = async (
   eventName,
+  eventDescription,
   nameOfSpeaker,
+  organizationOfSpeaker,
+  locationOfSpeaker,
   date,
   category,
   time,
@@ -11,15 +14,18 @@ exports.createEvent = async (
   eligibleYear,
   isPaid,
   cost,
-  banner
+  banner,
+  loaOfSpeaker
 ) => {
   try {
-    
     const [result] = await connection.query(
-      "INSERT INTO tpo_events (eventName, nameOfSpeaker, date, category, time, department, eligibleYear, isPaid, cost, banner) VALUES (?, ?, ?, ?, ?, ?, ?,?,?,?)",
+      "INSERT INTO tpo_events (eventName, eventDescription, nameOfSpeaker, organizationOfSpeaker,locationOfSpeaker, date, category, time, department, eligibleYear, isPaid, cost, banner, loaOfSpeaker) VALUES (?, ?, ?, ?, ?, ?, ?,?,?,?, ?,?,?,?)",
       [
         eventName,
+        eventDescription,
         nameOfSpeaker,
+        organizationOfSpeaker,
+        locationOfSpeaker,
         date,
         category,
         time,
@@ -27,7 +33,8 @@ exports.createEvent = async (
         eligibleYear,
         isPaid,
         cost,
-        banner
+        banner,
+        loaOfSpeaker
       ]
     );
     return result;
@@ -57,12 +64,15 @@ exports.getAEvent = async (eventId) => {
   } catch (error) {
     throw new Error("Error getting the event: " + error.message);
   }
-}
+};
 
 exports.updateEvent = async (
   id,
   eventName,
+  eventDescription,
   nameOfSpeaker,
+  organizationOfSpeaker,
+  locationOfSpeaker,
   date,
   category,
   time,
@@ -70,14 +80,18 @@ exports.updateEvent = async (
   eligibleYear,
   isPaid,
   cost,
-  banner
+  banner,
+  loaOfSpeaker
 ) => {
   try {
     const [rows] = await connection.query(
-      `UPDATE tpo_events SET eventName = ?, nameOfSpeaker = ?, date = ?, category = ?, time = ?, department = ?, eligibleYear = ?, isPaid = ?, cost = ?, banner = ? WHERE eventId = ?;`,
+      `UPDATE tpo_events SET eventName = ?,eventDescription = ?, nameOfSpeaker = ?,organizationOfSpeaker = ?,locationOfSpeaker =?, date = ?, category = ?, time = ?, department = ?, eligibleYear = ?, isPaid = ?, cost = ?, banner = ?, loaOfSpeaker = ? WHERE eventId = ?;`,
       [
         eventName,
+        eventDescription,
         nameOfSpeaker,
+        organizationOfSpeaker,
+        locationOfSpeaker,
         date,
         category,
         time,
@@ -86,6 +100,7 @@ exports.updateEvent = async (
         isPaid,
         cost,
         banner,
+        loaOfSpeaker,
         id,
       ]
     );
@@ -96,31 +111,57 @@ exports.updateEvent = async (
   }
 };
 
+exports.deleteEvent = async (id) => {
+  try {
+    const [rows] = await connection.query(
+      `DELETE from tpo_events WHERE eventId = ?;`,
+      [id]
+    );
 
-exports.deleteEvent = async (id)=> {
-    try {
-        const [rows] = await connection.query(
-          `DELETE from tpo_events WHERE eventId = ?;`,
-          [id]
-        );
-    
-        return rows
-      } catch (error) {
-        throw new Error("Error Deleting event: " + error.message);
-      }
-}
+    return rows;
+  } catch (error) {
+    throw new Error("Error Deleting event: " + error.message);
+  }
+};
 
-exports.isPaid = async (id)=> {
+exports.isPaid = async (id) => {
   try {
     const [rows] = await connection.query(
       `SELECT isPaid from tpo_events WHERE eventId = ?;`,
       [id]
-
     );
-    return rows[0].isPaid === 1
-
+    return rows[0].isPaid === 1;
   } catch (error) {
     throw new Error("Error checking if event is paid: " + error.message);
-    
-  } 
-}
+  }
+};
+
+exports.flagEventAsDeleted = async (id) => {
+  try {
+    const result = await connection.query(
+      `UPDATE tpo_events
+      SET isDeleted = true
+      WHERE eventId = ?;
+    `,
+      [id]
+    );
+    return result;
+  } catch (error) {
+    throw new Error("Error flagging event as deleted: " + error.message);
+  }
+};
+
+exports.flagEventAsNotDeleted = async (id) => {
+  try {
+    const result = await connection.query(
+      `UPDATE tpo_events
+      SET isDeleted = false
+      WHERE eventId = ?;
+    `,
+      [id]
+    );
+    return result;
+  } catch (error) {
+    throw new Error("Error flagging event as not deleted: " + error.message);
+  }
+};
