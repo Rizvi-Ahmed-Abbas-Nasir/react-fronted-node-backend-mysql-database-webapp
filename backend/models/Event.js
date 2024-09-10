@@ -81,10 +81,11 @@ exports.updateEvent = async (
   isPaid,
   cost,
   banner,
+  loaOfSpeaker
 ) => {
   try {
     const [rows] = await connection.query(
-      `UPDATE tpo_events SET eventName = ?,eventDescription = ?, nameOfSpeaker = ?,organizationOfSpeaker = ?,locationOfSpeaker =?, date = ?, category = ?, time = ?, department = ?, eligibleYear = ?, isPaid = ?, cost = ?, banner = ? WHERE eventId = ?;`,
+      `UPDATE tpo_events SET eventName = ?,eventDescription = ?, nameOfSpeaker = ?,organizationOfSpeaker = ?,locationOfSpeaker =?, date = ?, category = ?, time = ?, department = ?, eligibleYear = ?, isPaid = ?, cost = ?, banner = ?, loaOfSpeaker = ? WHERE eventId = ?;`,
       [
         eventName,
         eventDescription,
@@ -99,6 +100,7 @@ exports.updateEvent = async (
         isPaid,
         cost,
         banner,
+        loaOfSpeaker,
         id,
       ]
     );

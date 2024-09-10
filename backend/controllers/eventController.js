@@ -1,7 +1,7 @@
 const Event = require("../models/Event");
 const path = require("path");
 const fs = require("fs");
-const loaController = require("../controllers/loaController")
+const loaController = require("../controllers/loaController");
 //runs after middleware data cleaning
 exports.createEvent = async (req, res) => {
   try {
@@ -44,18 +44,17 @@ exports.createEvent = async (req, res) => {
       subject: eventName,
       activity: eventDescription,
     };
-    
-    const isGenerated = await loaController.createPDF(data)
+
+    const isGenerated = await loaController.createPDF(data);
     if (!isGenerated) {
-      console.log("Error generating loa")
-      req.body.loaOfSpeaker = null
+      console.log("Error generating loa");
+      req.body.loaOfSpeaker = null;
     } else {
-      console.log("Loa generated successfully")
-      req.body.loaOfSpeaker = isGenerated
-      
+      console.log("Loa generated successfully");
+      req.body.loaOfSpeaker = isGenerated;
     }
 
-    const loaOfSpeaker = await req.body.loaOfSpeaker
+    const loaOfSpeaker = await req.body.loaOfSpeaker;
     const result = await Event.createEvent(
       eventName,
       eventDescription,
@@ -73,8 +72,6 @@ exports.createEvent = async (req, res) => {
       loaOfSpeaker
     );
 
-    
-      
     res.status(201).json({ message: "Event created successfully", result });
   } catch (error) {
     res.status(400).json({ error: error.message });
@@ -119,6 +116,7 @@ exports.updateEvent = async (req, res) => {
       //getting the previous filename from the db if present
       const event = await Event.getAEvent(id);
       const prevFile = event[0].banner;
+      const loa = event[0].loaOfSpeaker;
 
       if (prevFile) {
         console.log("Deleting Previous file: ", prevFile);
@@ -138,6 +136,25 @@ exports.updateEvent = async (req, res) => {
       } else {
         console.log("there was no previous file to delete");
       }
+
+      //if loa is present previously, delete it
+      if (loa) {
+        console.log("Deleting Previous loa: ", loa);
+
+        const prevPath = path.join(__dirname, "../public", loa);
+
+        // ------------------------ Cautious code begins ---------------------------------------
+        fs.unlink(prevPath, (err) => {
+          if (err) {
+            console.error("Error deleting the loa:", err);
+          } else {
+            console.log("loa deleted successfully!");
+          }
+        });
+        // ------------------------ Cautious code ends ---------------------------------------
+      } else {
+        console.log("there was no loa to delete");
+      }
     } else {
       console.log("no new file specified");
       if (!req.body.banner) {
@@ -155,11 +172,12 @@ exports.updateEvent = async (req, res) => {
       }
       console.log("keeping the previous banner: ", req.body.banner);
     }
+
     const {
       eventName,
       eventDescription,
       nameOfSpeaker,
-      ogranizationOfSpeaker,
+      organizationOfSpeaker,
       locationOfSpeaker,
       date,
       category,
@@ -171,12 +189,32 @@ exports.updateEvent = async (req, res) => {
       banner,
     } = req.body;
 
+    //generate a new loa based on the data
+    const data = {
+      date: date,
+      recipientName: nameOfSpeaker,
+      recipientOrganization: organizationOfSpeaker,
+      recipientLocation: locationOfSpeaker,
+      subject: eventName,
+      activity: eventDescription,
+    };
+
+    const isGenerated = await loaController.createPDF(data);
+    if (!isGenerated) {
+      console.log("Error generating loa");
+      req.body.loaOfSpeaker = null;
+    } else {
+      console.log("Loa generated successfully");
+      req.body.loaOfSpeaker = isGenerated;
+    }
+    const loaOfSpeaker = await req.body.loaOfSpeaker;
+
     const result = await Event.updateEvent(
       id,
       eventName,
       eventDescription,
       nameOfSpeaker,
-      ogranizationOfSpeaker,
+      organizationOfSpeaker,
       locationOfSpeaker,
       date,
       category,
@@ -185,8 +223,10 @@ exports.updateEvent = async (req, res) => {
       eligibleYear,
       isPaid,
       cost,
-      banner
+      banner,
+      loaOfSpeaker
     );
+
     res.status(200).json({ message: "Event Updated Successfully", result });
   } catch (error) {
     return res.status(500).json({ error: error.message });
@@ -254,6 +294,7 @@ exports.deleteEvent = async (req, res) => {
     //getting the previous filename from the db if present
     const event = await Event.getAEvent(id);
     const prevFile = event[0].banner;
+    const loa = event[0].loaOfSpeaker;
     if (prevFile) {
       // checks if the previous file is present to perform the deletion
       console.log("Deleting Previous file: ", prevFile);
@@ -270,6 +311,28 @@ exports.deleteEvent = async (req, res) => {
         }
       });
       // ------------------------ Cautious code ends ---------------------------------------
+    } else {
+      console.log("No previous banner to delete")
+    }
+
+    //if loa is present previously, delete it
+    if (loa) {
+      console.log("Deleting Previous loa: ", loa);
+
+      const prevPath = path.join(__dirname, "../public", loa);
+
+      // ------------------------ Cautious code begins ---------------------------------------
+      fs.unlink(prevPath, (err) => {
+        if (err) {
+          console.error("Error deleting the loa:", err);
+        } else {
+          console.log("loa deleted successfully!");
+        }
+      });
+      // ------------------------ Cautious code ends ---------------------------------------
+
+    } else {
+      console.log("there was no loa to delete")
     }
 
     const result = await Event.deleteEvent(id);

@@ -22,8 +22,9 @@ function History() {
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this event?')) {
       try {
-        await axios.delete(`http://localhost:8000/event/${id}`);
+        const data = await axios.delete(`http://localhost:8000/event/${id}`);
         fetchEvents();
+        alert(data.data.message)
       } catch (error) {
         setError('Failed to delete the event.');
       }
@@ -34,8 +35,9 @@ function History() {
   const handleRemove = async (id) => {
     if (window.confirm('Are you sure you want to remove this event?')) {
       try {
-        await axios.delete(`http://localhost:8000/removeEvent/${id}`);
+        const data = await axios.delete(`http://localhost:8000/removeEvent/${id}`);
         fetchEvents(); // Refresh event list
+        alert(data.data.message)
       } catch (error) {
         setError('Failed to remove the event.');
       }
@@ -45,8 +47,9 @@ function History() {
   // Handle undo delete by setting isDeleted back to 0
   const handleUndo = async (id) => {
     try {
-      await axios.post(`http://localhost:8000/undoEvent/${id}`);
+      const data = await axios.post(`http://localhost:8000/undoEvent/${id}`);
       fetchEvents(); // Refresh event list
+      alert(data.data.message)
     } catch (error) {
       setError('Failed to undo the event deletion.');
     }

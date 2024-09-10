@@ -21,7 +21,7 @@ function CreateEvent() {
   const [events, setEvents] = useState([]);
   const [editEventId, setEditEventId] = useState(null);
   const [error, setError] = useState("");
-  const [bannerPreview, setBannerPreview] = useState(null);
+  // const [bannerPreview, setBannerPreview] = useState(null);
   
 
   useEffect(() => {
@@ -84,10 +84,12 @@ function CreateEvent() {
       }
 
       if (editEventId) {
-        await axios.put(`http://localhost:8000/event/${editEventId}`, data);
+        const response = await axios.put(`http://localhost:8000/event/${editEventId}`, data);
         setEditEventId(null);
+        alert(response.data.message)
       } else {
-        await axios.post("http://localhost:8000/event", data);
+        const response = await axios.post("http://localhost:8000/event", data);
+        alert(response.data.message)
       }
 
       setFormData({
@@ -128,8 +130,9 @@ function CreateEvent() {
   const handleDelete = async (id) => {
     if (window.confirm("Are you sure you want to delete this event?")) {
       try {
-        await axios.delete(`http://localhost:8000/event/${id}`);
+        const data = await axios.delete(`http://localhost:8000/event/${id}`);
         fetchEvents();
+        alert(data.data.message)
       } catch (error) {
         setError("Failed to delete the event.");
       }
@@ -141,8 +144,9 @@ function CreateEvent() {
       window.confirm("Are you sure you want to mark this event as removed?")
     ) {
       try {
-        await axios.delete(`http://localhost:8000/removeEvent/${id}`);
+        const data = await axios.delete(`http://localhost:8000/removeEvent/${id}`);
         fetchEvents();
+        alert(data.data.message)
       } catch (error) {
         setError("Failed to remove the event.");
       }

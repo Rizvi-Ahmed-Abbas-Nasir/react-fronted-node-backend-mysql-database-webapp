@@ -3,7 +3,7 @@ import axios from "axios";
 import qr from "../assets/qrcodedemo.png"; // Example QR code image
 
 const EventCompo = () => {
-  const [openBoxes, setOpenBoxes] = useState([false, false]); // Track which event boxes are open
+  // const [openBoxes, setOpenBoxes] = useState([false, false]); // Track which event boxes are open
   const [openPayBoxes, setOpenPayBoxes] = useState([false, false]); // Track which payment sections are open
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -53,13 +53,13 @@ const EventCompo = () => {
       );
 
       if (response.data) {
-        alert("Registration successful!");
+        alert(response.data.message);
       } else {
         alert("Registration failed.");
       }
     } catch (err) {
       console.error(err);
-      alert("An error occurred during registration.");
+      alert("An error occurred during registration."+ err);
     }
   };
 

@@ -67,7 +67,7 @@ const Header = () => {
 
           {/* Contact Information (Visible on desktop) */}
           <div className="text-sm hidden md:flex contact">
-            <span className="font-semibold text-[1.2rem]">tpo@yourcollege.edu</span>
+            <span className="font-semibold text-[1.2rem]">tpo@pvppcoe.ac.in</span>
           </div>
         </div>
       </header>

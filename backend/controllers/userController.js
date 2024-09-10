@@ -12,7 +12,7 @@ exports.registerForEvent = async (req, res) => {
     const isRegistered = await User.checkIfRegistered(event_id, student_id);
     if (isRegistered.length !== 0) {
       console.log("User already registered")
-      res.status(400).json({ message: "Already Registered" });
+      res.status(200).json({ message: "You have already Registered" });
     } else {
       const result = await User.registerForEvent(event_id, student_id, transaction_id);
   
@@ -25,7 +25,7 @@ exports.registerForEvent = async (req, res) => {
     //register the student for the event
   } catch (error) {
     console.log(error);
-    res.status(400).json({ error: error.message });
+    res.status(400).json({ message: error.message });
   }
 };
 
