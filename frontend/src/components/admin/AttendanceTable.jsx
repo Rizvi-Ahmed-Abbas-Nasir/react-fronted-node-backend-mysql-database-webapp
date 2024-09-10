@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { jsPDF } from 'jspdf';
+import 'jspdf-autotable';
 const converter = require('json-2-csv');
+
+
 function AttendanceTable() {
   const [attendanceData, setAttendanceData] = useState([]);
   const [error, setError] = useState("");
@@ -23,23 +27,65 @@ function AttendanceTable() {
 
     fetchAttendanceData();
   }, []);
+
+
+  const flattenObject = (obj, prefix = '') => {
+    let result = {};
+    for (let key in obj) {
+      if (obj.hasOwnProperty(key)) {
+        const value = obj[key];
+        const newKey = prefix ? `${prefix}_${key}` : key;
+        if (typeof value === 'object' && !Array.isArray(value) && value !== null) {
+          Object.assign(result, flattenObject(value, newKey));
+        } else {
+          result[newKey] = Array.isArray(value) ? value.join('\n') : value;
+        }
+      }
+    }
+    return result;
+  };
+  const handleDownloadPDF = () => {
+    const doc = new jsPDF();
+
+   
+    const flattenedData = attendanceData.map(item => flattenObject(item));
+    const headers = Object.keys(flattenedData.reduce((acc, item) => ({
+      ...acc,
+      ...item
+    }), {})).map(key => ({
+      header: key,
+      dataKey: key
+    }));
+
+   
+    doc.autoTable({
+      columns: headers,
+      body: flattenedData,
+      margin: { top: 20 },
+      theme: 'striped',
+      styles: {
+        cellWidth: 'auto',
+        overflow: 'linebreak',
+        cellPadding: 5
+      }});
   
+    doc.save('dynamic-data.pdf');
+  };
  
   const handleDownloadCSV = () => {
     try {
       
           const csv = converter.json2csv(attendanceData);
-             // Convert JSON data to CSV
+            
           const encodedUri = encodeURI('data:text/csv;charset=utf-8,' + csv); // Create data URL
     
-          // Create a temporary link element
+         
           const link = document.createElement('a');
           link.href = encodedUri;
-          link.setAttribute('download', 'data.csv'); // Set download attribute
+          link.setAttribute('download', 'data.csv'); 
           document.body.appendChild(link);
-          link.click(); // Trigger the download
+          link.click();
     
-          // Clean up
           document.body.removeChild(link);
       
       
@@ -53,6 +99,8 @@ function AttendanceTable() {
   return (
     <div className="flex flex-col gap-4 justify-start items-start md:ml-72 md:mt-32 w-auto">
       <h1 className="text-2xl font-bold">Registration Details</h1>
+      <button onClick={handleDownloadCSV} className="px-4 py-2 bg-green-500 text-white rounded mr-2">DOWNLOAD CSV</button>
+      <button  onClick={handleDownloadPDF} className="px-4 py-2 bg-green-500 text-white rounded mr-2"> DOWNLOAD PDF</button>
       {/* {error && <p className="text-red-500">{error}</p>} */}
       {attendanceData?.length > 0 ? (
         <div className=" overflow-x-scroll">
@@ -98,7 +146,7 @@ function AttendanceTable() {
           <p>No Data yet</p>
         </div>
       )}
-     <button onClick={handleDownloadCSV} className="px-4 py-2 bg-green-500 text-white rounded mr-2">DOWNLOAD CSV</button>
+     
     </div>
   );
 }
