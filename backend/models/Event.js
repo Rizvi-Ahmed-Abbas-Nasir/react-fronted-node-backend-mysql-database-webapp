@@ -3,7 +3,10 @@ const connection = require("../db");
 //creates an event
 exports.createEvent = async (
   eventName,
+  eventDescription,
   nameOfSpeaker,
+  organizationOfSpeaker,
+  locationOfSpeaker,
   date,
   category,
   time,
@@ -11,14 +14,18 @@ exports.createEvent = async (
   eligibleYear,
   isPaid,
   cost,
-  banner
+  banner,
+  loaOfSpeaker
 ) => {
   try {
     const [result] = await connection.query(
-      "INSERT INTO tpo_events (eventName, nameOfSpeaker, date, category, time, department, eligibleYear, isPaid, cost, banner) VALUES (?, ?, ?, ?, ?, ?, ?,?,?,?)",
+      "INSERT INTO tpo_events (eventName, eventDescription, nameOfSpeaker, organizationOfSpeaker,locationOfSpeaker, date, category, time, department, eligibleYear, isPaid, cost, banner, loaOfSpeaker) VALUES (?, ?, ?, ?, ?, ?, ?,?,?,?, ?,?,?,?)",
       [
         eventName,
+        eventDescription,
         nameOfSpeaker,
+        organizationOfSpeaker,
+        locationOfSpeaker,
         date,
         category,
         time,
@@ -27,6 +34,7 @@ exports.createEvent = async (
         isPaid,
         cost,
         banner,
+        loaOfSpeaker
       ]
     );
     return result;
@@ -61,7 +69,10 @@ exports.getAEvent = async (eventId) => {
 exports.updateEvent = async (
   id,
   eventName,
+  eventDescription,
   nameOfSpeaker,
+  organizationOfSpeaker,
+  locationOfSpeaker,
   date,
   category,
   time,
@@ -69,14 +80,17 @@ exports.updateEvent = async (
   eligibleYear,
   isPaid,
   cost,
-  banner
+  banner,
 ) => {
   try {
     const [rows] = await connection.query(
-      `UPDATE tpo_events SET eventName = ?, nameOfSpeaker = ?, date = ?, category = ?, time = ?, department = ?, eligibleYear = ?, isPaid = ?, cost = ?, banner = ? WHERE eventId = ?;`,
+      `UPDATE tpo_events SET eventName = ?,eventDescription = ?, nameOfSpeaker = ?,organizationOfSpeaker = ?,locationOfSpeaker =?, date = ?, category = ?, time = ?, department = ?, eligibleYear = ?, isPaid = ?, cost = ?, banner = ? WHERE eventId = ?;`,
       [
         eventName,
+        eventDescription,
         nameOfSpeaker,
+        organizationOfSpeaker,
+        locationOfSpeaker,
         date,
         category,
         time,

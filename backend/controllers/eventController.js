@@ -1,6 +1,7 @@
 const Event = require("../models/Event");
 const path = require("path");
 const fs = require("fs");
+const loaController = require("../controllers/loaController")
 //runs after middleware data cleaning
 exports.createEvent = async (req, res) => {
   try {
@@ -20,7 +21,10 @@ exports.createEvent = async (req, res) => {
     }
     const {
       eventName,
+      eventDescription,
       nameOfSpeaker,
+      organizationOfSpeaker,
+      locationOfSpeaker,
       date,
       category,
       time,
@@ -30,9 +34,34 @@ exports.createEvent = async (req, res) => {
       cost,
       banner,
     } = req.body;
+
+    //generate a loa based on the data
+    const data = {
+      date: date,
+      recipientName: nameOfSpeaker,
+      recipientOrganization: organizationOfSpeaker,
+      recipientLocation: locationOfSpeaker,
+      subject: eventName,
+      activity: eventDescription,
+    };
+    
+    const isGenerated = await loaController.createPDF(data)
+    if (!isGenerated) {
+      console.log("Error generating loa")
+      req.body.loaOfSpeaker = null
+    } else {
+      console.log("Loa generated successfully")
+      req.body.loaOfSpeaker = isGenerated
+      
+    }
+
+    const loaOfSpeaker = await req.body.loaOfSpeaker
     const result = await Event.createEvent(
       eventName,
+      eventDescription,
       nameOfSpeaker,
+      organizationOfSpeaker,
+      locationOfSpeaker,
       date,
       category,
       time,
@@ -40,8 +69,12 @@ exports.createEvent = async (req, res) => {
       eligibleYear,
       isPaid,
       cost,
-      banner
+      banner,
+      loaOfSpeaker
     );
+
+    
+      
     res.status(201).json({ message: "Event created successfully", result });
   } catch (error) {
     res.status(400).json({ error: error.message });
@@ -86,13 +119,13 @@ exports.updateEvent = async (req, res) => {
       //getting the previous filename from the db if present
       const event = await Event.getAEvent(id);
       const prevFile = event[0].banner;
-      
-      if(prevFile){
+
+      if (prevFile) {
         console.log("Deleting Previous file: ", prevFile);
-  
+
         const prevPath = path.join(__dirname, "../public", prevFile);
         // console.log(prevPath)
-  
+
         // ------------------------ Cautious code begins ---------------------------------------
         fs.unlink(prevPath, (err) => {
           if (err) {
@@ -102,32 +135,32 @@ exports.updateEvent = async (req, res) => {
           }
         });
         // ------------------------ Cautious code ends ---------------------------------------
-
-      }
-      else {
-        console.log("there was no previous file to delete")
+      } else {
+        console.log("there was no previous file to delete");
       }
     } else {
-      console.log("no new file specified")
-      if (!req.body.banner){
-        console.log("no new banner specified")
-  
+      console.log("no new file specified");
+      if (!req.body.banner) {
+        console.log("no new banner specified");
+
         //getting the previous filename from the db if present
         const event = await Event.getAEvent(id);
         const prevFile = event[0].banner;
-        
-        if(prevFile){
-          req.body.banner = prevFile
+
+        if (prevFile) {
+          req.body.banner = prevFile;
         } else {
-          req.body.banner = null
+          req.body.banner = null;
         }
-  
       }
-      console.log("keeping the previous banner: ",req.body.banner)
+      console.log("keeping the previous banner: ", req.body.banner);
     }
     const {
       eventName,
+      eventDescription,
       nameOfSpeaker,
+      ogranizationOfSpeaker,
+      locationOfSpeaker,
       date,
       category,
       time,
@@ -141,7 +174,10 @@ exports.updateEvent = async (req, res) => {
     const result = await Event.updateEvent(
       id,
       eventName,
+      eventDescription,
       nameOfSpeaker,
+      ogranizationOfSpeaker,
+      locationOfSpeaker,
       date,
       category,
       time,
@@ -158,7 +194,7 @@ exports.updateEvent = async (req, res) => {
 };
 
 //this controller flags the event as deleted, to not show in the admin UI, and removing the banner in the process for reducing server load
-exports.removeEvent = async (req, res)=> {
+exports.removeEvent = async (req, res) => {
   try {
     const id = req.params.eventId;
 
@@ -169,10 +205,10 @@ exports.removeEvent = async (req, res)=> {
     const prevFile = event[0].banner;
     if (prevFile) {
       console.log("Deleting Previous file: ", prevFile);
-  
+
       const prevPath = path.join(__dirname, "../public", prevFile);
       // console.log(prevPath)
-  
+
       // ------------------------ Cautious code begins ---------------------------------------
       fs.unlink(prevPath, (err) => {
         if (err) {
@@ -185,25 +221,28 @@ exports.removeEvent = async (req, res)=> {
     }
 
     const result = await Event.flagEventAsDeleted(id);
-    res.status(200).json({ message: "Event removed Successfully, you can undo this process but will have to include the banner again", result });
+    res.status(200).json({
+      message:
+        "Event removed Successfully, you can undo this process but will have to include the banner again",
+      result,
+    });
   } catch (error) {
     return res.status(500).json({ error: error.message });
   }
+};
 
-}
-
-exports.undoEvent = async (req, res)=> {
+exports.undoEvent = async (req, res) => {
   try {
     const id = req.params.eventId;
 
     const result = await Event.flagEventAsNotDeleted(id);
-    res.status(200).json({ message: "Successful undo of event details", result });
+    res
+      .status(200)
+      .json({ message: "Successful undo of event details", result });
   } catch (error) {
     return res.status(500).json({ error: error.message });
-    
   }
-}
-
+};
 
 //this deletes the whole event, its related registration records, the attendance and the banner
 exports.deleteEvent = async (req, res) => {
@@ -215,12 +254,13 @@ exports.deleteEvent = async (req, res) => {
     //getting the previous filename from the db if present
     const event = await Event.getAEvent(id);
     const prevFile = event[0].banner;
-    if (prevFile) { // checks if the previous file is present to perform the deletion
+    if (prevFile) {
+      // checks if the previous file is present to perform the deletion
       console.log("Deleting Previous file: ", prevFile);
-  
+
       const prevPath = path.join(__dirname, "../public", prevFile);
       // console.log(prevPath)
-  
+
       // ------------------------ Cautious code begins ---------------------------------------
       fs.unlink(prevPath, (err) => {
         if (err) {

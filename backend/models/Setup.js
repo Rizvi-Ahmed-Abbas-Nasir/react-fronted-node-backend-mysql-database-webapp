@@ -6,7 +6,10 @@ exports.createTables = async () => {
       `CREATE TABLE IF NOT EXISTS tpo_events (
       eventId int auto_increment primary key, 
       eventName varchar(255),
+      eventDescription varchar(255),
       nameOfSpeaker varchar(255), 
+      organizationOfSpeaker varchar(255),
+      locationOfSpeaker varchar(255),
       date date, 
       category varchar(255), 
       time time, 
@@ -15,6 +18,7 @@ exports.createTables = async () => {
       isPaid bool DEFAULT NULL, 
       cost int DEFAULT NULL,
       banner text,
+      loaOfSpeaker text,
       isDeleted bool DEFAULT false
       );
 

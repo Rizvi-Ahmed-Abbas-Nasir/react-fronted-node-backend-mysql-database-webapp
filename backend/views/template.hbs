@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Letter of Appreciation</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 0;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .letter-head {
+            text-align: center;
+            width: 100%;
+            overflow: hidden;
+        }
+        .letter-head img {
+            width: 100%;
+            height: 20rem;
+        }
+        .content {
+            margin: 20px;
+        }
+        .footer {
+            margin-top: 50px;
+            margin: 20px;
+        }
+        /* Aligning the date to the right */
+        .date {
+            display: flex;
+            justify-content: space-between;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Letterhead Image -->
+    <div class="letter-head">
+        <img src="http://localhost:8000/letterhead.jpg" alt="Letterhead">
+    </div>
+
+    <!-- Letter Body -->
+    <div class="content">
+        <div class="date">
+
+        <p>Ref. No.: VPPCOE&VA/T&P Office/2024-25</p>
+        
+        <!-- Date aligned to the right -->
+        <p>Date: {{date}}</p>
+        </div>
+
+        <p>To,<br>
+        {{recipientName}},<br>
+        {{recipientOrganization}},<br>
+        {{recipientLocation}}</p>
+
+        <p>Subject: {{subject}}</p>
+
+        <p>Dear {{recipientName}},</p>
+
+        <p>This is with respect to the subject cited above; we would like to state that you have conducted {{activity}}.
+        We appreciate the same.</p>
+
+        <p>We have no hesitation in saying that this particular activity was very fruitful and engaging and was
+        immensely helpful to our students from the point of view of improving the employability skills of our students. You have impeccably given all the information related to the subject, and we believe it will guide them in succeeding with the impending placement season.</p>
+
+        <p>We sincerely and affectionately appreciate your efforts, time, and concern for the cause of VPPCOE&VA and its students. We hope we will continue our association in the future and work together for mutual benefits.</p>
+
+        <p>Thank you very much.</p>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <p>Swapnil Desai<br>
+        Head, T&P Department,<br>
+        VPPCOE&VA</p>
+    </div>
+    
+</body>
+</html>
