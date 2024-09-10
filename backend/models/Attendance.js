@@ -10,7 +10,7 @@ exports.getAllAttendance = async () => {
     let selectColumns = events
       .map(
         (e) =>
-          `MAX(CASE WHEN e.eventId = ${e.eventId} THEN r.attended ELSE NULL END) AS \`${e.eventName +"("+e.eventId+") : "+e.nameOfSpeaker }\``
+          `MAX(CASE WHEN e.eventId = ${e.eventId} THEN r.attended ELSE NULL END) AS \`${e.eventName +"("+e.eventId+")" }\``
       )
       .join(", ");
 
