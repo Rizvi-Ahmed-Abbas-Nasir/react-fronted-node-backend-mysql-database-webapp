@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { jsPDF } from 'jspdf';
 import 'jspdf-autotable';
+import * as XLSX from 'xlsx';
+import { saveAs } from 'file-saver';
 const converter = require('json-2-csv');
 
 
@@ -29,26 +31,36 @@ function AttendanceTable() {
   }, []);
 
 
-  const flattenObject = (obj, prefix = '') => {
-    let result = {};
+ 
+
+  const flattenAndTransformObject = (obj, parent = '', res = {}) => {
     for (let key in obj) {
-      if (obj.hasOwnProperty(key)) {
-        const value = obj[key];
-        const newKey = prefix ? `${prefix}_${key}` : key;
-        if (typeof value === 'object' && !Array.isArray(value) && value !== null) {
-          Object.assign(result, flattenObject(value, newKey));
-        } else {
-          result[newKey] = Array.isArray(value) ? value.join('\n') : value;
+      const propName = parent ? `${parent}.${key}` : key; 
+      let value = obj[key];
+
+       if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
+        flattenAndTransformObject(value, propName, res);
+      } else {
+        
+        if (propName.includes('events')) {
+          
+          value = value === null ? 'Not Participated' : value === 0 ? 'Participated' : value;
+        } else if (['first_name', 'middle_name', 'last_name'].includes(key)) {
+         
+          value = value.charAt(0).toUpperCase() + value.slice(1);
         }
+
+        res[propName] = value;
       }
     }
-    return result;
+    return res;
   };
+
   const handleDownloadPDF = () => {
     const doc = new jsPDF();
 
    
-    const flattenedData = attendanceData.map(item => flattenObject(item));
+    const flattenedData = attendanceData.map(item => flattenAndTransformObject(item));
     const headers = Object.keys(flattenedData.reduce((acc, item) => ({
       ...acc,
       ...item
@@ -66,7 +78,8 @@ function AttendanceTable() {
       styles: {
         cellWidth: 'auto',
         overflow: 'linebreak',
-        cellPadding: 5
+        cellPadding: 2,
+        fontSize : 10,
       }});
   
     doc.save('dynamic-data.pdf');
@@ -75,7 +88,7 @@ function AttendanceTable() {
   const handleDownloadCSV = () => {
     try {
       
-          const csv = converter.json2csv(attendanceData);
+          const csv = converter.json2csv(flattenAndTransformObject(attendanceData));
             
           const encodedUri = encodeURI('data:text/csv;charset=utf-8,' + csv); // Create data URL
     
@@ -93,14 +106,30 @@ function AttendanceTable() {
       console.error('Error generating CSV:', error);
     }
   };
+  
+  const exportToExcel = () => {
+    
+    const transformedData = attendanceData.map(item => flattenAndTransformObject(item));
+    const worksheet = XLSX.utils.json_to_sheet(transformedData);
 
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
+
+    const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+    const excelBlob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8' });
+    saveAs(excelBlob, 'exported_data.xlsx');
+  };
 
 
   return (
     <div className="flex flex-col gap-4 justify-start items-start md:ml-72 md:mt-32 w-auto">
+      
       <h1 className="text-2xl font-bold">Registration Details</h1>
+      <div className="flex">
       <button onClick={handleDownloadCSV} className="px-4 py-2 bg-green-500 text-white rounded mr-2">DOWNLOAD CSV</button>
       <button  onClick={handleDownloadPDF} className="px-4 py-2 bg-green-500 text-white rounded mr-2"> DOWNLOAD PDF</button>
+      <button onClick={exportToExcel} className="px-4 py-2 bg-green-500 text-white rounded mr-2">DOWNLOAD EXEL</button>
+      </div>
       {/* {error && <p className="text-red-500">{error}</p>} */}
       {attendanceData?.length > 0 ? (
         <div className=" overflow-x-scroll">

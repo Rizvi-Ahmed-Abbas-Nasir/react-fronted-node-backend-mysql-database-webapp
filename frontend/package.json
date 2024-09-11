@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@barba/core": "^2.10.3",
     "@emotion/react": "^11.13.3",
     "@emotion/styled": "^11.13.0",
     "@mui/material": "^6.0.2",
@@ -12,10 +13,12 @@
     "axios": "^1.7.7",
     "export-from-json": "^1.7.4",
     "file-saver": "^2.0.5",
+    "framer-motion": "^11.5.4",
     "frontend": "file:",
     "fs": "^0.0.1-security",
     "https-browserify": "^1.0.0",
     "json-2-csv": "^5.5.5",
+    "json-as-xlsx": "^2.5.6",
     "jspdf": "^2.5.1",
     "jspdf-autotable": "^3.8.3",
     "papaparse": "^5.4.1",
@@ -29,7 +32,8 @@
     "react-scripts": "5.0.1",
     "react-toastify": "^10.0.5",
     "stream-http": "^3.2.0",
-    "web-vitals": "^2.1.4"
+    "web-vitals": "^2.1.4",
+    "xlsx": "^0.18.5"
   },
   "scripts": {
     "start": "react-scripts start",
