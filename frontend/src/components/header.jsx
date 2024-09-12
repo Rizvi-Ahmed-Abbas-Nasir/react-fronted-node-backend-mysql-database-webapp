@@ -92,7 +92,7 @@ const Header = () => {
             </li>
             <li>
               <NavLink
-                to="/admin"
+                to="/adminp"
                 onClick={toggleMenu}
                 className="text-white text-lg py-2 hover:bg-blue-500 rounded-lg px-4"
               >

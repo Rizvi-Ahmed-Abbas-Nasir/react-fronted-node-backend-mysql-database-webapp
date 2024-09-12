@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import ClipLoader from "react-spinners/ClipLoader";
 
 function CreateEvent() {
   const [formData, setFormData] = useState({
@@ -21,6 +22,7 @@ function CreateEvent() {
   const [events, setEvents] = useState([]);
   const [editEventId, setEditEventId] = useState(null);
   const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   // const [bannerPreview, setBannerPreview] = useState(null);
   
 
@@ -47,7 +49,8 @@ function CreateEvent() {
     } else if (name === "eligibleYear") {
       const updatedYears = checked
         ? [...formData.eligibleYear, value]
-        : formData.eligibleYear.filter((year) => year !== value);
+        : formData?.eligibleYear?.filter((year) => year !== value);
+        console.log(updatedYears);
       setFormData({ ...formData, eligibleYear: updatedYears });
     } else {
       setFormData({
@@ -59,6 +62,7 @@ function CreateEvent() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
     if (!formData.eventName || !formData.nameOfSpeaker || !formData.date) {
       setError("Please fill all required fields.");
       return;
@@ -109,6 +113,7 @@ function CreateEvent() {
       });
       setError("");
       fetchEvents();
+      setIsLoading(false);
     } catch (error) {
       setError(error.message);
     }
@@ -120,9 +125,11 @@ function CreateEvent() {
   };
 
   const handleEdit = (event) => {
+    event.eligibleYear =[];
     setFormData({
       ...event,
       date: formatDate(event.date),
+     
     });
     setEditEventId(event.eventId);
   };
@@ -343,77 +350,80 @@ function CreateEvent() {
             type="submit"
             className="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
           >
-            {editEventId ? "Update Event" : "Create Event"}
+            {isLoading ? 'Loading...' : 'Submit'}
           </button>
         </div>
       </form>
 
       {/* Existing Events */}
       <h3 className="text-xl mt-8 mb-4">Existing Events</h3>
-      {events.length > 0 ? (
-        <table className="table-auto w-full text-left">
-          <thead>
-            <tr className="bg-white text-black">
-              <th className="p-4">Event Name</th>
-              <th className="p-4">Speaker</th>
-              <th className="p-4">Date</th>
-              <th className="p-4">Paid</th>
-              <th className="p-4">Cost</th>
-              <th className="p-4">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {events.map(
-              (event) =>
-                !event.isDeleted && (
-                  <tr key={event.eventId} className="border-b border-gray-600">
-                    <td className="p-4">{event.eventName}</td>
-                    <td className="p-4">{event.nameOfSpeaker}</td>
-                    <td className="p-4">
-                      {new Date(event.date).toLocaleDateString()}
-                    </td>
-                    <td className="p-4">
-                      {event.isPaid ? "Paid" : "Not Paid"}
-                    </td>
-                    <td className="p-4">{event.cost ? event.cost : "Free"}</td>
-                    <td className="p-4 flex space-x-4">
-                      <button
-                        onClick={() => handleEdit(event)}
-                        className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600"
-                      >
-                        Edit
-                      </button>
-                      <button
-                        onClick={() => handleDelete(event.eventId)}
-                        className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600"
-                      >
-                        Delete
-                      </button>
-                      <button
-                        onClick={() => handleRemove(event.eventId)}
-                        className="bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-600"
-                      >
-                        Remove
-                      </button>
-                      {event.loaOfSpeaker && (
-                        <a
-                          href={`http://localhost:8000/${event.loaOfSpeaker}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600"
-                        >
-                          View LOA
-                        </a>
-                      )}
-                    </td>
-                  </tr>
-                )
-            )}
-          </tbody>
-        </table>
-      ) : (
-        <p>No Event Record</p>
-      )}
+{events.length > 0 ? (
+  <div className="overflow-x-auto">
+    <table className="table-auto w-full text-left min-w-[600px]">
+      <thead>
+        <tr className="bg-white text-black">
+          <th className="p-4">Event Name</th>
+          <th className="p-4">Speaker</th>
+          <th className="p-4">Date</th>
+          <th className="p-4">Paid</th>
+          <th className="p-4">Cost</th>
+          <th className="p-4">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {events.map(
+          (event) =>
+            !event.isDeleted && (
+              <tr key={event.eventId} className="border-b border-gray-600">
+                <td className="p-4">{event.eventName}</td>
+                <td className="p-4">{event.nameOfSpeaker}</td>
+                <td className="p-4">
+                  {new Date(event.date).toLocaleDateString()}
+                </td>
+                <td className="p-4">
+                  {event.isPaid ? "Paid" : "Not Paid"}
+                </td>
+                <td className="p-4">{event.cost ? event.cost : "Free"}</td>
+                <td className="p-4 flex space-x-4">
+                  <button
+                    onClick={() => handleEdit(event)}
+                    className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => handleDelete(event.eventId)}
+                    className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600"
+                  >
+                    Delete
+                  </button>
+                  <button
+                    onClick={() => handleRemove(event.eventId)}
+                    className="bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-600"
+                  >
+                    Remove
+                  </button>
+                  {event.loaOfSpeaker && (
+                    <a
+                      href={`http://localhost:8000/${event.loaOfSpeaker}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600"
+                    >
+                      View LOA
+                    </a>
+                  )}
+                </td>
+              </tr>
+            )
+        )}
+      </tbody>
+    </table>
+  </div>
+) : (
+  <p>No events available.</p>
+)}
+
     </div>
   );
 }

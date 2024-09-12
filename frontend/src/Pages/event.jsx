@@ -8,15 +8,15 @@ function Event() {
    
     <div>
     <Header />
-    <motion.div
+    {/* <motion.div
     initial={{ y: '-100%' }}
     animate={{ y: 0 }}
     exit={{ y: '100%' }}
     transition={{ duration : 1}}
    
-  >
+  > */}
     <EventCompo/>
-    </motion.div>
+    {/* </motion.div> */}
     </div>
    
   );

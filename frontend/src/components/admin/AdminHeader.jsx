@@ -101,7 +101,7 @@ const AdminHeader = () => {
               <ul className="flex flex-col items-center gap-4 py-4">
                 <li>
                   <NavLink
-                    to="/admin"
+                    to="/adminp"
                     onClick={toggleMenu}
                     className={({ isActive }) =>
                       isActive
