@@ -94,7 +94,28 @@ exports.getAllEvents = async (req, res) => {
 exports.updateEvent = async (req, res) => {
   try {
     const id = req.params.eventId;
+    //getting the previous filename from the db if present
+    const event = await Event.getAEvent(id);
+    const loa = event[0].loaOfSpeaker;
+    console.log(loa)
+    //if loa is present previously, delete it
+    if (loa) {
+      console.log("Deleting Previous loa: ", loa);
 
+      const prevPath = path.join(__dirname, "../public", loa);
+
+      // ------------------------ Cautious code begins ---------------------------------------
+      fs.unlink(prevPath, (err) => {
+        if (err) {
+          console.error("Error deleting the loa:", err);
+        } else {
+          console.log("loa deleted successfully!");
+        }
+      });
+      // ------------------------ Cautious code ends ---------------------------------------
+    } else {
+      console.log("there was no loa to delete");
+    }
     //if a new banner is chosen
     if (req.files && req.files.banner) {
       console.log("Flie received, saving");
@@ -116,8 +137,6 @@ exports.updateEvent = async (req, res) => {
       //getting the previous filename from the db if present
       const event = await Event.getAEvent(id);
       const prevFile = event[0].banner;
-      const loa = event[0].loaOfSpeaker;
-
       if (prevFile) {
         console.log("Deleting Previous file: ", prevFile);
 
@@ -137,24 +156,7 @@ exports.updateEvent = async (req, res) => {
         console.log("there was no previous file to delete");
       }
 
-      //if loa is present previously, delete it
-      if (loa) {
-        console.log("Deleting Previous loa: ", loa);
-
-        const prevPath = path.join(__dirname, "../public", loa);
-
-        // ------------------------ Cautious code begins ---------------------------------------
-        fs.unlink(prevPath, (err) => {
-          if (err) {
-            console.error("Error deleting the loa:", err);
-          } else {
-            console.log("loa deleted successfully!");
-          }
-        });
-        // ------------------------ Cautious code ends ---------------------------------------
-      } else {
-        console.log("there was no loa to delete");
-      }
+      
     } else {
       console.log("no new file specified");
       if (!req.body.banner) {

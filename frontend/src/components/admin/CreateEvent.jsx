@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import ClipLoader from "react-spinners/ClipLoader";
 
 function CreateEvent() {
   const [formData, setFormData] = useState({
@@ -21,6 +22,7 @@ function CreateEvent() {
   const [events, setEvents] = useState([]);
   const [editEventId, setEditEventId] = useState(null);
   const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   // const [bannerPreview, setBannerPreview] = useState(null);
   
 
@@ -47,7 +49,7 @@ function CreateEvent() {
     } else if (name === "eligibleYear") {
       const updatedYears = checked
         ? [...formData.eligibleYear, value]
-        : formData.eligibleYear.filter((year) => year !== value);
+        : formData?.eligibleYear?.filter((year) => year !== value);
       setFormData({ ...formData, eligibleYear: updatedYears });
     } else {
       setFormData({
@@ -59,6 +61,7 @@ function CreateEvent() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
     if (!formData.eventName || !formData.nameOfSpeaker || !formData.date) {
       setError("Please fill all required fields.");
       return;
@@ -109,6 +112,7 @@ function CreateEvent() {
       });
       setError("");
       fetchEvents();
+      setIsLoading(false);
     } catch (error) {
       setError(error.message);
     }
@@ -343,7 +347,7 @@ function CreateEvent() {
             type="submit"
             className="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
           >
-            {editEventId ? "Update Event" : "Create Event"}
+            {isLoading ? 'Loading...' : 'Submit'}
           </button>
         </div>
       </form>
