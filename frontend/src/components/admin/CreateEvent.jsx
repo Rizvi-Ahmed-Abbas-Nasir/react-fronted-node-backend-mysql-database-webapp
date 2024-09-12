@@ -50,6 +50,7 @@ function CreateEvent() {
       const updatedYears = checked
         ? [...formData.eligibleYear, value]
         : formData?.eligibleYear?.filter((year) => year !== value);
+        console.log(updatedYears);
       setFormData({ ...formData, eligibleYear: updatedYears });
     } else {
       setFormData({
@@ -124,9 +125,11 @@ function CreateEvent() {
   };
 
   const handleEdit = (event) => {
+    event.eligibleYear =[];
     setFormData({
       ...event,
       date: formatDate(event.date),
+     
     });
     setEditEventId(event.eventId);
   };
