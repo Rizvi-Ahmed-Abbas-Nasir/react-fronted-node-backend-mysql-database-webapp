@@ -7,4 +7,5 @@ node_modules
 package-lock.json
 
 public/assets/banner/
-public/assets/loa
+public/assets/loa/
+public/assets/notice/

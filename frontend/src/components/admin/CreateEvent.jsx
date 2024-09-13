@@ -9,7 +9,7 @@ function CreateEvent() {
     nameOfSpeaker: "",
     organizationOfSpeaker: "",
     locationOfSpeaker: "",
-    notice: "",
+    eventNotice: "",
     date: "",
     category: "",
     time: "",
@@ -82,7 +82,7 @@ function CreateEvent() {
       data.append("nameOfSpeaker", formData.nameOfSpeaker);
       data.append("organizationOfSpeaker", formData.organizationOfSpeaker); // New field
       data.append("locationOfSpeaker", formData.locationOfSpeaker); // New field
-      data.append('notice',formData.notice); // New field
+      data.append('eventNotice',formData.eventNotice); // New field
       data.append("date", formattedDate);
       data.append("category", formData.category);
       data.append("time", formData.time);
@@ -109,7 +109,7 @@ function CreateEvent() {
         nameOfSpeaker: "",
         organizationOfSpeaker: "", // Reset new field
         locationOfSpeaker: "", // Reset new field
-        notice:"",
+        eventNotice:"",
         date: "",
         category: "",
         time: "",
@@ -124,6 +124,8 @@ function CreateEvent() {
       setIsLoading(false);
     } catch (error) {
       setError(error.message);
+    setIsLoading(false);
+
     }
   };
 
@@ -316,7 +318,7 @@ function CreateEvent() {
           <label className="w-1/3 font-semibold">Notice:</label>
           <textarea
             name="notice"
-            value={formData.notice}
+            value={formData.eventNotice}
             onChange={handleChange}
             className="w-2/3 p-2 rounded-lg bg-gray-100 text-black border border-gray-300 focus:border-blue-400"
           />

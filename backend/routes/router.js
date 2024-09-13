@@ -40,9 +40,9 @@ router.get('/getAttendance/:eventId', adminController.getAttendance) //get a par
 router.get('/getAllAttendance', adminController.getAllAttendance) //for the all events attendance sheet
 
 //notice
-router.post('/notice/:eventId', noticeController.createNotice)
-router.put('/notice/:eventId', noticeController.updateNotice)
-router.delete('/notice/:eventId', noticeController.deleteNotice)
+// router.post('/notice/:eventId', noticeController.createNotice)
+// router.put('/notice/:eventId', noticeController.updateNotice)
+// router.delete('/notice/:eventId', noticeController.deleteNotice)
 
 //qrcode send handler
 router.post('/sendAttendanceQrcode',qrCodeController.sendAttendanceQrcode)
