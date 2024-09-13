@@ -190,3 +190,15 @@ exports.deleteNotice = async (id)=> {
     throw new Error("Error deleting notice: " + error.message);    
   }
 }
+
+exports.deleteBanner = async (id)=> {
+  try {
+
+    const result = await connection.query(`UPDATE tpo_events SET banner = null WHERE eventId = ?`,
+      [id]
+    )
+    return result
+  } catch (error) {
+    throw new Error("Error making banner null: " + error.message);    
+  }
+}

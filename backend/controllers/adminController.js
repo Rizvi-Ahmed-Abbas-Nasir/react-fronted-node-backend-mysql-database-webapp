@@ -1,6 +1,6 @@
 const Admin = require("../models/Admin");
 const Event = require("../models/Event");
-const Attendance = require("../models/Attendance")
+const Attendance = require("../models/Attendance");
 //get all the registered students for a particular event (even not attended)
 
 exports.getAllRegistrations = async (req, res) => {
@@ -24,7 +24,9 @@ exports.getApprovedRegistrations = async (req, res) => {
     const eventId = req.params.eventId;
     const result = await Admin.getApprovedRegistrations(eventId);
     if (result.length === 0) {
-      res.status(200).json({ message: "No approved registrations for this event yet" });
+      res
+        .status(200)
+        .json({ message: "No approved registrations for this event yet" });
     } else {
       res.status(200).json(result);
     }
@@ -47,7 +49,7 @@ exports.getAttendance = async (req, res) => {
     console.log(error);
     res.status(400).json({ error: error.message });
   }
-}
+};
 
 //approve student for the event, whenever admin clicks
 exports.approveStudent = async (req, res) => {
@@ -59,12 +61,10 @@ exports.approveStudent = async (req, res) => {
     const isApproved = await Admin.isApproved(eventId, student_id);
     if (!isApproved) {
       const result = await Admin.approveStudent(eventId, student_id);
-      res
-        .status(200)
-        .json({
-          message: "Successfully approved student for the event",
-          result,
-        });
+      res.status(200).json({
+        message: "Successfully approved student for the event",
+        result,
+      });
     } else {
       res.status(200).json({ message: "Student is already approved" });
     }
@@ -75,49 +75,68 @@ exports.approveStudent = async (req, res) => {
 
 exports.markAsAttended = async (req, res) => {
   try {
-
     //---------------------- details fetched through json ----------------
     const { student_id, event_id } = req.body;
-
 
     //check if the student is already attended
     const isAttended = await Admin.isAttended(event_id, student_id);
     if (!isAttended) {
       const result = await Admin.markAsAttended(event_id, student_id);
-      res
-        .status(200)
-        .json({
-          message: "Successfully marked student as attended for the event",
-          result,
-        });
+      res.status(200).json({
+        message: "Successfully marked student as attended for the event",
+        result,
+      });
     } else {
       res.status(200).json({ message: "Student has already attended" });
     }
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
-}
+};
 
 exports.deleteRegistration = async (req, res) => {
   try {
     const eventId = req.params.eventId;
-    const {student_id} = req.body
+    const { student_id } = req.body;
     const result = await Admin.deleteRegistration(eventId, student_id);
-    res.status(200).json({message: "Successfully deleted ", result: result});
+    res.status(200).json({ message: "Successfully deleted ", result: result });
   } catch (error) {
     console.log(error);
     res.status(400).json({ error: error.message });
   }
-
-}
+};
 
 exports.getAllAttendance = async (req, res) => {
-
   try {
-   const data = await Admin.getAllAttendance()
-   res.status(200).json({ result: data});
+    const data = await Admin.getAllAttendance();
+    res.status(200).json({ result: data });
   } catch (error) {
     console.log(error);
     res.status(400).json({ message: error.message });
   }
-}
+};
+
+exports.getStatus = async (req, res) => {
+  try {
+    const eventId = req.params.eventId;
+
+    const event = await Event.getAEvent(eventId);
+    //logics
+
+    if (
+      event[0].banner != null &&
+      event[0].attendanceFlag == true &&
+      event[0].photosUploaded == true
+    ) {
+      res.status(200).json({ status: 4, message: "Banner is uploaded, min attendance done, and event photos are uploaded" });
+    } else if (event[0].banner != null && event[0].attendanceFlag == true) {
+      res.status(200).json({ status: 3 , message: "Banner is uploaded, min attendance done"});
+    } else if (event[0].banner != null) {
+      res.status(200).json({ status: 2 , message: "Banner is uploaded"});
+    } else {
+      res.status(200).json({ status: 1, message: "Event is created" });
+    }
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};

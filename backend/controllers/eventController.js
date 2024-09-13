@@ -260,6 +260,11 @@ exports.removeEvent = async (req, res) => {
         }
       });
       // ------------------------ Cautious code ends ---------------------------------------
+
+      //make the banner null here
+      const result = await Event.deleteBanner(id)
+
+
     }
 
     const result = await Event.flagEventAsDeleted(id);
@@ -313,6 +318,10 @@ exports.deleteEvent = async (req, res) => {
         }
       });
       // ------------------------ Cautious code ends ---------------------------------------
+
+      //make the banner null here
+      const result = await Event.deleteBanner(id)
+
     } else {
       console.log("No previous banner to delete")
     }

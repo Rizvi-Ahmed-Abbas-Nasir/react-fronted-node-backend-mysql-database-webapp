@@ -20,6 +20,8 @@ exports.createTables = async () => {
       banner text,
       loaOfSpeaker text,
       notice text,
+      attendanceFlag bool DEFAULT false,
+      photosUploaded bool DEFAULT false,
       isDeleted bool DEFAULT false
       );
 

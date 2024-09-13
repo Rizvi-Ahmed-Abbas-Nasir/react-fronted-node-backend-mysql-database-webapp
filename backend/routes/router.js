@@ -24,6 +24,9 @@ router.put('/event/:eventId', eventMiddleware, eventController.updateEvent)
 router.delete('/event/:eventId', eventController.deleteEvent) // this delete removes the event permanently
 router.delete('/removeEvent/:eventId', eventController.removeEvent) // this movese the event to the event history
 router.post('/undoEvent/:eventId', eventController.undoEvent) // this moves the event back to the events tab
+
+// event status
+router.get('/eventStatus/:eventId', adminController.getStatus)
 //user handlers
 router.post('/userEventReg/:event_id', userController.registerForEvent ) //registers the user for a event
 
@@ -33,8 +36,8 @@ router.get('/getApprovedRegistrations/:eventId', adminController.getApprovedRegi
 router.put('/approveStudent/:eventId', adminController.approveStudent)
 router.delete('/deleteRegistration/:eventId', adminController.deleteRegistration)
 router.put('/markAsAttended', adminController.markAsAttended)
-router.get('/getAttendance/:eventId', adminController.getAttendance)
-router.get('/getAllAttendance', adminController.getAllAttendance)
+router.get('/getAttendance/:eventId', adminController.getAttendance) //get a particular events attendance list
+router.get('/getAllAttendance', adminController.getAllAttendance) //for the all events attendance sheet
 
 //notice
 router.post('/notice/:eventId', noticeController.createNotice)

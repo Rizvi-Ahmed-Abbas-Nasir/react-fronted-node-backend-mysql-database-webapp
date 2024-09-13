@@ -154,7 +154,9 @@ exports.markAsAttended = async (eventId, studentId) => {
       [eventId, studentId]
     );
 
-    return rows, rows1;
+    const result = await this.changeAttendanceFlag(eventId)
+
+    return rows, rows1, result;
   } catch (error) {
     throw new Error(
       "Error marking attendance of the student: " + error.message
@@ -227,5 +229,34 @@ exports.getAllAttendance = async () => {
     return formattedResult;
   } catch (error) {
     console.log(error);
+  }
+};
+
+exports.changeAttendanceFlag = async (eventId) => {
+
+  try {
+    
+    const [result] = await connection.query(
+      `SELECT * FROM tpo_event_registrations WHERE event_id=? AND attended = true;`,
+      [eventId]
+    );
+  
+    if (result.length === 0) {
+      //keep the flag false
+      const isUpdated = await connection.query(
+        `UPDATE tpo_events SET attendanceFlag = false WHERE eventId = ?;`,
+        [eventId]
+      );
+      return isUpdated;
+    } else {
+      //update the flag to true
+      const isUpdated = await connection.query(
+        `UPDATE tpo_events SET attendanceFlag = true WHERE eventId = ?;`,
+        [eventId]
+      );
+      return isUpdated
+    }
+  } catch (error) {
+    console.log(error)
   }
 };
