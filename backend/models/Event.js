@@ -15,11 +15,12 @@ exports.createEvent = async (
   isPaid,
   cost,
   banner,
-  loaOfSpeaker
+  loaOfSpeaker,
+  notice
 ) => {
   try {
     const [result] = await connection.query(
-      "INSERT INTO tpo_events (eventName, eventDescription, nameOfSpeaker, organizationOfSpeaker,locationOfSpeaker, date, category, time, department, eligibleYear, isPaid, cost, banner, loaOfSpeaker) VALUES (?, ?, ?, ?, ?, ?, ?,?,?,?, ?,?,?,?)",
+      "INSERT INTO tpo_events (eventName, eventDescription, nameOfSpeaker, organizationOfSpeaker,locationOfSpeaker, date, category, time, department, eligibleYear, isPaid, cost, banner, loaOfSpeaker, notice) VALUES (?, ?, ?, ?, ?, ?, ?,?,?,?, ?,?,?,?,?)",
       [
         eventName,
         eventDescription,
@@ -34,7 +35,8 @@ exports.createEvent = async (
         isPaid,
         cost,
         banner,
-        loaOfSpeaker
+        loaOfSpeaker,
+        notice
       ]
     );
     return result;
@@ -81,11 +83,12 @@ exports.updateEvent = async (
   isPaid,
   cost,
   banner,
-  loaOfSpeaker
+  loaOfSpeaker,
+  notice
 ) => {
   try {
     const [rows] = await connection.query(
-      `UPDATE tpo_events SET eventName = ?,eventDescription = ?, nameOfSpeaker = ?,organizationOfSpeaker = ?,locationOfSpeaker =?, date = ?, category = ?, time = ?, department = ?, eligibleYear = ?, isPaid = ?, cost = ?, banner = ?, loaOfSpeaker = ? WHERE eventId = ?;`,
+      `UPDATE tpo_events SET eventName = ?,eventDescription = ?, nameOfSpeaker = ?,organizationOfSpeaker = ?,locationOfSpeaker =?, date = ?, category = ?, time = ?, department = ?, eligibleYear = ?, isPaid = ?, cost = ?, banner = ?, loaOfSpeaker = ?, notice = ? WHERE eventId = ?;`,
       [
         eventName,
         eventDescription,
@@ -101,6 +104,7 @@ exports.updateEvent = async (
         cost,
         banner,
         loaOfSpeaker,
+        notice,
         id,
       ]
     );

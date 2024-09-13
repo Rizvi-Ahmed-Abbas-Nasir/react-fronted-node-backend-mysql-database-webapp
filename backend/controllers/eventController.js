@@ -2,6 +2,7 @@ const Event = require("../models/Event");
 const path = require("path");
 const fs = require("fs");
 const loaController = require("../controllers/loaController");
+const noticeController = require("../controllers/noticeController");
 //runs after middleware data cleaning
 exports.createEvent = async (req, res) => {
   try {
@@ -33,7 +34,30 @@ exports.createEvent = async (req, res) => {
       isPaid,
       cost,
       banner,
+      eventNotice
     } = req.body;
+
+    //notice here
+    if (eventNotice != null){
+      
+      //generate a notice based on the data
+      const noticeData = {
+        date: date,
+        eventName: eventName,
+        eventNotice: eventNotice,
+      };
+  
+      const isNoticeGenerated = await noticeController.createPDF(noticeData);
+      if (!isNoticeGenerated) {
+        console.log("Error generating notice");
+        req.body.notice = null;
+      } else {
+        console.log("notice generated successfully");
+        req.body.notice = isNoticeGenerated;
+      }
+  
+    }
+    const notice = await req.body.notice;
 
     //generate a loa based on the data
     const data = {
@@ -55,6 +79,8 @@ exports.createEvent = async (req, res) => {
     }
 
     const loaOfSpeaker = await req.body.loaOfSpeaker;
+
+
     const result = await Event.createEvent(
       eventName,
       eventDescription,
@@ -69,7 +95,8 @@ exports.createEvent = async (req, res) => {
       isPaid,
       cost,
       banner,
-      loaOfSpeaker
+      loaOfSpeaker,
+      notice
     );
 
     res.status(201).json({ message: "Event created successfully", result });
@@ -97,7 +124,7 @@ exports.updateEvent = async (req, res) => {
     //getting the previous filename from the db if present
     const event = await Event.getAEvent(id);
     const loa = event[0].loaOfSpeaker;
-    console.log(loa)
+    // console.log(loa)
     //if loa is present previously, delete it
     if (loa) {
       console.log("Deleting Previous loa: ", loa);
@@ -174,6 +201,9 @@ exports.updateEvent = async (req, res) => {
       }
       console.log("keeping the previous banner: ", req.body.banner);
     }
+
+    //if notice is modified, update it, and delete the previous in the process
+    
 
     const {
       eventName,
