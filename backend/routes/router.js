@@ -6,7 +6,7 @@ const eventController = require("../controllers/eventController")
 const userController = require("../controllers/userController")
 const adminController = require("../controllers/adminController")
 const qrCodeController = require("../controllers/qrCodeController")
-
+const noticeController = require("../controllers/noticeController")
 //test routes
 router.get('/', (req, res)=> {
     res.status(200).json({message:"Hello world"});
@@ -36,6 +36,10 @@ router.put('/markAsAttended', adminController.markAsAttended)
 router.get('/getAttendance/:eventId', adminController.getAttendance)
 router.get('/getAllAttendance', adminController.getAllAttendance)
 
+//notice
+router.post('/notice/:eventId', noticeController.createNotice)
+router.put('/notice/:eventId', noticeController.updateNotice)
+router.delete('/notice/:eventId', noticeController.deleteNotice)
 
 //qrcode send handler
 router.post('/sendAttendanceQrcode',qrCodeController.sendAttendanceQrcode)

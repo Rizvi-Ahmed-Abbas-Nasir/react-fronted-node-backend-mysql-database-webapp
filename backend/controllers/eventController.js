@@ -337,6 +337,30 @@ exports.deleteEvent = async (req, res) => {
       console.log("there was no loa to delete")
     }
 
+    //delete notice
+
+    const prevNotice = event[0].notice;
+        if (prevNotice) {
+
+          // checks if the previous file is present to perform the deletion
+          console.log("Deleting Previous notice: ", prevNotice);
+    
+          const prevPath = path.join(__dirname, "../public", prevNotice);
+          // console.log(prevPath)
+    
+          // ------------------------ Cautious code begins ---------------------------------------
+          fs.unlink(prevPath, (err) => {
+            if (err) {
+              console.error("Error deleting the file:", err);
+            } else {
+              console.log("File deleted successfully!");
+            }
+          });
+          // ------------------------ Cautious code ends ---------------------------------------
+        } else {
+          console.log("No previous notice to delete")
+        }
+
     const result = await Event.deleteEvent(id);
     res.status(200).json({ message: "Event Deleted Successfully", result });
   } catch (error) {

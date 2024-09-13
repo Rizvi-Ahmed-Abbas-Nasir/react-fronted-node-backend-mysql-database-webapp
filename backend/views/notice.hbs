@@ -1,0 +1,82 @@
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Notice</title>
+    <style>
+      @page { size: A4; margin: 0; } 
+      body { 
+        font-family: Arial, sans-serif;
+        margin: 0; 
+        padding: 0; 
+        } 
+    
+    .letter-head { 
+        text-align: center; 
+        width: 100%;
+        overflow: hidden; 
+    } 
+    .letter-head img { 
+        width: 100%; 
+        height: 20rem; 
+    }
+    .content { 
+        margin: 20px; 
+    } 
+    .footer { 
+        margin-top: 50px; 
+        margin: 20px; 
+    } 
+    /*  Aligning the date to the right */ 
+    .date { 
+        display: flex; 
+        justify-content: space-between; 
+    }
+
+    .notice { 
+        display: flex; 
+        justify-content: center; 
+    }
+    </style>
+  </head>
+  <body>
+
+    <!-- Letterhead Image -->
+    <div class="letter-head">
+      <img src="http://localhost:8000/letterhead.jpg" alt="Letterhead" />
+    </div>
+
+    <!-- Letter Body -->
+    <div class="content">
+      <div class="notice">
+
+        <p><b>Notice</b></p>
+      </div>
+      <div class="date">
+
+        <p>Ref. No.: VPPCOE&VA/T&P Office/2024-25</p>
+
+        <!-- Date aligned to the right -->
+        <p>Date: {{date}}</p>
+      </div>
+      <p>Event Name: {{eventName}}</p>
+
+      <p>Event Notice: {{eventNotice}}</p>
+    </div>
+
+    <!-- Footer -->
+    <br />
+    <br />
+    <br />
+    <br />
+    <br />
+    <div class="footer">
+        <b>
+      <p>Swapnil Desai<br />
+        Head, T&P Department,<br />
+        VPPCOE&VA</p>
+        </b>
+    </div>
+
+  </body>
+</html>

@@ -165,3 +165,28 @@ exports.flagEventAsNotDeleted = async (id) => {
     throw new Error("Error flagging event as not deleted: " + error.message);
   }
 };
+
+exports.storeNotice = async (notice, eventId) => {
+  try {
+    console.log("EventId:", eventId, " and Notice: ", notice)
+    const result = await connection.query(`UPDATE tpo_events SET notice = ? WHERE eventId = ?`,
+      [notice, eventId]
+    )
+    return result
+    
+  } catch (error) {
+    throw new Error("Error storing notice: " + error.message);
+  }
+}
+
+exports.deleteNotice = async (id)=> {
+  try {
+
+    const result = await connection.query(`UPDATE tpo_events SET notice = null WHERE eventId = ?`,
+      [id]
+    )
+    return result
+  } catch (error) {
+    throw new Error("Error deleting notice: " + error.message);    
+  }
+}

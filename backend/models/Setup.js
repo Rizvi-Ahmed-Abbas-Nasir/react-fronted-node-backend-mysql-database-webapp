@@ -19,6 +19,7 @@ exports.createTables = async () => {
       cost int DEFAULT NULL,
       banner text,
       loaOfSpeaker text,
+      notice text,
       isDeleted bool DEFAULT false
       );
 
