@@ -11,7 +11,7 @@ const AdminHeader = () => {
 
   return (
     <div>
-      <header className="lg:bg-gray-800 bg-gray-900 text-white w-full lg:w-64 lg:h-[90vh] md:fixed lg:bottom-0 lg:left-0 py-8 border-t border-black">
+      <header className="lg:bg-gray-800 bg-gray-900 text-white w-full lg:w-64  lg:h-[90vh] md:fixed lg:bottom-0 lg:left-0 py-8 border-t border-black">
         <div className="container mx-auto flex justify-between flex-col items-center h-full">
           <nav className="h-full flex justify-center">
             <ul className="lg:flex items-center justify-start gap-6 h-full hidden lg:flex-col">
@@ -93,6 +93,7 @@ const AdminHeader = () => {
             </div>
           </div>
 
+          {/* Mobile Menu */}
           <div
             className={`lg:hidden transition-all duration-500 overflow-hidden ${activeMenu ? 'max-h-[400px] mb-4' : 'max-h-0'} w-full`}
             style={{ transitionTimingFunction: 'ease-in-out' }}
@@ -169,12 +170,6 @@ const AdminHeader = () => {
           </div>
         </div>
       </header>
-
-      <div className={`transition-all duration-500 ${activeMenu ? 'mt-[100px]' : 'mt-0'}`}>
-        <div className="p-4 flex w-full justify-center md:hidden">
-          <h1 className="text-xl font-bold">Welcome to the Admin Panel</h1>
-        </div>
-      </div>
     </div>
   );
 };

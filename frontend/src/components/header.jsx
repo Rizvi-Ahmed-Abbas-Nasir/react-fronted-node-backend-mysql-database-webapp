@@ -11,7 +11,6 @@ const Header = () => {
 
   return (
     <>
-      {/* Main Header */}
       <header className="bg-gray-800 text-white w-full py-8 px-5 fixed top-0 left-0 h-[10vh] z-10">
         <div className="container mx-auto h-[100%] flex justify-between items-center">
           <div className="text-[1.2rem] font-bold logo">TPO Website</div>
@@ -74,7 +73,7 @@ const Header = () => {
 
       {/* Mobile Menu */}
       <div
-        className={`md:hidden bg-gray-800 text-white transition-all duration-500 overflow-hidden ${activeMenu ? 'max-h-[500px] mt-[10vh]' : 'max-h-20'}`}
+        className={`md:hidden bg-gray-800 text-white transition-all duration-500 overflow-hidden ${activeMenu ? 'max-h-[20vh] mt-[10vh]' : 'max-h-20'}`}
         style={{
           transitionTimingFunction: 'ease-in-out',
         }}
