@@ -47,19 +47,15 @@ exports.createTables = async () => {
       FOREIGN KEY (event_id) REFERENCES tpo_events(eventId) ON DELETE CASCADE,
       FOREIGN KEY (student_id) REFERENCES tpo_student_details(student_id)
       );
-
-      CREATE TABLE IF NOT EXISTS attendance_records (
-      student_id INT,
-      clg_id VARCHAR(255),
-      first_name VARCHAR(255),
-      middle_name VARCHAR(255),
-      last_name VARCHAR(255),
-      PRIMARY KEY (student_id)
-      );
-
-
-
       `
+      // CREATE TABLE IF NOT EXISTS attendance_records (
+      // student_id INT,
+      // clg_id VARCHAR(255),
+      // first_name VARCHAR(255),
+      // middle_name VARCHAR(255),
+      // last_name VARCHAR(255),
+      // PRIMARY KEY (student_id)
+      // );
     );
     return result;
   } catch (error) {

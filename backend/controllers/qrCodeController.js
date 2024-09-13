@@ -3,7 +3,7 @@ const nodemailer = require('nodemailer');
 exports.sendAttendanceQrcode = async (req, res) => {
   try {
     const { email, src } = req.body;
-    console.log(email, src);
+    // console.log(email, src);
 
     // Create a transporter
     const transporter = nodemailer.createTransport({

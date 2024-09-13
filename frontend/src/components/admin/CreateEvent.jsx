@@ -9,10 +9,11 @@ function CreateEvent() {
     nameOfSpeaker: "",
     organizationOfSpeaker: "",
     locationOfSpeaker: "",
+    notice: "",
     date: "",
     category: "",
     time: "",
-    department: "",
+    department: [],
     eligibleYear: [],
     isPaid: false,
     cost: null,
@@ -52,6 +53,11 @@ function CreateEvent() {
         : formData?.eligibleYear?.filter((year) => year !== value);
         console.log(updatedYears);
       setFormData({ ...formData, eligibleYear: updatedYears });
+    } else if (name === "department") {
+      const updatedDepartments = checked
+        ? [...formData.department, value]
+        : formData.department.filter((dep) => dep !== value);
+      setFormData({ ...formData, department: updatedDepartments });
     } else {
       setFormData({
         ...formData,
@@ -76,6 +82,7 @@ function CreateEvent() {
       data.append("nameOfSpeaker", formData.nameOfSpeaker);
       data.append("organizationOfSpeaker", formData.organizationOfSpeaker); // New field
       data.append("locationOfSpeaker", formData.locationOfSpeaker); // New field
+      data.append('notice',formData.notice); // New field
       data.append("date", formattedDate);
       data.append("category", formData.category);
       data.append("time", formData.time);
@@ -102,10 +109,11 @@ function CreateEvent() {
         nameOfSpeaker: "",
         organizationOfSpeaker: "", // Reset new field
         locationOfSpeaker: "", // Reset new field
+        notice:"",
         date: "",
         category: "",
         time: "",
-        department: "",
+        department: [],
         eligibleYear: [],
         isPaid: false,
         cost: null,
@@ -126,6 +134,7 @@ function CreateEvent() {
 
   const handleEdit = (event) => {
     event.eligibleYear =[];
+    event.department =[];
     setFormData({
       ...event,
       date: formatDate(event.date),
@@ -133,6 +142,7 @@ function CreateEvent() {
     });
     setEditEventId(event.eventId);
   };
+
 
   const handleDelete = async (id) => {
     if (window.confirm("Are you sure you want to delete this event?")) {
@@ -232,17 +242,6 @@ function CreateEvent() {
         </div>
 
         <div className="flex items-center">
-          <label className="w-1/3 font-semibold">Department:</label>
-          <input
-            type="text"
-            name="department"
-            value={formData.department}
-            onChange={handleChange}
-            className="w-2/3 p-2 rounded-lg bg-gray-100 text-black border border-gray-300 focus:border-blue-400"
-          />
-        </div>
-
-        <div className="flex items-center">
           <label className="w-1/3 font-semibold">Year:</label>
           <div className="w-2/3 space-x-4">
             {["First Year", "Second Year", "Third Year", "Final Year"].map(
@@ -257,6 +256,26 @@ function CreateEvent() {
                     className="mr-2"
                   />
                   {year}
+                </label>
+              )
+            )}
+          </div>
+        </div>
+        <div className="flex items-center">
+          <label className="w-1/3 font-semibold">Department:</label>
+          <div className="w-2/3 space-x-4">
+            {["Computer", "IT", "AIDS"].map(
+              (department) => (
+                <label key={department} className="inline-flex items-center">
+                  <input
+                    type="checkbox"
+                    name="department"
+                    value={department}
+                    checked={formData.department.includes(department)}
+                    onChange={handleChange}
+                    className="mr-2"
+                  />
+                  {department}
                 </label>
               )
             )}
@@ -289,6 +308,15 @@ function CreateEvent() {
             type="text"
             name="locationOfSpeaker"
             value={formData.locationOfSpeaker}
+            onChange={handleChange}
+            className="w-2/3 p-2 rounded-lg bg-gray-100 text-black border border-gray-300 focus:border-blue-400"
+          />
+        </div>
+        <div className="flex items-center">
+          <label className="w-1/3 font-semibold">Notice:</label>
+          <textarea
+            name="notice"
+            value={formData.notice}
             onChange={handleChange}
             className="w-2/3 p-2 rounded-lg bg-gray-100 text-black border border-gray-300 focus:border-blue-400"
           />

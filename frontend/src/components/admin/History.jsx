@@ -4,8 +4,8 @@ import { CircularProgress, Box, Typography } from '@mui/material';
 
 function History() {
   const [events, setEvents] = useState([]);
+  const [progresses, setProgresses] = useState({});
   const [error, setError] = useState('');
-  const [progress, setProgress] = useState(60); //dummy value added 
 
   const getProgressValue = (value) => {
     switch (value) {
@@ -22,25 +22,33 @@ function History() {
     }
   };
 
-  useEffect(() => {
-    fetchEvents();
-  }, []);
-
-  const updateProgress = (value) => {
+  const updateProgress = async (id) => {
     try {
-      // Fetch function update logic here
+      const response = await axios.get(`http://localhost:8000/eventStatus/${id}`);
+      const progressStatus = response.data.status; // Assuming status is in response data
+      const mappedValue = getProgressValue(progressStatus);
+      // Update progress for the specific event
+      setProgresses((prevProgresses) => ({
+        ...prevProgresses,
+        [id]: mappedValue,
+      }));
     } catch (error) {
       setError('Failed to update progress.');
     }
-    const mappedValue = getProgressValue(value);
-    setProgress(mappedValue);
   };
+
+  useEffect(() => {
+    fetchEvents();
+  }, []);
 
   // Fetch events from API
   const fetchEvents = async () => {
     try {
       const response = await axios.get('http://localhost:8000/event');
       setEvents(response.data);
+      
+      // Trigger progress update for all events
+      response.data.forEach((event) => updateProgress(event.eventId));
     } catch (error) {
       setError('Failed to fetch events.');
     }
@@ -113,7 +121,7 @@ function History() {
                   <td className="p-4 text-gray-800">{new Date(event.date).toLocaleDateString()}</td>
                   <td className="p-4 text-gray-800">{event.isPaid ? 'Paid' : 'Not Paid'}</td>
                   <td className="p-4 text-gray-800">{event.cost ? event.cost : 'Free'}</td>
-                  <td className="p-4 ">
+                  <td className="p-4">
                     <div className="flex items-center">
                       <Box
                         sx={{
@@ -125,7 +133,7 @@ function History() {
                       >
                         <CircularProgress
                           variant="determinate"
-                          value={progress}
+                          value={progresses[event.eventId] || 0} // Use specific event progress
                           size={60}
                           thickness={6}
                         />
@@ -148,7 +156,7 @@ function History() {
                             fontSize={16}
                             fontWeight="bold"
                           >
-                            {`${Math.round(progress)}%`}
+                            {`${Math.round(progresses[event.eventId] || 0)}%`}
                           </Typography>
                         </Box>
                       </Box>

@@ -34,7 +34,7 @@ function AttendanceTable() {
       } else {
         if (propName.includes('events')) {
           
-          value = value === null ? 'Not Participated' : value === 1 ? 'Participated' : 'Absent  ';
+          value = value === null ? 'NP' : value === 1 ? 1 : 0;
         } else if (['first_name', 'middle_name', 'last_name'].includes(key)) {
           value = value.charAt(0).toUpperCase() + value.slice(1);
         }
