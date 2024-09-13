@@ -1,13 +1,40 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { CircularProgress, Box, Typography } from '@mui/material';
 
 function History() {
   const [events, setEvents] = useState([]);
   const [error, setError] = useState('');
+  const [progress, setProgress] = useState(60); //dummy value added 
+
+  const getProgressValue = (value) => {
+    switch (value) {
+      case 1:
+        return 20;
+      case 2:
+        return 40;
+      case 3:
+        return 70;
+      case 4:
+        return 100;
+      default:
+        return 0;
+    }
+  };
 
   useEffect(() => {
     fetchEvents();
   }, []);
+
+  const updateProgress = (value) => {
+    try {
+      // Fetch function update logic here
+    } catch (error) {
+      setError('Failed to update progress.');
+    }
+    const mappedValue = getProgressValue(value);
+    setProgress(mappedValue);
+  };
 
   // Fetch events from API
   const fetchEvents = async () => {
@@ -66,7 +93,7 @@ function History() {
       {/* Event Table */}
       {events.length > 0 ? (
         <div className="overflow-x-auto">
-          <table className="table-auto w-full text-left bg-white rounded-lg shadow-md">
+          <table className="table-auto w-full min-w-[700px] text-left bg-white rounded-lg shadow-md">
             <thead className="bg-gray-200">
               <tr className="text-gray-700">
                 <th className="p-4 font-semibold">Event Name</th>
@@ -74,6 +101,7 @@ function History() {
                 <th className="p-4 font-semibold">Date</th>
                 <th className="p-4 font-semibold">Paid</th>
                 <th className="p-4 font-semibold">Cost</th>
+                <th className="p-4 font-semibold">Progress</th>
                 <th className="p-4 font-semibold">Actions</th>
               </tr>
             </thead>
@@ -85,6 +113,47 @@ function History() {
                   <td className="p-4 text-gray-800">{new Date(event.date).toLocaleDateString()}</td>
                   <td className="p-4 text-gray-800">{event.isPaid ? 'Paid' : 'Not Paid'}</td>
                   <td className="p-4 text-gray-800">{event.cost ? event.cost : 'Free'}</td>
+                  <td className="p-4 ">
+                    <div className="flex items-center">
+                      <Box
+                        sx={{
+                          position: 'relative',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                        }}
+                      >
+                        <CircularProgress
+                          variant="determinate"
+                          value={progress}
+                          size={60}
+                          thickness={6}
+                        />
+                        <Box
+                          sx={{
+                            top: 0,
+                            left: 0,
+                            bottom: 0,
+                            right: 0,
+                            position: 'absolute',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                          }}
+                        >
+                          <Typography
+                            variant="caption"
+                            component="div"
+                            color="textSecondary"
+                            fontSize={16}
+                            fontWeight="bold"
+                          >
+                            {`${Math.round(progress)}%`}
+                          </Typography>
+                        </Box>
+                      </Box>
+                    </div>
+                  </td>
                   <td className="p-4 flex space-x-2">
                     <button
                       onClick={() => handleDelete(event.eventId)}
