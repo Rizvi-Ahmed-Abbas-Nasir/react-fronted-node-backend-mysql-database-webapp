@@ -14,7 +14,6 @@ const EventCompo = () => {
     const fetchData = async () => {
       try {
         const response = await axios.get("http://localhost:8000/event");
-        console.log(response.data);
         setData(response.data);
       } catch (err) {
         setError(err.message);
@@ -58,7 +57,6 @@ const EventCompo = () => {
         alert("Registration failed.");
       }
     } catch (err) {
-      console.error(err);
       alert("An error occurred during registration."+ err);
     }
   };
