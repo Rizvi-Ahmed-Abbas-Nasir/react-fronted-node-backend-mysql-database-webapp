@@ -6,7 +6,7 @@ const eventController = require("../controllers/eventController")
 const userController = require("../controllers/userController")
 const adminController = require("../controllers/adminController")
 const qrCodeController = require("../controllers/qrCodeController")
-const noticeController = require("../controllers/noticeController")
+// const noticeController = require("../controllers/noticeController")
 //test routes
 router.get('/', (req, res)=> {
     res.status(200).json({message:"Hello world"});

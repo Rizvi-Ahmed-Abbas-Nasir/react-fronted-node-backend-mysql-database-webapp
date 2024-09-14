@@ -26,12 +26,12 @@ function EditEventForm() {
   const [events, setEvents] = useState([]); // For storing existing events
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
-  const departments = ["Computer", "IT", "AIDS"];
+  const departments = ["Comps", "IT", "AIDS"];
   const eligibleYears = [
-    "First Year",
-    "Second Year",
-    "Third Year",
-    "Final Year",
+    "FE",
+    "SE",
+    "TE",
+    "BE",
   ];
 
   useEffect(() => {
@@ -243,8 +243,8 @@ function EditEventForm() {
 
         <div className="flex items-center">
           <label className="w-1/3 font-semibold">Year:</label>
-          <div className="w-2/3 space-x-4  border border-gray-300 p-4 rounded-lg">
-            {["First Year", "Second Year", "Third Year", "Final Year"].map(
+          <div className="w-2/3 space-x-4 border border-gray-300 p-4 rounded-lg">
+            {["FE", "SE", "TE", "BE"].map(
               (year) => (
                 <label key={year} className="inline-flex items-center">
                   <input
@@ -254,30 +254,31 @@ function EditEventForm() {
                     checked={formData.eligibleYear.includes(year)}
                     onChange={handleChange}
                     className="mr-2 custom-checkbox rounded-lg"
-                    />
+                  />
                   {year}
                 </label>
               )
             )}
           </div>
         </div>
-
         <div className="flex items-center">
           <label className="w-1/3 font-semibold">Department:</label>
           <div className="w-2/3 space-x-4 border border-gray-300 p-4 rounded-lg">
-            {["Computer", "IT", "AIDS"].map((department) => (
-              <label key={department} className="inline-flex items-center">
-                <input
-                  type="checkbox"
-                  name="department"
-                  value={department}
-                  checked={formData.department.includes(department)}
-                  onChange={handleChange}
-                  className="mr-2 custom-checkbox rounded-lg"
-                />
-                {department}
-              </label>
-            ))}
+            {["Comps", "IT", "AIDS"].map(
+              (department) => (
+                <label key={department} className="inline-flex items-center">
+                  <input
+                    type="checkbox"
+                    name="department"
+                    value={department}
+                    checked={formData.department.includes(department)}
+                    onChange={handleChange}
+                    className="mr-2 custom-checkbox rounded-lg"
+                  />
+                  {department}
+                </label>
+              )
+            )}
           </div>
         </div>
         <div className="flex items-center">
@@ -286,7 +287,7 @@ function EditEventForm() {
             name="eventDescription"
             value={formData.eventDescription}
             onChange={handleChange}
-            className="w-2/3 p-2 h-24 rounded-lg bg-gray-100 text-black border border-gray-300 focus:border-blue-400"
+            className="w-2/3 p-2 rounded-lg bg-gray-100 text-black border border-gray-300 focus:border-blue-400"
           />
         </div>
 
@@ -311,62 +312,59 @@ function EditEventForm() {
             className="w-2/3 p-2 rounded-lg bg-gray-100 text-black border border-gray-300 focus:border-blue-400"
           />
         </div>
-
         <div className="flex items-center">
           <label className="w-1/3 font-semibold">Notice:</label>
           <textarea
             name="eventNotice"
             value={formData.eventNotice}
             onChange={handleChange}
-            className="w-2/3 p-2 h-24 rounded-lg bg-gray-100 text-black border border-gray-300 focus:border-blue-400"
+            className="w-2/3 p-2 rounded-lg bg-gray-100 text-black border border-gray-300 focus:border-blue-400"
           />
         </div>
 
         <div className="flex items-center">
-          <label className="w-1/3 font-semibold">Banner Image:</label>
+          <label className="w-1/3 font-semibold">Banner:</label>
           <input
             type="file"
             name="banner"
-            accept="image/*"
             onChange={handleChange}
             className="w-2/3 p-2 rounded-lg bg-gray-100 text-black border border-gray-300 focus:border-blue-400"
           />
         </div>
 
         <div className="flex items-center">
-          <label className="w-1/3 font-semibold">Is Event Paid?</label>
-          <div className="w-2/3 space-x-4 border border-gray-300 p-4 rounded-lg">
-  <label className="inline-flex items-center">
-    <input
-      type="radio"
-      name="isPaid"
-      value={true}
-      checked={formData.isPaid === true}
-      onChange={handleChange}
-      className="mr-2 custom-radio-input"
-      style={{ width: '24px', height: '24px' }} // Apply size
-    />
-    Yes
-  </label>
-  <label className="inline-flex items-center">
-    <input
-      type="radio"
-      name="isPaid"
-      value={false}
-      checked={formData.isPaid === false}
-      onChange={handleChange}
-      className="mr-2 custom-radio-input"
-      style={{ width: '24px', height: '24px' }} // Apply size
-    />
-    No
-  </label>
-</div>
-
+          <label className="w-1/3 font-semibold">Is the event paid?</label>
+          <div className="flex w-2/3 border border-gray-300 p-4 rounded-lg">
+            <label className="flex items-center">
+              <input
+                type="radio"
+                name="isPaid"
+                value={true}
+                checked={formData.isPaid === true}
+                onChange={handleChange}
+                className="mr-2 custom-radio-input"
+                style={{ width: '24px', height: '24px' }} // Apply size
+              />
+              Paid
+            </label>
+            <label className="flex items-center ml-6">
+              <input
+                type="radio"
+                name="isPaid"
+                value={false}
+                checked={formData.isPaid === false}
+                onChange={handleChange}
+                className="mr-2 custom-radio-input"
+                style={{ width: '24px', height: '24px' }} // Apply size
+              />
+              Not Paid
+            </label>
+          </div>
         </div>
 
         {formData.isPaid && (
           <div className="flex items-center">
-            <label className="w-1/3 font-semibold">Cost of Event:</label>
+            <label className="w-1/3 font-semibold">Cost:</label>
             <input
               type="number"
               name="cost"
@@ -377,18 +375,17 @@ function EditEventForm() {
           </div>
         )}
 
-        {/* Submit Button */}
-        <div className="flex justify-center">
+<div className="flex justify-center">
           <button
             type="submit"
-            className="w-full lg:w-1/3 p-2 rounded-lg bg-blue-500 text-white hover:bg-blue-600 focus:outline-none"
+            className="w-full lg:w-1/3 mt-5 p-2 rounded-lg bg-blue-500 text-white hover:bg-blue-600 focus:outline-none"
           >
             {isLoading ? (
               <ClipLoader color="white" size={20} />
-            ) : editEventId ? (
+            ) : isLoading ? (
               "Update Event"
             ) : (
-              "Update Event"
+              "Updating Event"
             )}
           </button>
         </div>

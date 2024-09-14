@@ -180,15 +180,50 @@ exports.deleteRegistration = async (eventId, student_id) => {
 exports.getAllAttendance = async () => {
   try {
     const events = await Event.getAllEvents();
-    // console.log(events)
-
+  
+    // Define how to infer the academic year of a student based on degree and ac_yr
+    const inferYear = `
+      CASE
+        WHEN SUBSTRING(s.degree, 6, 4) - 4 = SUBSTRING(s.ac_yr, 1, 4) THEN 'FE'
+        WHEN SUBSTRING(s.degree, 6, 4) - 3 = SUBSTRING(s.ac_yr, 1, 4) THEN 'SE'
+        WHEN SUBSTRING(s.degree, 6, 4) - 2 = SUBSTRING(s.ac_yr, 1, 4) THEN 'TE'
+        WHEN SUBSTRING(s.degree, 6, 4) - 1 = SUBSTRING(s.ac_yr, 1, 4) THEN 'BE'
+        ELSE 'UNKNOWN'
+      END
+    `;
+  
+    // Create a query for each event to determine eligibility (E), registration (R), and participation (P)
     let selectColumns = events
       .map(
-        (e) =>
-          `MAX(CASE WHEN e.eventId = ${e.eventId} THEN r.attended ELSE NULL END) AS \`${e.eventName}\``
+        (e) => `
+        MAX(
+          CASE 
+            -- Eligibility (E) based on matching department and inferred academic year
+            WHEN FIND_IN_SET(s.branch, '${e.department}') > 0 
+            AND FIND_IN_SET((${inferYear}), '${e.eligibleYear}') > 0 
+            THEN 1 ELSE 0 
+          END
+        ) AS \`${e.eventName}_E\`,
+        MAX(
+          CASE 
+            -- Registration (R)
+            WHEN r.event_id = ${e.eventId} 
+            THEN 1 ELSE 0 
+          END
+        ) AS \`${e.eventName}_R\`,
+        MAX(
+          CASE 
+            -- Participation (P)
+            WHEN r.event_id = ${e.eventId} 
+            AND r.attended = 1 
+            THEN 1 ELSE 0 
+          END
+        ) AS \`${e.eventName}_P\`,
+        '${e.date.toLocaleDateString()}' AS \`${e.eventName}_Date\`
+      `
       )
       .join(", ");
-
+  
     let query = `
       SELECT 
         s.student_id, 
@@ -196,40 +231,53 @@ exports.getAllAttendance = async () => {
         s.first_name,
         s.middle_name,
         s.last_name,
+        s.branch,
+        s.ac_yr,
         ${selectColumns}
-      FROM tpo_event_registrations r
-      JOIN tpo_student_details s ON r.student_id = s.student_id
-      JOIN tpo_events e ON r.event_id = e.eventId
+      FROM tpo_student_details s
+      LEFT JOIN tpo_event_registrations r ON r.student_id = s.student_id
+      LEFT JOIN tpo_events e ON r.event_id = e.eventId
       GROUP BY s.student_id, s.clg_id;
     `;
-
+  
     const result = await connection.query(query);
-
-    // getting all the events in a events object for easy retrieval
-    // Transform the result to group event data under an "Events" key
+  
+    // Format the result to have the desired structure
     const formattedResult = result[0].map((student) => {
-      const {
-        student_id,
-        clg_id,
-        first_name,
-        middle_name,
-        last_name,
-        ...events
-      } = student;
-
+      const { student_id, clg_id, first_name, middle_name, last_name, branch, ac_yr, ...events } = student;
+      
+      // Organize events into the new structure
+      let eventDetails = {};
+      Object.keys(events).forEach((key) => {
+        const [eventName, type] = key.split('_');
+        if (!eventDetails[eventName]) {
+          eventDetails[eventName] = { E: 0, R: 0, P: 0, Date: "" };
+        }
+        if (type === "Date") {
+          eventDetails[eventName]["Date"] = events[key];
+        } else {
+          eventDetails[eventName][type] = events[key];
+        }
+      });
+  
       return {
         student_id,
         clg_id,
         first_name,
         middle_name,
         last_name,
-        events: events,
+        branch,
+        ac_yr,
+        events: eventDetails,
       };
     });
+  
     return formattedResult;
   } catch (error) {
     console.log(error);
   }
+  
+  
 };
 
 exports.changeAttendanceFlag = async (eventId) => {
