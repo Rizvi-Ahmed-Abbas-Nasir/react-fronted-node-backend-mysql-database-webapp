@@ -8,15 +8,17 @@ const converter = require('json-2-csv');
 
 function AttendanceTable() {
   const [attendanceData, setAttendanceData] = useState([]);
+  const [filteredData, setFilteredData] = useState([]);
   const [error, setError] = useState("");
+  const [selectedYear, setSelectedYear] = useState("All");
+  const [selectedDepartment, setSelectedDepartment] = useState("All");
 
   useEffect(() => {
     const fetchAttendanceData = async () => {
       try {
-        const response = await axios.get(
-          "http://localhost:8000/getAllAttendance"
-        );
+        const response = await axios.get("http://localhost:8000/getAllAttendance");
         setAttendanceData(response.data.result);
+        setFilteredData(response.data.result); // Set initial filtered data
       } catch (err) {
         setError("Failed to fetch attendance data");
         console.error(err);
@@ -25,11 +27,35 @@ function AttendanceTable() {
     fetchAttendanceData();
   }, []);
 
+  const handleYearChange = (event) => {
+    setSelectedYear(event.target.value);
+    filterData(event.target.value, selectedDepartment);
+  };
+
+  const handleDepartmentChange = (event) => {
+    setSelectedDepartment(event.target.value);
+    filterData(selectedYear, event.target.value);
+  };
+
+  const filterData = (year, department) => {
+    let filtered = attendanceData;
+
+    if (year !== "All") {
+      filtered = filtered.filter(student => student.ac_yr === year);
+    }
+
+    if (department !== "All") {
+      filtered = filtered.filter(student => student.branch === department);
+    }
+
+    setFilteredData(filtered);
+  };
+
   const flattenAndTransformObject = (obj, parent = '', res = {}) => {
     for (let key in obj) {
-      const propName = parent ?  `${parent}.${key}` : key; 
+      const propName = parent ? `${parent}.${key}` : key; 
       let value = obj[key];
-  
+
       if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
         flattenAndTransformObject(value, propName, res);
       } else {
@@ -46,7 +72,7 @@ function AttendanceTable() {
 
   const handleDownloadPDF = () => {
     const doc = new jsPDF();
-    const flattenedData = attendanceData.map(item => flattenAndTransformObject(item));
+    const flattenedData = filteredData.map(item => flattenAndTransformObject(item));
     const headers = Object.keys(flattenedData.reduce((acc, item) => ({
       ...acc,
       ...item
@@ -71,7 +97,7 @@ function AttendanceTable() {
 
   const handleDownloadCSV = () => {
     try {
-      const csv = converter.json2csv(flattenAndTransformObject(attendanceData));
+      const csv = converter.json2csv(flattenAndTransformObject(filteredData));
       const encodedUri = encodeURI('data:text/csv;charset=utf-8,' + csv);
       const link = document.createElement('a');
       link.href = encodedUri;
@@ -85,7 +111,7 @@ function AttendanceTable() {
   };
 
   const exportToExcel = () => {
-    const transformedData = attendanceData.map(item => flattenAndTransformObject(item));
+    const transformedData = filteredData.map(item => flattenAndTransformObject(item));
     const worksheet = XLSX.utils.json_to_sheet(transformedData);
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
@@ -96,60 +122,90 @@ function AttendanceTable() {
 
   return (
     <div className="flex flex-col gap-6 justify-start items-start md:ml-72 md:mt-32 w-auto p-4 bg-gray-50 rounded-lg shadow-lg">
-      <h1 className="text-3xl font-bold text-gray-800 mb-4">Event Registration Details</h1>
+      <h1 className="text-3xl font-bold text-gray-800 mb-4">Registration Details</h1>
+
+      <div className="flex space-x-4 mb-4">
+        <label htmlFor="yearFilter" className="font-medium text-gray-700">Filter by Year:</label>
+        <select
+          id="yearFilter"
+          value={selectedYear}
+          onChange={handleYearChange}
+          className="px-4 py-2 border rounded-lg shadow-sm"
+        >
+          <option value="All">All</option>
+          <option value="2023-2024">2023-2024</option>
+          <option value="2024-2025">2024-2025</option>
+        </select>
+
+        <label htmlFor="departmentFilter" className="font-medium text-gray-700">Filter by Department:</label>
+        <select
+          id="departmentFilter"
+          value={selectedDepartment}
+          onChange={handleDepartmentChange}
+          className="px-4 py-2 border rounded-lg shadow-sm"
+        >
+          <option value="All">All</option>
+          <option value="Comps">Comps</option>
+          <option value="IT">IT</option>
+          <option value="AIDS">AIDS</option>
+        </select>
+      </div>
+
       <div className="flex space-x-4">
         <button onClick={handleDownloadCSV} className="px-4 py-2 bg-green-600 text-white rounded-lg shadow-md hover:bg-green-700 transition duration-200">Download CSV</button>
         <button onClick={handleDownloadPDF} className="px-4 py-2 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700 transition duration-200">Download PDF</button>
         <button onClick={exportToExcel} className="px-4 py-2 bg-indigo-600 text-white rounded-lg shadow-md hover:bg-indigo-700 transition duration-200">Download Excel</button>
       </div>
-      {attendanceData?.length > 0 ? (
+
+      {filteredData?.length > 0 ? (
         <div className="overflow-x-auto w-full">
           <table className="table-auto border-collapse w-full min-w-max bg-white shadow-lg rounded-lg">
-            <thead className="bg-blue-500 text-white">
+            <thead className="bg-blue-600 text-white border-b border-gray-200">
               <tr>
-                <th className="border px-6 py-3 text-white text-sm font-medium">Student ID</th>
-                <th className="border px-6 py-3 text-white text-sm font-medium">College ID</th>
-                <th className="border px-6 py-3 text-white text-sm font-medium">Name</th>
-                {attendanceData.length > 0 &&
-                  Object.keys(attendanceData[0].events).map((event, index) => (
-                    <th key={index} className="border  py-2 text-white text-sm font-medium">
-                      <div className="flex flex-col items-center">
-                        <div className=" border-b w-full py-2"> <span>{event}</span></div>
-                       
-                        <div className="flex flex-row justify-around px-5 py-2  w-full" >
-                          <div> <span className=" text-sm">E</span></div>
-                          <div>   <span className="   text-sm">R</span></div>
-                          <div>                          <span className="   text-sm">P</span>
+                <th className="border px-6 py-3 text-sm font-medium">Student ID</th>
+                <th className="border px-6 py-3 text-sm font-medium">College ID</th>
+                <th className="border px-6 py-3 text-sm font-medium">Name</th>
+                <th className="border px-6 py-3 text-sm font-medium">Branch</th>
+                <th className="border px-6 py-3 text-sm font-medium">Academic Year</th>
+                {filteredData.length > 0 &&
+                  Object.keys(filteredData[0].events).map((event, index) => (
+                    <React.Fragment key={index}>
+                      <th colSpan={3} className="border px-6 py-1 text-sm font-medium">
+                        <div className="border-b py-3">{event}</div>
+                        
+                        <div className="flex mt-1 w-full justify-between px-8 py-2">
+                          <div>                          <span className="  pt-1 text-[0.9rem]">E</span>
                           </div>
-                      
+                          <div>                          <span className="  pt-1 text-[0.9rem]">R</span>
+                          </div>
+                          <div>                          <span className="  pt-1 text-[0.9rem]">P</span>
+                          </div>
                         </div>
-                      </div>
-                    </th>
+                      </th>
+                    </React.Fragment>
                   ))}
               </tr>
             </thead>
             <tbody>
-              {attendanceData.map((student) => (
+              {filteredData.map((student) => (
                 <tr key={student.student_id} className="even:bg-gray-100 odd:bg-white">
                   <td className="border px-6 py-4 text-gray-800">{student.student_id}</td>
                   <td className="border px-6 py-4 text-gray-800">{student.clg_id}</td>
                   <td className="border px-6 py-4 text-gray-800">{`${student.first_name} ${student.middle_name || ""} ${student.last_name}`}</td>
+                  <td className="border px-6 py-4 text-gray-800">{student.branch}</td>
+                  <td className="border px-6 py-4 text-gray-800">{student.ac_yr}</td>
                   {Object.entries(student.events).map(([event, status], index) => (
-                    <td key={index} className="border px-6 py-4 text-center text-gray-800">
-                      <div className="flex flex-col items-center justify-around w-full">
-                        <div className="flex flex-row w-full justify-around">
-                          <span className="px-2  rounded-lg text-sm">
-                            {status.e === 1 ? "Present" : "Absent"}
-                          </span>
-                          <span className=" px-2 py-1 rounded-lg text-sm">
-                            {status.r === 1 ? "Present" : "Absent"}
-                          </span>
-                          <span className=" px-2 py-1 rounded-lg text-sm">
-                            {status.p === 1 ? "Present" : "Absent"}
-                          </span>
-                        </div>
-                      </div>
-                    </td>
+                    <React.Fragment key={index}>
+                      <td className="border px-6 py-4 text-center text-gray-800">
+                        {status.e === 1 ? "Present" : "Absent"}
+                      </td>
+                      <td className="border px-6 py-4 text-center text-gray-800">
+                        {status.r === 1 ? "Present" : "Absent"}
+                      </td>
+                      <td className="border px-6 py-4 text-center text-gray-800">
+                        {status.p === 1 ? "Present" : "Absent"}
+                      </td>
+                    </React.Fragment>
                   ))}
                 </tr>
               ))}
