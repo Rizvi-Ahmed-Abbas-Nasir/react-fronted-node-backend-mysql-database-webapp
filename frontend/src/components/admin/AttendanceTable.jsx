@@ -16,12 +16,9 @@ function AttendanceTable() {
   useEffect(() => {
     const fetchAttendanceData = async () => {
       try {
-        const response = await axios.get(
-          "http://localhost:8000/getAllAttendance"
-        );
+        const response = await axios.get("http://localhost:8000/getAllAttendance");
         setAttendanceData(response.data.result);
         setFilteredData(response.data.result); // Set initial filtered data
-        console.log(response.data.result);
       } catch (err) {
         setError("Failed to fetch attendance data");
         console.error(err);
@@ -126,7 +123,7 @@ function AttendanceTable() {
   return (
     <div className="flex flex-col gap-6 justify-start items-start md:ml-72 md:mt-32 w-auto p-4 bg-gray-50 rounded-lg shadow-lg">
       <h1 className="text-3xl font-bold text-gray-800 mb-4">Registration Details</h1>
-      
+
       <div className="flex space-x-4 mb-4">
         <label htmlFor="yearFilter" className="font-medium text-gray-700">Filter by Year:</label>
         <select
@@ -163,18 +160,29 @@ function AttendanceTable() {
       {filteredData?.length > 0 ? (
         <div className="overflow-x-auto w-full">
           <table className="table-auto border-collapse w-full min-w-max bg-white shadow-lg rounded-lg">
-            <thead className="bg-gray-200">
+            <thead className="bg-blue-600 text-white border-b border-gray-200">
               <tr>
-                <th className="border px-6 py-3 text-gray-700 text-sm font-medium">Student ID</th>
-                <th className="border px-6 py-3 text-gray-700 text-sm font-medium">College ID</th>
-                <th className="border px-6 py-3 text-gray-700 text-sm font-medium">Name</th>
-                <th className="border px-6 py-3 text-gray-700 text-sm font-medium">Branch</th>
-                <th className="border px-6 py-3 text-gray-700 text-sm font-medium">Academic Year</th>
+                <th className="border px-6 py-3 text-sm font-medium">Student ID</th>
+                <th className="border px-6 py-3 text-sm font-medium">College ID</th>
+                <th className="border px-6 py-3 text-sm font-medium">Name</th>
+                <th className="border px-6 py-3 text-sm font-medium">Branch</th>
+                <th className="border px-6 py-3 text-sm font-medium">Academic Year</th>
                 {filteredData.length > 0 &&
                   Object.keys(filteredData[0].events).map((event, index) => (
-                    <th key={index} colSpan={3} className="border px-6 py-3 text-gray-700 text-sm font-medium">
-                      {`${event} (E, R, P)`}
-                    </th>
+                    <React.Fragment key={index}>
+                      <th colSpan={3} className="border px-6 py-1 text-sm font-medium">
+                        <div className="border-b py-3">{event}</div>
+                        
+                        <div className="flex mt-1 w-full justify-between px-8 py-2">
+                          <div>                          <span className="  pt-1 text-[0.9rem]">E</span>
+                          </div>
+                          <div>                          <span className="  pt-1 text-[0.9rem]">R</span>
+                          </div>
+                          <div>                          <span className="  pt-1 text-[0.9rem]">P</span>
+                          </div>
+                        </div>
+                      </th>
+                    </React.Fragment>
                   ))}
               </tr>
             </thead>
@@ -186,11 +194,17 @@ function AttendanceTable() {
                   <td className="border px-6 py-4 text-gray-800">{`${student.first_name} ${student.middle_name || ""} ${student.last_name}`}</td>
                   <td className="border px-6 py-4 text-gray-800">{student.branch}</td>
                   <td className="border px-6 py-4 text-gray-800">{student.ac_yr}</td>
-                  {Object.values(student.events).map((event, index) => (
+                  {Object.entries(student.events).map(([event, status], index) => (
                     <React.Fragment key={index}>
-                      <td className="border px-6 py-4 text-center text-gray-800">{event.E}</td>
-                      <td className="border px-6 py-4 text-center text-gray-800">{event.R}</td>
-                      <td className="border px-6 py-4 text-center text-gray-800">{event.P}</td>
+                      <td className="border px-6 py-4 text-center text-gray-800">
+                        {status.e === 1 ? "Present" : "Absent"}
+                      </td>
+                      <td className="border px-6 py-4 text-center text-gray-800">
+                        {status.r === 1 ? "Present" : "Absent"}
+                      </td>
+                      <td className="border px-6 py-4 text-center text-gray-800">
+                        {status.p === 1 ? "Present" : "Absent"}
+                      </td>
                     </React.Fragment>
                   ))}
                 </tr>
