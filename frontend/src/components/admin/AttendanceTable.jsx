@@ -12,13 +12,15 @@ function AttendanceTable() {
   const [error, setError] = useState("");
   const [filterYear, setFilterYear] = useState(""); 
   const [filterDepartment, setFilterDepartment] = useState("");
+  const [selectedYear, setSelectedYear] = useState("All");
+  const [selectedDepartment, setSelectedDepartment] = useState("All");
 
   useEffect(() => {
     const fetchAttendanceData = async () => {
       try {
         const response = await axios.get("http://localhost:8000/getAllAttendance");
         setAttendanceData(response.data.result);
-        setFilteredData(response.data.result);
+        setFilteredData(response.data.result); // Set initial filtered data
       } catch (err) {
         setError("Failed to fetch attendance data");
         console.error(err);
@@ -206,31 +208,70 @@ function AttendanceTable() {
     const excelBlob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8' });
     saveAs(excelBlob, 'attendance-data.xlsx');
   };
+ 
+  const handleYearChange = (event) => {
+    setSelectedYear(event.target.value);
+    filterData(event.target.value, selectedDepartment);
+  };
+
+  const handleDepartmentChange = (event) => {
+    setSelectedDepartment(event.target.value);
+    filterData(selectedYear, event.target.value);
+  };
+  
+  const filterData = (year, department) => {
+    let filtered = attendanceData;
+
+    if (year !== "All") {
+      filtered = filtered.filter(student => student.ac_yr === year);
+    }
+
+    if (department !== "All") {
+      filtered = filtered.filter(student => student.branch === department);
+    }
+
+    setFilteredData(filtered);
+  };
+
 
   return (
     <div className="flex flex-col gap-6 justify-start items-start md:ml-72 md:mt-32 w-auto p-4 bg-gray-50 rounded-lg shadow-lg">
       <h1 className="text-3xl font-bold text-gray-800 mb-4">Registration Details</h1>
-      <div className="flex space-x-4">
-        <input
-          type="text"
-          placeholder="Filter by Academic Year"
-          value={filterYear}
-          onChange={(e) => setFilterYear(e.target.value)}
-          className="px-4 py-2 border rounded-lg"
-        />
-        <input
-          type="text"
-          placeholder="Filter by Department"
-          value={filterDepartment}
-          onChange={(e) => setFilterDepartment(e.target.value)}
-          className="px-4 py-2 border rounded-lg"
-        />
-        <button
-          onClick={handleFilter}
-          className="px-4 py-2 bg-gray-700 text-white rounded-lg shadow-md hover:bg-gray-800 transition duration-200"
+
+      <div className="flex space-x-4 mb-4">
+        <label htmlFor="yearFilter" className="font-medium text-gray-700">Filter by Year:</label>
+        <select
+          id="yearFilter"
+          value={selectedYear}
+          onChange={handleYearChange}
+          className="px-4 py-2 border rounded-lg shadow-sm"
         >
-          Filter
-        </button>
+          <option value="All">All</option>
+          <option value="2026-2027">2026-2027</option>
+          <option value="2025-2026">2025-2026</option>
+          <option value="2024-2025">2024-2025</option>
+          <option value="2023-2024">2023-2024</option>
+          <option value="2022-2023">2022-2023</option>
+          <option value="2021-2022">2021-2022</option>
+          <option value="2020-2021">2020-2021</option>
+        </select>
+
+        <label htmlFor="departmentFilter" className="font-medium text-gray-700">Filter by Department:</label>
+        <select
+          id="departmentFilter"
+          value={selectedDepartment}
+          onChange={handleDepartmentChange}
+          className="px-4 py-2 border rounded-lg shadow-sm"
+        >
+          <option value="All">All</option>
+          <option value="Comps">Comps</option>
+          <option value="IT">IT</option>
+          <option value="AIDS">AIDS</option>
+        </select>
+      </div>
+
+      <div className="flex space-x-4">
+      
         <button onClick={handleDownloadCSV} className="px-4 py-2 bg-green-600 text-white rounded-lg shadow-md hover:bg-green-700 transition duration-200">Download CSV</button>
         <button onClick={handleDownloadPDF} className="px-4 py-2 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700 transition duration-200">Download PDF</button>
         <button onClick={exportToExcel} className="px-4 py-2 bg-indigo-600 text-white rounded-lg shadow-md hover:bg-indigo-700 transition duration-200">Download Excel</button>
@@ -238,38 +279,30 @@ function AttendanceTable() {
       {filteredData.length > 0 ? (
         <div className="overflow-x-auto w-full">
           <table className="table-auto border-collapse w-full min-w-max bg-white shadow-lg rounded-lg">
-            <thead className="bg-gray-200">
+            <thead className="bg-blue-600 text-white border-b border-gray-200">
               <tr>
-                <th className="border px-6 py-3 text-gray-700 text-sm font-medium">Student ID</th>
-                <th className="border px-6 py-3 text-gray-700 text-sm font-medium">College ID</th>
-                <th className="border px-6 py-3 text-gray-700 text-sm font-medium">Name</th>
-                <th className="border px-6 py-3 text-gray-700 text-sm font-medium">Department</th>
-                <th className="border px-6 py-3 text-gray-700 text-sm font-medium">Academic Year</th> {/* Added Academic Year */}
-                {Object.keys(filteredData[0].events).map((event, index) => (
-                  <th key={index} className="border px-6 py-3 text-center text-gray-700 text-sm font-medium" colSpan="3">
-                    {event}
-                  </th>
-                ))}
-              </tr>
-              <tr>
-                <th className="border px-6 py-3"></th>
-                <th className="border px-6 py-3"></th>
-                <th className="border px-6 py-3"></th>
-                <th className="border px-6 py-3"></th>
-                <th className="border px-6 py-3"></th> {/* Empty cell for Academic Year */}
-                {Object.keys(filteredData[0].events).map((event, index) => (
-                  <>
-                    <th key={`${event}_E`} className="border px-6 py-3 text-center text-gray-700 text-sm font-medium">
-                      E
-                    </th>
-                    <th key={`${event}_R`} className="border px-6 py-3 text-center text-gray-700 text-sm font-medium">
-                      R
-                    </th>
-                    <th key={`${event}_P`} className="border px-6 py-3 text-center text-gray-700 text-sm font-medium">
-                      P
-                    </th>
-                  </>
-                ))}
+                <th className="border px-6 py-3 text-sm font-medium">Student ID</th>
+                <th className="border px-6 py-3 text-sm font-medium">College ID</th>
+                <th className="border px-6 py-3 text-sm font-medium">Name</th>
+                <th className="border px-6 py-3 text-sm font-medium">Branch</th>
+                <th className="border px-6 py-3 text-sm font-medium">Academic Year</th>
+                {filteredData.length > 0 &&
+                  Object.keys(filteredData[0].events).map((event, index) => (
+                    <React.Fragment key={index}>
+                      <th colSpan={3} className="border px-6 py-1 text-sm font-medium">
+                        <div className="border-b py-3">{event}</div>
+                        
+                        <div className="flex mt-1 w-full justify-between px-8 py-2">
+                          <div>                          <span className="  pt-1 text-[0.9rem]">E</span>
+                          </div>
+                          <div>                          <span className="  pt-1 text-[0.9rem]">R</span>
+                          </div>
+                          <div>                          <span className="  pt-1 text-[0.9rem]">P</span>
+                          </div>
+                        </div>
+                      </th>
+                    </React.Fragment>
+                  ))}
               </tr>
             </thead>
             <tbody>

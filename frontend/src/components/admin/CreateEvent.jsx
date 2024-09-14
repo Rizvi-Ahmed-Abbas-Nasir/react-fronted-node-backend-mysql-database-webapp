@@ -207,7 +207,7 @@ function CreateEvent() {
 
         <div className="flex items-center">
           <label className="w-1/3 font-semibold">Year:</label>
-          <div className="w-2/3 space-x-4">
+          <div className="w-2/3 space-x-4 border border-gray-300 p-4 rounded-lg">
             {["FE", "SE", "TE", "BE"].map(
               (year) => (
                 <label key={year} className="inline-flex items-center">
@@ -217,7 +217,7 @@ function CreateEvent() {
                     value={year}
                     checked={formData.eligibleYear.includes(year)}
                     onChange={handleChange}
-                    className="mr-2"
+                    className="mr-2 custom-checkbox rounded-lg"
                   />
                   {year}
                 </label>
@@ -227,7 +227,7 @@ function CreateEvent() {
         </div>
         <div className="flex items-center">
           <label className="w-1/3 font-semibold">Department:</label>
-          <div className="w-2/3 space-x-4">
+          <div className="w-2/3 space-x-4 border border-gray-300 p-4 rounded-lg">
             {["Comps", "IT", "AIDS"].map(
               (department) => (
                 <label key={department} className="inline-flex items-center">
@@ -237,7 +237,7 @@ function CreateEvent() {
                     value={department}
                     checked={formData.department.includes(department)}
                     onChange={handleChange}
-                    className="mr-2"
+                    className="mr-2 custom-checkbox rounded-lg"
                   />
                   {department}
                 </label>
@@ -298,7 +298,7 @@ function CreateEvent() {
 
         <div className="flex items-center">
           <label className="w-1/3 font-semibold">Is the event paid?</label>
-          <div className="flex w-2/3">
+          <div className="flex w-2/3 border border-gray-300 p-4 rounded-lg">
             <label className="flex items-center">
               <input
                 type="radio"
@@ -306,7 +306,8 @@ function CreateEvent() {
                 value={true}
                 checked={formData.isPaid === true}
                 onChange={handleChange}
-                className="mr-2"
+                className="mr-2 custom-radio-input"
+                style={{ width: '24px', height: '24px' }} // Apply size
               />
               Paid
             </label>
@@ -317,7 +318,8 @@ function CreateEvent() {
                 value={false}
                 checked={formData.isPaid === false}
                 onChange={handleChange}
-                className="mr-2"
+                className="mr-2 custom-radio-input"
+                style={{ width: '24px', height: '24px' }} // Apply size
               />
               Not Paid
             </label>
@@ -337,15 +339,69 @@ function CreateEvent() {
           </div>
         )}
 
-        <div className="text-center">
+<div className="flex justify-center">
           <button
             type="submit"
-            className="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+            className="w-full lg:w-1/3 mt-5 p-2 rounded-lg bg-blue-500 text-white hover:bg-blue-600 focus:outline-none"
           >
-            {isLoading ? 'Creating...' : 'Create'}
+            {isLoading ? (
+              <ClipLoader color="white" size={20} />
+            ) : isLoading ? (
+              "Creating Event"
+            ) : (
+              "Create Event"
+            )}
           </button>
         </div>
       </form>
+      <style jsx>{`
+     
+     .custom-checkbox {
+          position: relative;
+          display: inline-block;
+          width: 1.1rem; /* Increase width as needed */
+          height:1.1rem; /* Increase height as needed */
+        }
+    
+        .custom-checkbox input {
+          opacity: 0; /* Hide the default checkbox */
+          width: 0;
+          height: 0;
+          margin: 0;
+          position: absolute;
+        }
+    
+        .custom-checkbox .checkbox-label {
+          display: flex;
+          align-items: center;
+          cursor: pointer;
+          position: relative;
+          width: 24px; /* Match the size of the container */
+          height: 24px; /* Match the size of the container */
+        }
+    
+        .custom-checkbox .checkbox-label::before {
+          content: '';
+          position: absolute;
+          left: 0;
+          top: 0;
+          width: 24px; /* Match the size of the container */
+          height: 24px; /* Match the size of the container */
+          border: 2px solid #ccc; /* Border color */
+          background-color: #fff; /* Background color */
+          border-radius: 4px; /* Rounded corners */
+          box-shadow: inset 0 0 0 2px #000; /* Optional shadow */
+          transition: background-color 0.3s, border-color 0.3s;
+        }
+    
+        .custom-checkbox input:checked + .checkbox-label::before {
+          background-color: #007BFF; /* Background color when checked */
+          border-color: #007BFF; /* Border color when checked */
+        }
+    
+        
+           
+          `}</style>
     </div>
   );
 }
