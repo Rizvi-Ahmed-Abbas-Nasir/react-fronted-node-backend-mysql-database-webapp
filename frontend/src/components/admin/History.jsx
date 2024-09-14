@@ -22,6 +22,7 @@ function History() {
     }
   };
 
+
   const updateProgress = async (id) => {
     try {
       const response = await axios.get(`http://localhost:8000/eventStatus/${id}`);
@@ -38,6 +39,8 @@ function History() {
   };
 
   useEffect(() => {
+
+   
     fetchEvents();
   }, []);
 
@@ -133,9 +136,17 @@ function History() {
                       >
                         <CircularProgress
                           variant="determinate"
-                          value={progresses[event.eventId] || 0} // Use specific event progress
+                          id='cg'
+                          value={progresses[event.eventId] || 0} 
                           size={60}
                           thickness={6}
+                          style={{
+                            color:
+                              (progresses[event.eventId] || 0) === 100
+                                ? 'green'  
+                                : 'blue',  
+                          }} // Set to dynamic if 100% it will set to green hehhe
+
                         />
                         <Box
                           sx={{

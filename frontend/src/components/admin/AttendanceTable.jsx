@@ -8,6 +8,8 @@ const converter = require('json-2-csv');
 
 function AttendanceTable() {
   const [attendanceData, setAttendanceData] = useState([]);
+  const [filteredData, setFilteredData] = useState([]);
+  const [academicYear, setAcademicYear] = useState("2025"); // Default academic year
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -17,6 +19,7 @@ function AttendanceTable() {
           "http://localhost:8000/getAllAttendance"
         );
         setAttendanceData(response.data.result);
+        setFilteredData(response.data.result); // Set initial filtered data
       } catch (err) {
         setError("Failed to fetch attendance data");
         console.error(err);
@@ -24,6 +27,12 @@ function AttendanceTable() {
     };
     fetchAttendanceData();
   }, []);
+
+  // Filter data based on selected academic year
+  useEffect(() => {
+    const filtered = attendanceData.filter(student => student.academic_year === academicYear);
+    setFilteredData(filtered);
+  }, [academicYear, attendanceData]);
 
   const flattenAndTransformObject = (obj, parent = '', res = {}) => {
     for (let key in obj) {
@@ -36,7 +45,6 @@ function AttendanceTable() {
         if (propName.includes('events')) {
           value = value === null ? 'NP' : value === 1 ? 1 : 0;
         } else if (['first_name', 'middle_name', 'last_name'].includes(key)) {
-          // Only transform if value is a valid string
           value = value ? value.charAt(0).toUpperCase() + value.slice(1) : 'N/A';
         }
         res[propName] = value;
@@ -44,11 +52,10 @@ function AttendanceTable() {
     }
     return res;
   };
-  
 
   const handleDownloadPDF = () => {
     const doc = new jsPDF();
-    const flattenedData = attendanceData.map(item => flattenAndTransformObject(item));
+    const flattenedData = filteredData.map(item => flattenAndTransformObject(item));
     const headers = Object.keys(flattenedData.reduce((acc, item) => ({
       ...acc,
       ...item
@@ -72,7 +79,7 @@ function AttendanceTable() {
 
   const handleDownloadCSV = () => {
     try {
-      const csv = converter.json2csv(flattenAndTransformObject(attendanceData));
+      const csv = converter.json2csv(flattenAndTransformObject(filteredData));
       const encodedUri = encodeURI('data:text/csv;charset=utf-8,' + csv);
       const link = document.createElement('a');
       link.href = encodedUri;
@@ -86,7 +93,7 @@ function AttendanceTable() {
   };
 
   const exportToExcel = () => {
-    const transformedData = attendanceData.map(item => flattenAndTransformObject(item));
+    const transformedData = filteredData.map(item => flattenAndTransformObject(item));
     const worksheet = XLSX.utils.json_to_sheet(transformedData);
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
@@ -102,8 +109,21 @@ function AttendanceTable() {
         <button onClick={handleDownloadCSV} className="px-4 py-2 bg-green-600 text-white rounded-lg shadow-md hover:bg-green-700 transition duration-200">Download CSV</button>
         <button onClick={handleDownloadPDF} className="px-4 py-2 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700 transition duration-200">Download PDF</button>
         <button onClick={exportToExcel} className="px-4 py-2 bg-indigo-600 text-white rounded-lg shadow-md hover:bg-indigo-700 transition duration-200">Download Excel</button>
+
+        {/* Dropdown for academic year selection */}
+        <select
+          className="px-4 py-2 bg-white border rounded-lg shadow-md focus:outline-none"
+          value={academicYear}
+          onChange={(e) => setAcademicYear(e.target.value)}
+        >
+          <option value="2025">2025</option>
+          <option value="2024">2024</option>
+          <option value="2023">2023</option>
+          {/* Add more academic years as needed */}
+        </select>
       </div>
-      {attendanceData?.length > 0 ? (
+
+      {filteredData?.length > 0 ? (
         <div className="overflow-x-auto w-full">
           <table className="table-auto border-collapse w-full min-w-max bg-white shadow-lg rounded-lg">
             <thead className="bg-gray-200">
@@ -111,8 +131,8 @@ function AttendanceTable() {
                 <th className="border px-6 py-3 text-gray-700 text-sm font-medium">Student ID</th>
                 <th className="border px-6 py-3 text-gray-700 text-sm font-medium">College ID</th>
                 <th className="border px-6 py-3 text-gray-700 text-sm font-medium">Name</th>
-                {attendanceData.length > 0 &&
-                  Object.keys(attendanceData[0].events).map((event, index) => (
+                {filteredData.length > 0 &&
+                  Object.keys(filteredData[0].events).map((event, index) => (
                     <th key={index} className="border px-6 py-3 text-gray-700 text-sm font-medium">
                       {event}
                     </th>
@@ -120,7 +140,7 @@ function AttendanceTable() {
               </tr>
             </thead>
             <tbody>
-              {attendanceData.map((student) => (
+              {filteredData.map((student) => (
                 <tr key={student.student_id} className="even:bg-gray-100 odd:bg-white">
                   <td className="border px-6 py-4 text-gray-800">{student.student_id}</td>
                   <td className="border px-6 py-4 text-gray-800">{student.clg_id}</td>
