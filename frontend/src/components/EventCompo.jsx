@@ -3,7 +3,6 @@ import axios from "axios";
 import qr from "../assets/qrcodedemo.png"; // Example QR code image
 
 const EventCompo = () => {
-  // const [openBoxes, setOpenBoxes] = useState([false, false]); // Track which event boxes are open
   const [openPayBoxes, setOpenPayBoxes] = useState([false, false]); // Track which payment sections are open
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -47,7 +46,7 @@ const EventCompo = () => {
       const response = await axios.post(
         `http://localhost:8000/userEventReg/${eventId}`,
         {
-          student_id: "4", 
+          student_id: "4", // Hardcoded student ID for example
           transaction_id: transactionId,
         }
       );
@@ -59,7 +58,7 @@ const EventCompo = () => {
       }
     } catch (err) {
       console.error(err);
-      alert("An error occurred during registration."+ err);
+      alert("An error occurred during registration." + err);
     }
   };
 
@@ -83,7 +82,7 @@ const EventCompo = () => {
                       <strong>Event:</strong> {event.eventName}
                     </h3>
                   </div>
-                  <div className="mt-4">
+                  <div className="mt-4 flex flex-col gap-2">
                     {event.banner ? (
                       <img
                         src={`http://localhost:8000/${event.banner}`}
@@ -108,6 +107,19 @@ const EventCompo = () => {
                     </p>
                     <p>
                       <strong>Eligible Year:</strong> {event.eligibleYear}
+                    </p>
+                    <p className="">
+                      <strong>Notice:</strong> {event.notice ? event.notice : "No Notice Available"}
+                      {event.notice && (
+                        <a
+                          href={`http://localhost:8000/notice/${event.noticeId}`} // aap update kardo
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="ml-2 text-blue-500 hover:underline"
+                        >
+                          View
+                        </a>
+                      )}
                     </p>
 
                     {event.isPaid ? (
@@ -161,14 +173,14 @@ const EventCompo = () => {
                                 e.target.value
                               )
                             }
-                            className="border-2 border-black w-full p-2"
+                            className="border-2 rounded-md border-black w-full p-2"
                             type="text"
                             placeholder="Enter Transaction Id"
                           />
                         </div>
                       ) : null}
 
-                      <div className="w-full justify-center flex mt-10">
+                      <div className="w-full justify-center flex mt-4">
                         <button
                           type="submit"
                           className="ml-2 text-white hover:underline py-3 px-5 bg-blue-500 rounded-lg"
@@ -176,7 +188,7 @@ const EventCompo = () => {
                           Register
                         </button>
                       </div>
-                    </form>
+                    </form>                  
                   </div>
                 </div>
               )
