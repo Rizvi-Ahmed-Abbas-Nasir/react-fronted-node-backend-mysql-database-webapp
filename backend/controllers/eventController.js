@@ -121,6 +121,11 @@ exports.getAllEvents = async (req, res) => {
           const isSet = await Event.changeDeadStatus(event.eventId, true)
 
           await removeEventById(event.eventId); //removes the event
+          
+          //make default 3000
+          const makeDefault = Event.makeDefault(event.eventId)
+        
+
         } else {
           console.log(event.eventId, ": has not met the deadline, moving on")
           const isSet = await Event.changeDeadStatus(event.eventId, false)
@@ -397,6 +402,8 @@ exports.undoEvent = async (req, res) => {
     const id = req.params.eventId;
 
     const result = await Event.flagEventAsNotDeleted(id);
+    const isSet = await Event.changeDeadStatus(id, false)
+
     res
       .status(200)
       .json({ message: "Successful undo of event details", result });

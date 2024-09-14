@@ -265,3 +265,13 @@ exports.changeDeadStatus = async (eventId, value) => {
     throw new Error("Error updating isDead status: " + error.message);
   }
 };
+
+
+exports.makeDefault = async (eventId) => {
+  try {
+    const result = await connection.query(`UPDATE tpo_events SET eventDeadline = '3000-01-01' WHERE eventId = ?`, [eventId])
+  } catch (error) {
+    throw new Error("Error making deadline default: " + error.message);
+    
+  }
+}
