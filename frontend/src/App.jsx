@@ -8,6 +8,7 @@ import Scan from './Pages/scan';
 import Attendance from './Pages/attendance'
 import AttendanceScan from './components/admin/attendanceScan'
 import HistoryEvents from './Pages/historyEvents';
+import EditEventPage from './Pages/EditEventPage';
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
     <Route path="/attendancescan/:id" element={<AttendanceScan/>} />
     <Route path="/registrations/:id" element={<RegistrationPage/>} />
     <Route path="/admin/history" element={<HistoryEvents/>} />
+    <Route path="/admin/editEvent" element={<EditEventPage/>} />
 
     </Routes>
     </BrowserRouter>

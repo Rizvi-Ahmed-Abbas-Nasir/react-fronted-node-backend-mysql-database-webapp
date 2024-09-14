@@ -27,22 +27,24 @@ function AttendanceTable() {
 
   const flattenAndTransformObject = (obj, parent = '', res = {}) => {
     for (let key in obj) {
-      const propName = parent ? `${parent}.${key}` : key; 
+      const propName = parent ?  `${parent}.${key}` : key; 
       let value = obj[key];
+  
       if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
         flattenAndTransformObject(value, propName, res);
       } else {
         if (propName.includes('events')) {
-          
-          value = value === null ? 'Not Participated' : value === 1 ? 'Participated' : 'Absent  ';
+          value = value === null ? 'NP' : value === 1 ? 1 : 0;
         } else if (['first_name', 'middle_name', 'last_name'].includes(key)) {
-          value = value.charAt(0).toUpperCase() + value.slice(1);
+          // Only transform if value is a valid string
+          value = value ? value.charAt(0).toUpperCase() + value.slice(1) : 'N/A';
         }
         res[propName] = value;
       }
     }
     return res;
   };
+  
 
   const handleDownloadPDF = () => {
     const doc = new jsPDF();

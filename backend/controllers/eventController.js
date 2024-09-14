@@ -2,6 +2,7 @@ const Event = require("../models/Event");
 const path = require("path");
 const fs = require("fs");
 const loaController = require("../controllers/loaController");
+const noticeController = require("../controllers/noticeController");
 //runs after middleware data cleaning
 exports.createEvent = async (req, res) => {
   try {
@@ -33,7 +34,28 @@ exports.createEvent = async (req, res) => {
       isPaid,
       cost,
       banner,
+      eventNotice,
     } = req.body;
+
+    //notice here
+    if (eventNotice != null) {
+      //generate a notice based on the data
+      const noticeData = {
+        date: date,
+        eventName: eventName,
+        eventNotice: eventNotice,
+      };
+
+      const isNoticeGenerated = await noticeController.createPDF(noticeData);
+      if (!isNoticeGenerated) {
+        console.log("Error generating notice");
+        req.body.notice = null;
+      } else {
+        console.log("notice generated successfully");
+        req.body.notice = isNoticeGenerated;
+      }
+    }
+    const notice = await req.body.notice;
 
     //generate a loa based on the data
     const data = {
@@ -55,6 +77,7 @@ exports.createEvent = async (req, res) => {
     }
 
     const loaOfSpeaker = await req.body.loaOfSpeaker;
+
     const result = await Event.createEvent(
       eventName,
       eventDescription,
@@ -69,7 +92,8 @@ exports.createEvent = async (req, res) => {
       isPaid,
       cost,
       banner,
-      loaOfSpeaker
+      loaOfSpeaker,
+      notice
     );
 
     res.status(201).json({ message: "Event created successfully", result });
@@ -97,7 +121,9 @@ exports.updateEvent = async (req, res) => {
     //getting the previous filename from the db if present
     const event = await Event.getAEvent(id);
     const loa = event[0].loaOfSpeaker;
-    console.log(loa)
+    const eNotice = await event[0].notice;
+  
+    // console.log(loa)
     //if loa is present previously, delete it
     if (loa) {
       console.log("Deleting Previous loa: ", loa);
@@ -155,8 +181,6 @@ exports.updateEvent = async (req, res) => {
       } else {
         console.log("there was no previous file to delete");
       }
-
-      
     } else {
       console.log("no new file specified");
       if (!req.body.banner) {
@@ -189,7 +213,54 @@ exports.updateEvent = async (req, res) => {
       isPaid,
       cost,
       banner,
-    } = req.body;
+      eventNotice,
+    } = await req.body;
+
+    //if notice is modified, update it, and delete the previous in the process
+    console.log("Event Notice: "+ eventNotice);
+    console.log("Previous notice: "+ eNotice);
+
+    //notice here
+    if (eventNotice && eventNotice.trim() !== "") {
+      //if notice is present previously, delete it
+      if (eNotice != null) {
+        console.log("Deleting Previous notice: ", eNotice);
+
+        const prevPath = path.join(__dirname, "../public", eNotice);
+
+        // ------------------------ Cautious code begins ---------------------------------------
+        fs.unlink(prevPath, (err) => {
+          if (err) {
+            console.error("Error deleting the notice:", err);
+          } else {
+            console.log("notice deleted successfully!");
+          }
+        });
+        // ------------------------ Cautious code ends ---------------------------------------
+      } else {
+        console.log("there was no notice to delete");
+      }
+
+      //generate a notice based on the data
+      const noticeData = {
+        date: date,
+        eventName: eventName,
+        eventNotice: eventNotice,
+      };
+
+      const isNoticeGenerated = await noticeController.createPDF(noticeData);
+      if (!isNoticeGenerated) {
+        console.log("Error generating notice");
+        req.body.notice = null;
+      } else {
+        console.log("notice generated successfully");
+        req.body.notice = isNoticeGenerated;
+      }
+    } else {
+      console.log("No notice defined");
+      req.body.notice = eNotice
+    }
+    const notice = await req.body.notice;
 
     //generate a new loa based on the data
     const data = {
@@ -226,7 +297,8 @@ exports.updateEvent = async (req, res) => {
       isPaid,
       cost,
       banner,
-      loaOfSpeaker
+      loaOfSpeaker,
+      notice
     );
 
     res.status(200).json({ message: "Event Updated Successfully", result });
@@ -239,11 +311,38 @@ exports.updateEvent = async (req, res) => {
 exports.removeEvent = async (req, res) => {
   try {
     const id = req.params.eventId;
+    const event = await Event.getAEvent(id);
+    const prevNotice = event[0].notice;
 
-    //deleting the previous file
+    //deleting the previous notice:
+    if (prevNotice) {
+      // checks if the previous file is present to perform the deletion
+      console.log("Deleting Previous notice: ", prevNotice);
+
+      const prevPath = path.join(__dirname, "../public", prevNotice);
+      // console.log(prevPath)
+
+      // ------------------------ Cautious code begins ---------------------------------------
+      fs.unlink(prevPath, (err) => {
+        if (err) {
+          console.error("Error deleting the file:", err);
+        } else {
+          console.log("File deleted successfully!");
+        }
+      });
+
+      const result = await Event.deleteNotice(id);
+
+      // ------------------------ Cautious code ends ---------------------------------------
+    } else {
+      console.log("No previous notice to delete");
+    }
+
+    //make the notice null here:
+
+    const noticeResult = await Event.deleteNotice(id);
 
     //getting the previous filename from the db if present
-    const event = await Event.getAEvent(id);
     const prevFile = event[0].banner;
     if (prevFile) {
       console.log("Deleting Previous file: ", prevFile);
@@ -262,9 +361,7 @@ exports.removeEvent = async (req, res) => {
       // ------------------------ Cautious code ends ---------------------------------------
 
       //make the banner null here
-      const result = await Event.deleteBanner(id)
-
-
+      const result = await Event.deleteBanner(id);
     }
 
     const result = await Event.flagEventAsDeleted(id);
@@ -320,10 +417,9 @@ exports.deleteEvent = async (req, res) => {
       // ------------------------ Cautious code ends ---------------------------------------
 
       //make the banner null here
-      const result = await Event.deleteBanner(id)
-
+      const result = await Event.deleteBanner(id);
     } else {
-      console.log("No previous banner to delete")
+      console.log("No previous banner to delete");
     }
 
     //if loa is present previously, delete it
@@ -341,34 +437,33 @@ exports.deleteEvent = async (req, res) => {
         }
       });
       // ------------------------ Cautious code ends ---------------------------------------
-
     } else {
-      console.log("there was no loa to delete")
+      console.log("there was no loa to delete");
     }
 
     //delete notice
 
     const prevNotice = event[0].notice;
-        if (prevNotice) {
+    if (prevNotice) {
+      // checks if the previous file is present to perform the deletion
+      console.log("Deleting Previous notice: ", prevNotice);
 
-          // checks if the previous file is present to perform the deletion
-          console.log("Deleting Previous notice: ", prevNotice);
-    
-          const prevPath = path.join(__dirname, "../public", prevNotice);
-          // console.log(prevPath)
-    
-          // ------------------------ Cautious code begins ---------------------------------------
-          fs.unlink(prevPath, (err) => {
-            if (err) {
-              console.error("Error deleting the file:", err);
-            } else {
-              console.log("File deleted successfully!");
-            }
-          });
-          // ------------------------ Cautious code ends ---------------------------------------
+      const prevPath = path.join(__dirname, "../public", prevNotice);
+      // console.log(prevPath)
+
+      // ------------------------ Cautious code begins ---------------------------------------
+      fs.unlink(prevPath, (err) => {
+        if (err) {
+          console.error("Error deleting the file:", err);
         } else {
-          console.log("No previous notice to delete")
+          console.log("File deleted successfully!");
         }
+      });
+      // ------------------------ Cautious code ends ---------------------------------------
+      const result = await Event.deleteNotice(id);
+    } else {
+      console.log("No previous notice to delete");
+    }
 
     const result = await Event.deleteEvent(id);
     res.status(200).json({ message: "Event Deleted Successfully", result });

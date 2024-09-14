@@ -4,130 +4,129 @@ const puppeteer = require("puppeteer");
 const handlebars = require("handlebars");
 const Event = require("../models/Event");
 
-exports.createNotice = async (req, res) => {
-  try {
-    const { eventNotice } = req.body;
-    const eventId = req.params.eventId;
-    //get event information
-    const event = await Event.getAEvent(eventId);
-    console.log(event);
+// exports.createNotice = async (req, res) => {
+//   try {
+//     const { eventNotice } = req.body;
+//     const eventId = req.params.eventId;
+//     //get event information
+//     const event = await Event.getAEvent(eventId);
+//     console.log(event);
 
-    //generate a notice based on the data
-    const data = {
-      date: event[0].date.toLocaleDateString("en-GB"),
-      eventName: event[0].eventName,
-      eventNotice: eventNotice,
-    };
+//     //generate a notice based on the data
+//     const data = {
+//       date: event[0].date.toLocaleDateString("en-GB"),
+//       eventName: event[0].eventName,
+//       eventNotice: eventNotice,
+//     };
 
-    const isGenerated = await this.createPDF(data);
-    if (!isGenerated) {
-      console.log("Error generating notice");
-      req.body.notice = null;
-    } else {
-      console.log("notice generated successfully");
-      req.body.notice = isGenerated;
-    }
+//     const isGenerated = await this.createPDF(data);
+//     if (!isGenerated) {
+//       console.log("Error generating notice");
+//       req.body.notice = null;
+//     } else {
+//       console.log("notice generated successfully");
+//       req.body.notice = isGenerated;
+//     }
 
-    const notice = isGenerated;
+//     const notice = isGenerated;
 
-    const isStored = await Event.storeNotice(notice, eventId);
-    res.status(201).json({ message: "Notice created successfully", isStored });
-  } catch (error) {
-    res.status(400).json({ error: error.message });
-  }
-};
+//     const isStored = await Event.storeNotice(notice, eventId);
+//     res.status(201).json({ message: "Notice created successfully", isStored });
+//   } catch (error) {
+//     res.status(400).json({ error: error.message });
+//   }
+// };
 
-//update the notice
-exports.updateNotice = async (req, res) => {
-  try {
-    const eventId = req.params.eventId;
-    const { eventNotice } = req.body;
+// //update the notice
+// exports.updateNotice = async (req, res) => {
+//   try {
+//     const eventId = req.params.eventId;
+//     const { eventNotice } = req.body;
 
-    //getting the previous filename from the db if present
-    const event = await Event.getAEvent(eventId);
-    const notice = event[0].notice;
-    //   console.log(notice)
-    //if notice is present previously, delete it
-    if (notice) {
-      console.log("Deleting Previous notice: ", notice);
+//     //getting the previous filename from the db if present
+//     const event = await Event.getAEvent(eventId);
+//     const notice = event[0].notice;
+//     //   console.log(notice)
+//     //if notice is present previously, delete it
+//     if (notice) {
+//       console.log("Deleting Previous notice: ", notice);
 
-      const prevPath = path.join(__dirname, "../public", notice);
+//       const prevPath = path.join(__dirname, "../public", notice);
 
-      // ------------------------ Cautious code begins ---------------------------------------
-      fs.unlink(prevPath, (err) => {
-        if (err) {
-          console.error("Error deleting the notice:", err);
-        } else {
-          console.log("notice deleted successfully!");
-        }
-      });
-      // ------------------------ Cautious code ends ---------------------------------------
-    } else {
-      console.log("there was no notice to delete");
-    }
+//       // ------------------------ Cautious code begins ---------------------------------------
+//       fs.unlink(prevPath, (err) => {
+//         if (err) {
+//           console.error("Error deleting the notice:", err);
+//         } else {
+//           console.log("notice deleted successfully!");
+//         }
+//       });
+//       // ------------------------ Cautious code ends ---------------------------------------
+//     } else {
+//       console.log("there was no notice to delete");
+//     }
 
-    //generate a new loa based on the data
-    //generate a notice based on the data
-    const data = {
-      date: event[0].date.toLocaleDateString("en-GB"),
-      eventName: event[0].eventName,
-      eventNotice: eventNotice,
-    };
+//     //generate a notice based on the data
+//     const data = {
+//       date: event[0].date.toLocaleDateString("en-GB"),
+//       eventName: event[0].eventName,
+//       eventNotice: eventNotice,
+//     };
 
-    const isGenerated = await this.createPDF(data);
-    if (!isGenerated) {
-      console.log("Error generating updated notice");
-      req.body.notice = null;
-    } else {
-      console.log("notice updated successfully");
-      req.body.notice = isGenerated;
-    }
-    const updatedNotice = await req.body.notice;
+//     const isGenerated = await this.createPDF(data);
+//     if (!isGenerated) {
+//       console.log("Error generating updated notice");
+//       req.body.notice = null;
+//     } else {
+//       console.log("notice updated successfully");
+//       req.body.notice = isGenerated;
+//     }
+//     const updatedNotice = await req.body.notice;
 
-    const result = await Event.storeNotice(updatedNotice, eventId);
+//     const result = await Event.storeNotice(updatedNotice, eventId);
 
-    res.status(200).json({ message: "Notice Updated Successfully", result });
-  } catch (error) {
-    return res.status(500).json({ error: error.message });
-  }
-};
+//     res.status(200).json({ message: "Notice Updated Successfully", result });
+//   } catch (error) {
+//     return res.status(500).json({ error: error.message });
+//   }
+// };
 
-//delete the notice
-exports.deleteNotice = async (req, res) => {
-  try {
-    const id = req.params.eventId;
+// //delete the notice
+// exports.deleteNotice = async (req, res) => {
+//   try {
+//     const id = req.params.eventId;
 
-    //deleting the previous file
+//     //deleting the previous file
 
-    //getting the previous filename from the db if present
-    const event = await Event.getAEvent(id);
-    const prevNotice = event[0].notice;
-    if (prevNotice) {
-      // checks if the previous file is present to perform the deletion
-      console.log("Deleting Previous notice: ", prevNotice);
+//     //getting the previous filename from the db if present
+//     const event = await Event.getAEvent(id);
+//     const prevNotice = event[0].notice;
+//     if (prevNotice) {
+//       // checks if the previous file is present to perform the deletion
+//       console.log("Deleting Previous notice: ", prevNotice);
 
-      const prevPath = path.join(__dirname, "../public", prevNotice);
-      // console.log(prevPath)
+//       const prevPath = path.join(__dirname, "../public", prevNotice);
+//       // console.log(prevPath)
 
-      // ------------------------ Cautious code begins ---------------------------------------
-      fs.unlink(prevPath, (err) => {
-        if (err) {
-          console.error("Error deleting the file:", err);
-        } else {
-          console.log("File deleted successfully!");
-        }
-      });
-      // ------------------------ Cautious code ends ---------------------------------------
-    } else {
-      console.log("No previous notice to delete");
-    }
+//       // ------------------------ Cautious code begins ---------------------------------------
+//       fs.unlink(prevPath, (err) => {
+//         if (err) {
+//           console.error("Error deleting the file:", err);
+//         } else {
+//           console.log("File deleted successfully!");
+//         }
+//       });
+//       // ------------------------ Cautious code ends ---------------------------------------
+//     } else {
+//       console.log("No previous notice to delete");
+//     }
 
-    const result = await Event.deleteNotice(id);
-    res.status(200).json({ message: "Notice Deleted Successfully", result });
-  } catch (error) {
-    return res.status(500).json({ error: error.message });
-  }
-};
+    // const result = await Event.deleteNotice(id);
+//     res.status(200).json({ message: "Notice Deleted Successfully", result });
+//   } catch (error) {
+//     return res.status(500).json({ error: error.message });
+//   }
+// };
 
 //the main function to create the pdf using the handlebar template under views directory
 exports.createPDF = async (data) => {

@@ -9,10 +9,11 @@ function CreateEvent() {
     nameOfSpeaker: "",
     organizationOfSpeaker: "",
     locationOfSpeaker: "",
+    eventNotice: "",
     date: "",
     category: "",
     time: "",
-    department: "",
+    department: [],
     eligibleYear: [],
     isPaid: false,
     cost: null,
@@ -52,6 +53,11 @@ function CreateEvent() {
         : formData?.eligibleYear?.filter((year) => year !== value);
         console.log(updatedYears);
       setFormData({ ...formData, eligibleYear: updatedYears });
+    } else if (name === "department") {
+      const updatedDepartments = checked
+        ? [...formData.department, value]
+        : formData.department.filter((dep) => dep !== value);
+      setFormData({ ...formData, department: updatedDepartments });
     } else {
       setFormData({
         ...formData,
@@ -76,6 +82,7 @@ function CreateEvent() {
       data.append("nameOfSpeaker", formData.nameOfSpeaker);
       data.append("organizationOfSpeaker", formData.organizationOfSpeaker); // New field
       data.append("locationOfSpeaker", formData.locationOfSpeaker); // New field
+      data.append('eventNotice',formData.eventNotice); // New field
       data.append("date", formattedDate);
       data.append("category", formData.category);
       data.append("time", formData.time);
@@ -102,10 +109,11 @@ function CreateEvent() {
         nameOfSpeaker: "",
         organizationOfSpeaker: "", // Reset new field
         locationOfSpeaker: "", // Reset new field
+        eventNotice:"",
         date: "",
         category: "",
         time: "",
-        department: "",
+        department: [],
         eligibleYear: [],
         isPaid: false,
         cost: null,
@@ -116,48 +124,14 @@ function CreateEvent() {
       setIsLoading(false);
     } catch (error) {
       setError(error.message);
+    setIsLoading(false);
+
     }
   };
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     return date.toISOString().split("T")[0];
-  };
-
-  const handleEdit = (event) => {
-    event.eligibleYear =[];
-    setFormData({
-      ...event,
-      date: formatDate(event.date),
-     
-    });
-    setEditEventId(event.eventId);
-  };
-
-  const handleDelete = async (id) => {
-    if (window.confirm("Are you sure you want to delete this event?")) {
-      try {
-        const data = await axios.delete(`http://localhost:8000/event/${id}`);
-        fetchEvents();
-        alert(data.data.message)
-      } catch (error) {
-        setError("Failed to delete the event.");
-      }
-    }
-  };
-
-  const handleRemove = async (id) => {
-    if (
-      window.confirm("Are you sure you want to mark this event as removed?")
-    ) {
-      try {
-        const data = await axios.delete(`http://localhost:8000/removeEvent/${id}`);
-        fetchEvents();
-        alert(data.data.message)
-      } catch (error) {
-        setError("Failed to remove the event.");
-      }
-    }
   };
 
   return (
@@ -232,17 +206,6 @@ function CreateEvent() {
         </div>
 
         <div className="flex items-center">
-          <label className="w-1/3 font-semibold">Department:</label>
-          <input
-            type="text"
-            name="department"
-            value={formData.department}
-            onChange={handleChange}
-            className="w-2/3 p-2 rounded-lg bg-gray-100 text-black border border-gray-300 focus:border-blue-400"
-          />
-        </div>
-
-        <div className="flex items-center">
           <label className="w-1/3 font-semibold">Year:</label>
           <div className="w-2/3 space-x-4">
             {["First Year", "Second Year", "Third Year", "Final Year"].map(
@@ -257,6 +220,26 @@ function CreateEvent() {
                     className="mr-2"
                   />
                   {year}
+                </label>
+              )
+            )}
+          </div>
+        </div>
+        <div className="flex items-center">
+          <label className="w-1/3 font-semibold">Department:</label>
+          <div className="w-2/3 space-x-4">
+            {["Computer", "IT", "AIDS"].map(
+              (department) => (
+                <label key={department} className="inline-flex items-center">
+                  <input
+                    type="checkbox"
+                    name="department"
+                    value={department}
+                    checked={formData.department.includes(department)}
+                    onChange={handleChange}
+                    className="mr-2"
+                  />
+                  {department}
                 </label>
               )
             )}
@@ -289,6 +272,15 @@ function CreateEvent() {
             type="text"
             name="locationOfSpeaker"
             value={formData.locationOfSpeaker}
+            onChange={handleChange}
+            className="w-2/3 p-2 rounded-lg bg-gray-100 text-black border border-gray-300 focus:border-blue-400"
+          />
+        </div>
+        <div className="flex items-center">
+          <label className="w-1/3 font-semibold">Notice:</label>
+          <textarea
+            name="eventNotice"
+            value={formData.eventNotice}
             onChange={handleChange}
             className="w-2/3 p-2 rounded-lg bg-gray-100 text-black border border-gray-300 focus:border-blue-400"
           />
@@ -350,80 +342,10 @@ function CreateEvent() {
             type="submit"
             className="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
           >
-            {isLoading ? 'Loading...' : 'Submit'}
+            {isLoading ? 'Creating...' : 'Create'}
           </button>
         </div>
       </form>
-
-      {/* Existing Events */}
-      <h3 className="text-xl mt-8 mb-4">Existing Events</h3>
-{events.length > 0 ? (
-  <div className="overflow-x-auto">
-    <table className="table-auto w-full text-left min-w-[600px]">
-      <thead>
-        <tr className="bg-white text-black">
-          <th className="p-4">Event Name</th>
-          <th className="p-4">Speaker</th>
-          <th className="p-4">Date</th>
-          <th className="p-4">Paid</th>
-          <th className="p-4">Cost</th>
-          <th className="p-4">Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        {events.map(
-          (event) =>
-            !event.isDeleted && (
-              <tr key={event.eventId} className="border-b border-gray-600">
-                <td className="p-4">{event.eventName}</td>
-                <td className="p-4">{event.nameOfSpeaker}</td>
-                <td className="p-4">
-                  {new Date(event.date).toLocaleDateString()}
-                </td>
-                <td className="p-4">
-                  {event.isPaid ? "Paid" : "Not Paid"}
-                </td>
-                <td className="p-4">{event.cost ? event.cost : "Free"}</td>
-                <td className="p-4 flex space-x-4">
-                  <button
-                    onClick={() => handleEdit(event)}
-                    className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => handleDelete(event.eventId)}
-                    className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600"
-                  >
-                    Delete
-                  </button>
-                  <button
-                    onClick={() => handleRemove(event.eventId)}
-                    className="bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-600"
-                  >
-                    Remove
-                  </button>
-                  {event.loaOfSpeaker && (
-                    <a
-                      href={`http://localhost:8000/${event.loaOfSpeaker}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600"
-                    >
-                      View LOA
-                    </a>
-                  )}
-                </td>
-              </tr>
-            )
-        )}
-      </tbody>
-    </table>
-  </div>
-) : (
-  <p>No events available.</p>
-)}
-
     </div>
   );
 }

@@ -29,6 +29,18 @@ const AdminHeader = () => {
               </li>
               <li>
                 <NavLink
+                  to="/admin/editEvent"
+                  className={({ isActive }) =>
+                    isActive
+                      ? 'p-2 text-[1.2rem] rounded text-white font-bold underline'
+                      : 'text-[1.2rem] text-gray-300 hover:bg-gray-700 hover:text-white p-2 rounded'
+                  }
+                >
+                  Edit Event
+                </NavLink>
+              </li>
+              <li>
+                <NavLink
                   to="/admin/approve"
                   className={({ isActive }) =>
                     isActive
@@ -60,7 +72,7 @@ const AdminHeader = () => {
                       : 'text-[1.2rem] text-gray-300 hover:bg-gray-700 hover:text-white p-2 rounded'
                   }
                 >
-                  Attendance
+                  ERP
                 </NavLink>
               </li>
               <li>
@@ -115,6 +127,19 @@ const AdminHeader = () => {
                 </li>
                 <li>
                   <NavLink
+                    to="/admin/editEvent"
+                    onClick={toggleMenu}
+                    className={({ isActive }) =>
+                      isActive
+                        ? 'text-white text-lg py-2 rounded-lg px-4 font-bold underline'
+                        : 'text-white text-lg py-2 hover:bg-gray-700 rounded-lg px-4'
+                    }
+                  >
+                    Edit Event
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink
                     to="/admin/approve"
                     onClick={toggleMenu}
                     className={({ isActive }) =>
@@ -149,7 +174,7 @@ const AdminHeader = () => {
                         : 'text-white text-lg py-2 hover:bg-gray-700 rounded-lg px-4'
                     }
                   >
-                    Attendance
+                    ERP
                   </NavLink>
                 </li>
                 <li>
