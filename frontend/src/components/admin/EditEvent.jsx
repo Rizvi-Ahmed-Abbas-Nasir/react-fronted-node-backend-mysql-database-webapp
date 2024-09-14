@@ -24,12 +24,12 @@ function EditEventForm() {
   const [events, setEvents] = useState([]); // For storing existing events
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
-  const departments = ["Computer", "IT", "AIDS"];
+  const departments = ["Comps", "IT", "AIDS"];
   const eligibleYears = [
-    "First Year",
-    "Second Year",
-    "Third Year",
-    "Final Year",
+    "FE",
+    "SE",
+    "TE",
+    "BE",
   ];
 
   useEffect(() => {
@@ -237,7 +237,7 @@ function EditEventForm() {
             value={formData.eventNotice}
             onChange={handleChange}
             className="w-full border px-3 py-2 rounded-lg"
-            required
+            
           ></textarea>
         </div>
 

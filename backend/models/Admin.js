@@ -218,7 +218,8 @@ exports.getAllAttendance = async () => {
             AND r.attended = 1 
             THEN 1 ELSE 0 
           END
-        ) AS \`${e.eventName}_P\`
+        ) AS \`${e.eventName}_P\`,
+        '${e.date.toLocaleDateString()}' AS \`${e.eventName}_Date\`
       `
       )
       .join(", ");
@@ -242,35 +243,40 @@ exports.getAllAttendance = async () => {
     const result = await connection.query(query);
   
     // Format the result to have the desired structure
-  const formattedResult = result[0].map((student) => {
-    const { student_id, clg_id, first_name, middle_name, last_name, branch, ac_yr, ...events } = student;
-    
-    // Organize events into the new structure
-    let eventDetails = {};
-    Object.keys(events).forEach((key) => {
-      const [eventName, type] = key.split('_');
-      if (!eventDetails[eventName]) {
-        eventDetails[eventName] = { E: 0, R: 0, P: 0 };
-      }
-      eventDetails[eventName][type] = events[key];
+    const formattedResult = result[0].map((student) => {
+      const { student_id, clg_id, first_name, middle_name, last_name, branch, ac_yr, ...events } = student;
+      
+      // Organize events into the new structure
+      let eventDetails = {};
+      Object.keys(events).forEach((key) => {
+        const [eventName, type] = key.split('_');
+        if (!eventDetails[eventName]) {
+          eventDetails[eventName] = { E: 0, R: 0, P: 0, Date: "" };
+        }
+        if (type === "Date") {
+          eventDetails[eventName]["Date"] = events[key];
+        } else {
+          eventDetails[eventName][type] = events[key];
+        }
+      });
+  
+      return {
+        student_id,
+        clg_id,
+        first_name,
+        middle_name,
+        last_name,
+        branch,
+        ac_yr,
+        events: eventDetails,
+      };
     });
-
-    return {
-      student_id,
-      clg_id,
-      first_name,
-      middle_name,
-      last_name,
-      branch,
-      ac_yr,
-      events: eventDetails,
-    };
-  });
-
-  return formattedResult;
-} catch (error) {
-  console.log(error);
-}
+  
+    return formattedResult;
+  } catch (error) {
+    console.log(error);
+  }
+  
   
 };
 
