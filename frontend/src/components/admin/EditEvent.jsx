@@ -14,6 +14,7 @@ function EditEventForm() {
     locationOfSpeaker: "",
     eventNotice: "",
     date: "",
+    eventDeadline:"",
     category: "",
     time: "",
     department: [],
@@ -80,6 +81,7 @@ function EditEventForm() {
     setIsLoading(true);
     try {
       const formattedDate = formatDate(formData.date);
+      const deadlineDate = formatDate(formData.eventDeadline);
       const data = new FormData();
       data.append("eventName", formData.eventName);
       data.append("eventDescription", formData.eventDescription);
@@ -88,6 +90,7 @@ function EditEventForm() {
       data.append("locationOfSpeaker", formData.locationOfSpeaker);
       data.append("eventNotice", formData.eventNotice);
       data.append("date", formattedDate);
+      data.append("eventDeadline", deadlineDate);
       data.append("category", formData.category);
       data.append("time", formData.time);
       data.append("department", formData.department);
@@ -159,6 +162,7 @@ function EditEventForm() {
       locationOfSpeaker: event.locationOfSpeaker,
       eventNotice: event.eventNotice,
       date: formatDate(event.date),
+      eventDeadline: formatDate(event.eventDeadline),
       category: event.category,
       time: event.time,
       department: event.department,
@@ -209,6 +213,17 @@ function EditEventForm() {
             type="date"
             name="date"
             value={formData.date}
+            onChange={handleChange}
+            className="w-2/3 p-2 rounded-lg bg-gray-100 text-black border border-gray-300 focus:border-blue-400"
+            required
+          />
+        </div>
+        <div className="flex items-center">
+          <label className="w-1/3 font-semibold">Event Deadline:</label>
+          <input
+            type="date"
+            name="eventDeadline"
+            value={formData.eventDeadline}
             onChange={handleChange}
             className="w-2/3 p-2 rounded-lg bg-gray-100 text-black border border-gray-300 focus:border-blue-400"
             required
