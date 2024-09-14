@@ -33,6 +33,9 @@ exports.createTables = async () => {
       middle_name varchar(45) DEFAULT NULL,
       last_name varchar(45) DEFAULT NULL,
       clg_id varchar(45) DEFAULT NULL,
+      branch varchar(45) DEFAULT NULL,
+      ac_yr varchar(255) DEFAULT NULL,
+      degree varchar(25) DEFAULT NULL,
       UNIQUE KEY email_id (email_id),
       UNIQUE KEY clg_id (clg_id)
       );
@@ -70,17 +73,23 @@ exports.createStudent = async (
   first_name,
   middle_name,
   last_name,
-  clg_id
+  clg_id,
+  branch,
+  ac_yr,
+  degree
 ) => {
   try {
     const [result] = await connection.query(
-      "INSERT INTO tpo_student_details (email_id, first_name, middle_name, last_name, clg_id) VALUES (?, ?, ?, ?, ?)",
+      "INSERT INTO tpo_student_details (email_id, first_name, middle_name, last_name, clg_id, branch, ac_yr, degree) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
       [
         email_id,
         first_name,
         middle_name,
         last_name,
-        clg_id
+        clg_id,
+        branch,
+        ac_yr,
+        degree
       ]
     );
     return result;

@@ -208,7 +208,7 @@ function CreateEvent() {
         <div className="flex items-center">
           <label className="w-1/3 font-semibold">Year:</label>
           <div className="w-2/3 space-x-4">
-            {["First Year", "Second Year", "Third Year", "Final Year"].map(
+            {["FE", "SE", "TE", "BE"].map(
               (year) => (
                 <label key={year} className="inline-flex items-center">
                   <input
@@ -228,7 +228,7 @@ function CreateEvent() {
         <div className="flex items-center">
           <label className="w-1/3 font-semibold">Department:</label>
           <div className="w-2/3 space-x-4">
-            {["Computer", "IT", "AIDS"].map(
+            {["Comps", "IT", "AIDS"].map(
               (department) => (
                 <label key={department} className="inline-flex items-center">
                   <input

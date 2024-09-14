@@ -46,7 +46,7 @@ const EventCompo = () => {
       const response = await axios.post(
         `http://localhost:8000/userEventReg/${eventId}`,
         {
-          student_id: "11", 
+          student_id: "2", 
           transaction_id: transactionId,
         }
       );
