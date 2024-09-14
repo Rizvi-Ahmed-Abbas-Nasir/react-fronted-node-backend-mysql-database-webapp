@@ -490,11 +490,88 @@ exports.deleteEvent = async (req, res) => {
     }
 
     const result = await Event.deleteEvent(id);
+
+//deleting the event photos if they exist
+    const prevZipFile = await event[0].eventPhotos
+    
+    if(prevZipFile){
+      //previous file exists, delete it
+      console.log("Deleting Previous file: ", prevZipFile);
+      const prevPath = path.join(__dirname, "../public", prevZipFile);
+      fs.unlink(prevPath, (err) => {
+        if (err) {
+          console.error("Error deleting previous event photos:", err);
+        } else {
+          console.log("Previous photos deleted successfully!");
+        }
+      });
+
+    } else {
+      console.log("No previous photos to delete")
+    }
+
+    
     res.status(200).json({ message: "Event Deleted Successfully", result });
   } catch (error) {
     return res.status(500).json({ error: error.message });
   }
 };
+
+
+//upload event photos:
+exports.uploadEventPhotos = async (req, res)=> {
+  try {
+    const eventId = req.params.eventId
+
+    //check if previous file exists
+    const event = await Event.getAEvent(eventId);
+    const prevFile = await event[0].eventPhotos
+    
+    if(prevFile){
+      //previous file exists, delete it
+      console.log("Deleting Previous file: ", prevFile);
+      const prevPath = path.join(__dirname, "../public", prevFile);
+      fs.unlink(prevPath, (err) => {
+        if (err) {
+          console.error("Error deleting previous event photos:", err);
+        } else {
+          console.log("Previous photos deleted successfully!");
+        }
+      });
+
+    } else {
+      console.log("No previous photos to delete")
+    }
+
+    if (req.files && req.files.photos) {
+      console.log("Zip File Received, saving");
+
+      let file = req.files.photos;
+      let fileName = new Date().getTime().toString() + "-" + file.name;
+      const savePath = path.join(
+        __dirname,
+        "../public/assets/",
+        "uploads",
+        fileName
+      );
+      await file.mv(savePath);
+      fileName = "assets/uploads/" + fileName;
+      req.body.photos = fileName;
+
+      const result = await Event.storePhoto(eventId, req.body.photos)
+      
+      res.status(200).json({message: "Successfully stored the event photos", result: result});
+
+
+    } else {
+      console.log("no file received")
+      res.status(400).json({ message: "No file received"})
+    }
+    
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+}
 
 
 

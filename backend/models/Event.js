@@ -275,3 +275,12 @@ exports.makeDefault = async (eventId) => {
     
   }
 }
+
+exports.storePhoto = async (eventId, path) => {
+  try {
+    const result = await connection.query(`UPDATE tpo_events SET eventPhotos = ? WHERE eventId = ?`, [path, eventId])
+    return result
+  } catch (error) {
+    throw new Error("Error storing event photos: "+ error.message);
+  }
+}
