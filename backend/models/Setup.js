@@ -24,7 +24,8 @@ exports.createTables = async () => {
       eventDeadline date,
       attendanceFlag bool DEFAULT false,
       photosUploaded bool DEFAULT false,
-      isDeleted bool DEFAULT false
+      isDeleted bool DEFAULT false,
+      isDead bool DEFAULT false
       );
 
       CREATE TABLE IF NOT EXISTS tpo_student_details (
