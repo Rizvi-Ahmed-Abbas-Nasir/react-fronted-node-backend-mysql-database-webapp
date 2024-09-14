@@ -121,21 +121,30 @@ exports.getStatus = async (req, res) => {
     const eventId = req.params.eventId;
 
     const event = await Event.getAEvent(eventId);
-    //logics
+    const status = [];
+    let statusCode = 1; // Default status code
 
-    if (
-      event[0].banner != null &&
-      event[0].attendanceFlag == true &&
-      event[0].photosUploaded == true
-    ) {
-      res.status(200).json({ status: 4, message: "Banner is uploaded, min attendance done, and event photos are uploaded" });
-    } else if (event[0].banner != null && event[0].attendanceFlag == true) {
-      res.status(200).json({ status: 3 , message: "Banner is uploaded, min attendance done"});
-    } else if (event[0].banner != null) {
-      res.status(200).json({ status: 2 , message: "Banner is uploaded"});
-    } else {
-      res.status(200).json({ status: 1, message: "Event is created" });
+    if (event[0].banner != null) {
+      status.push("Banner is uploaded");
+      statusCode = Math.max(statusCode, 2); // Update statusCode to 2
     }
+
+    if (event[0].attendanceFlag == true) {
+      status.push("Minimum attendance achieved");
+      statusCode = Math.max(statusCode, 3); // Update statusCode to 3
+    }
+
+    if (event[0].photosUploaded == true) {
+      status.push("Event photos are uploaded");
+      statusCode = Math.max(statusCode, 4); // Update statusCode to 4
+    }
+
+    // If no status is updated, it means only event is created
+    if (status.length === 0) {
+      status.push("Event is created");
+    }
+
+    res.status(200).json({ status: statusCode, message: status.join(", ") });
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
