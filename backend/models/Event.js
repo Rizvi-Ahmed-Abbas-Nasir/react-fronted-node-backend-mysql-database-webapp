@@ -16,11 +16,12 @@ exports.createEvent = async (
   cost,
   banner,
   loaOfSpeaker,
-  notice
+  notice,
+  eventDeadline
 ) => {
   try {
     const [result] = await connection.query(
-      "INSERT INTO tpo_events (eventName, eventDescription, nameOfSpeaker, organizationOfSpeaker,locationOfSpeaker, date, category, time, department, eligibleYear, isPaid, cost, banner, loaOfSpeaker, notice) VALUES (?, ?, ?, ?, ?, ?, ?,?,?,?, ?,?,?,?,?)",
+      "INSERT INTO tpo_events (eventName, eventDescription, nameOfSpeaker, organizationOfSpeaker,locationOfSpeaker, date, category, time, department, eligibleYear, isPaid, cost, banner, loaOfSpeaker, notice, eventDeadline) VALUES (?, ?, ?, ?, ?, ?, ?,?,?,?, ?,?,?,?,?,?)",
       [
         eventName,
         eventDescription,
@@ -36,7 +37,8 @@ exports.createEvent = async (
         cost,
         banner,
         loaOfSpeaker,
-        notice
+        notice,
+        eventDeadline,
       ]
     );
     return result;
@@ -84,11 +86,12 @@ exports.updateEvent = async (
   cost,
   banner,
   loaOfSpeaker,
-  notice
+  notice,
+  eventDeadline
 ) => {
   try {
     const [rows] = await connection.query(
-      `UPDATE tpo_events SET eventName = ?,eventDescription = ?, nameOfSpeaker = ?,organizationOfSpeaker = ?,locationOfSpeaker =?, date = ?, category = ?, time = ?, department = ?, eligibleYear = ?, isPaid = ?, cost = ?, banner = ?, loaOfSpeaker = ?, notice = ? WHERE eventId = ?;`,
+      `UPDATE tpo_events SET eventName = ?,eventDescription = ?, nameOfSpeaker = ?,organizationOfSpeaker = ?,locationOfSpeaker =?, date = ?, category = ?, time = ?, department = ?, eligibleYear = ?, isPaid = ?, cost = ?, banner = ?, loaOfSpeaker = ?, notice = ?, eventDeadline = ? WHERE eventId = ?;`,
       [
         eventName,
         eventDescription,
@@ -105,6 +108,7 @@ exports.updateEvent = async (
         banner,
         loaOfSpeaker,
         notice,
+        eventDeadline,
         id,
       ]
     );
@@ -172,37 +176,92 @@ exports.flagEventAsNotDeleted = async (id) => {
 
 exports.storeNotice = async (notice, eventId) => {
   try {
-    console.log("EventId:", eventId, " and Notice: ", notice)
-    const result = await connection.query(`UPDATE tpo_events SET notice = ? WHERE eventId = ?`,
+    console.log("EventId:", eventId, " and Notice: ", notice);
+    const result = await connection.query(
+      `UPDATE tpo_events SET notice = ? WHERE eventId = ?`,
       [notice, eventId]
-    )
-    return result
-    
+    );
+    return result;
   } catch (error) {
     throw new Error("Error storing notice: " + error.message);
   }
-}
+};
 
-exports.deleteNotice = async (id)=> {
+exports.deleteNotice = async (id) => {
   try {
-
-    const result = await connection.query(`UPDATE tpo_events SET notice = null WHERE eventId = ?`,
+    const result = await connection.query(
+      `UPDATE tpo_events SET notice = null WHERE eventId = ?`,
       [id]
-    )
-    return result
+    );
+    return result;
   } catch (error) {
-    throw new Error("Error deleting notice: " + error.message);    
+    throw new Error("Error deleting notice: " + error.message);
   }
-}
+};
 
-exports.deleteBanner = async (id)=> {
+exports.deleteBanner = async (id) => {
   try {
-
-    const result = await connection.query(`UPDATE tpo_events SET banner = null WHERE eventId = ?`,
+    const result = await connection.query(
+      `UPDATE tpo_events SET banner = null WHERE eventId = ?`,
       [id]
-    )
-    return result
+    );
+    return result;
   } catch (error) {
-    throw new Error("Error making banner null: " + error.message);    
+    throw new Error("Error making banner null: " + error.message);
   }
-}
+};
+
+// Handle event deadlines, remove the event if the deadline is met
+exports.handleDeadline = async (eventDeadline) => {
+  try {
+    const now = new Date();
+
+    // Convert the eventDeadline to a Date object
+    const deadlineDate = new Date(eventDeadline);
+
+    // Normalize both dates by setting the time to 00:00:00
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const eventDay = new Date(
+      deadlineDate.getFullYear(),
+      deadlineDate.getMonth(),
+      deadlineDate.getDate()
+    );
+
+    // console.log("The Event Deadline: ", eventDay);
+    // console.log("Today's date to compare: ", today);
+    // Check if the current date is past the eventDeadline date
+    if (today > eventDay) {
+      // If the deadline has passed, remove the event from the database
+
+      return true;
+    } else {
+      // If the deadline hasn't passed, no action is needed
+      return false;
+    }
+  } catch (error) {
+    throw new Error("Error checking deadline: " + error.message);
+  }
+};
+
+exports.changeDeadStatus = async (eventId, value) => {
+  try {
+    if (value) {
+      //runs when setting true
+      const result = await connection.query(
+        `UPDATE tpo_events SET isDead = true WHERE eventId = ?`,
+        [eventId]
+      );
+      return result
+    } else {
+      //runs when setting false
+      
+      const result = await connection.query(
+        `UPDATE tpo_events SET isDead = false WHERE eventId = ?`,
+        [eventId]
+      );
+      return result
+    }
+  } catch (error) {
+    throw new Error("Error updating isDead status: " + error.message);
+  }
+};

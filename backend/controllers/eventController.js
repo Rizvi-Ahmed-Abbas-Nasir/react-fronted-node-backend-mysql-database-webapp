@@ -35,6 +35,7 @@ exports.createEvent = async (req, res) => {
       cost,
       banner,
       eventNotice,
+      eventDeadline
     } = req.body;
 
     //notice here
@@ -93,7 +94,8 @@ exports.createEvent = async (req, res) => {
       cost,
       banner,
       loaOfSpeaker,
-      notice
+      notice,
+      eventDeadline
     );
 
     res.status(201).json({ message: "Event created successfully", result });
@@ -104,10 +106,27 @@ exports.createEvent = async (req, res) => {
 
 exports.getAllEvents = async (req, res) => {
   try {
+    
     const events = await Event.getAllEvents();
     if (events.length === 0) {
       res.status(200).json({ message: "No Events yet" });
     } else {
+      const eventPromises = events.map(async (event) => {
+        
+        const isDead = await Event.handleDeadline(event.eventDeadline);
+        
+        if (isDead) {
+          console.log(event.eventName, ": has met the deadline, removing event")
+          //make isDeadlineMet = true here:
+          const isSet = await Event.changeDeadStatus(event.eventId, true)
+
+          await removeEventById(event.eventId); //removes the event
+        } else {
+          console.log(event.eventId, ": has not met the deadline, moving on")
+          const isSet = await Event.changeDeadStatus(event.eventId, false)
+
+        }
+      })
       res.status(200).json(events);
     }
   } catch (error) {
@@ -214,6 +233,7 @@ exports.updateEvent = async (req, res) => {
       cost,
       banner,
       eventNotice,
+      eventDeadline
     } = await req.body;
 
     //if notice is modified, update it, and delete the previous in the process
@@ -298,7 +318,8 @@ exports.updateEvent = async (req, res) => {
       cost,
       banner,
       loaOfSpeaker,
-      notice
+      notice,
+      eventDeadline
     );
 
     res.status(200).json({ message: "Event Updated Successfully", result });
@@ -308,49 +329,35 @@ exports.updateEvent = async (req, res) => {
 };
 
 //this controller flags the event as deleted, to not show in the admin UI, and removing the banner in the process for reducing server load
-exports.removeEvent = async (req, res) => {
+// Helper function to remove an event by ID
+const removeEventById = async (eventId) => {
   try {
-    const id = req.params.eventId;
-    const event = await Event.getAEvent(id);
+    const event = await Event.getAEvent(eventId);
     const prevNotice = event[0].notice;
 
-    //deleting the previous notice:
+    // Deleting the previous notice:
     if (prevNotice) {
-      // checks if the previous file is present to perform the deletion
       console.log("Deleting Previous notice: ", prevNotice);
-
       const prevPath = path.join(__dirname, "../public", prevNotice);
-      // console.log(prevPath)
-
-      // ------------------------ Cautious code begins ---------------------------------------
       fs.unlink(prevPath, (err) => {
         if (err) {
-          console.error("Error deleting the file:", err);
+          console.error("Error deleting the notice:", err);
         } else {
-          console.log("File deleted successfully!");
+          console.log("Notice deleted successfully!");
         }
       });
-
-      const result = await Event.deleteNotice(id);
-
-      // ------------------------ Cautious code ends ---------------------------------------
     } else {
       console.log("No previous notice to delete");
     }
 
-    //make the notice null here:
+    // Remove the notice from the event
+    await Event.deleteNotice(eventId);
 
-    const noticeResult = await Event.deleteNotice(id);
-
-    //getting the previous filename from the db if present
+    // Deleting the banner file:
     const prevFile = event[0].banner;
     if (prevFile) {
       console.log("Deleting Previous file: ", prevFile);
-
       const prevPath = path.join(__dirname, "../public", prevFile);
-      // console.log(prevPath)
-
-      // ------------------------ Cautious code begins ---------------------------------------
       fs.unlink(prevPath, (err) => {
         if (err) {
           console.error("Error deleting the file:", err);
@@ -358,22 +365,32 @@ exports.removeEvent = async (req, res) => {
           console.log("File deleted successfully!");
         }
       });
-      // ------------------------ Cautious code ends ---------------------------------------
-
-      //make the banner null here
-      const result = await Event.deleteBanner(id);
+      await Event.deleteBanner(eventId);
     }
 
-    const result = await Event.flagEventAsDeleted(id);
-    res.status(200).json({
-      message:
-        "Event removed Successfully, you can undo this process but will have to include the banner again",
-      result,
-    });
+    // Flag the event as deleted
+    const result = await Event.flagEventAsDeleted(eventId);
+    // console.log("Event removed successfully, result:", result);
+
+    return result;
   } catch (error) {
-    return res.status(500).json({ error: error.message });
+    throw new Error(error.message);
   }
 };
+
+// Original removeEvent function (now simplified)
+exports.removeEvent = async (req, res) => {
+  try {
+    const id = req.params.eventId;
+    await removeEventById(id);
+    res.status(200).json({
+      message: "Event removed successfully",
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
 
 exports.undoEvent = async (req, res) => {
   try {
@@ -471,3 +488,6 @@ exports.deleteEvent = async (req, res) => {
     return res.status(500).json({ error: error.message });
   }
 };
+
+
+
