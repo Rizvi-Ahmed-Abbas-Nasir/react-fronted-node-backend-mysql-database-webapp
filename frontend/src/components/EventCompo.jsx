@@ -107,6 +107,7 @@ const EventCompo = () => {
                     <p>
                       <strong>Eligible Year:</strong> {event.eligibleYear}
                     </p>
+                    <a className="text-blue-700 font-bold underline" href={`http://localhost:8000/${event.notice}`} target="_blank">Notice</a>
 
                     {event.isPaid ? (
                       <p>

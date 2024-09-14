@@ -26,7 +26,6 @@ function RegistrationPage() {
         setLoading(false);
       }
     };
-
     fetchRegistrations();
   }, [eventId]);
 
@@ -118,6 +117,7 @@ function RegistrationPage() {
         <h1 className="text-2xl font-bold">Registration Details</h1>
         
         {/* Buttons for bulk actions */}
+        {registrations.length  ?
         <div className="flex gap-4 mb-4">
           <button
             onClick={approveAll}
@@ -134,6 +134,7 @@ function RegistrationPage() {
             {bulkActionStatus === 'deleting' ? <CircularProgress size={20} color="inherit" /> : 'Delete All'}
           </button>
         </div>
+          : null}
 
         {registrations.length ? (
           <table className="min-w-full divide-y divide-gray-200">
