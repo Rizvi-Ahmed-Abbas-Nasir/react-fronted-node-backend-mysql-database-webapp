@@ -35,6 +35,7 @@ exports.createEvent = async (req, res) => {
       cost,
       banner,
       eventNotice,
+      eventDeadline
     } = req.body;
 
     //notice here
@@ -93,7 +94,8 @@ exports.createEvent = async (req, res) => {
       cost,
       banner,
       loaOfSpeaker,
-      notice
+      notice,
+      eventDeadline
     );
 
     res.status(201).json({ message: "Event created successfully", result });
@@ -104,10 +106,15 @@ exports.createEvent = async (req, res) => {
 
 exports.getAllEvents = async (req, res) => {
   try {
+    
     const events = await Event.getAllEvents();
     if (events.length === 0) {
       res.status(200).json({ message: "No Events yet" });
     } else {
+      const eventPromises = events.map(async (event) => {
+        const result = await Event.handleDeadline(event.eventId, event.eventDeadline);
+        return result
+      })
       res.status(200).json(events);
     }
   } catch (error) {
@@ -214,6 +221,7 @@ exports.updateEvent = async (req, res) => {
       cost,
       banner,
       eventNotice,
+      eventDeadline
     } = await req.body;
 
     //if notice is modified, update it, and delete the previous in the process
@@ -298,7 +306,8 @@ exports.updateEvent = async (req, res) => {
       cost,
       banner,
       loaOfSpeaker,
-      notice
+      notice,
+      eventDeadline
     );
 
     res.status(200).json({ message: "Event Updated Successfully", result });
@@ -471,3 +480,6 @@ exports.deleteEvent = async (req, res) => {
     return res.status(500).json({ error: error.message });
   }
 };
+
+
+

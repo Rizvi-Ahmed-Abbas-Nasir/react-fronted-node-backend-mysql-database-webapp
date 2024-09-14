@@ -16,11 +16,12 @@ exports.createEvent = async (
   cost,
   banner,
   loaOfSpeaker,
-  notice
+  notice,
+  eventDeadline
 ) => {
   try {
     const [result] = await connection.query(
-      "INSERT INTO tpo_events (eventName, eventDescription, nameOfSpeaker, organizationOfSpeaker,locationOfSpeaker, date, category, time, department, eligibleYear, isPaid, cost, banner, loaOfSpeaker, notice) VALUES (?, ?, ?, ?, ?, ?, ?,?,?,?, ?,?,?,?,?)",
+      "INSERT INTO tpo_events (eventName, eventDescription, nameOfSpeaker, organizationOfSpeaker,locationOfSpeaker, date, category, time, department, eligibleYear, isPaid, cost, banner, loaOfSpeaker, notice, eventDeadline) VALUES (?, ?, ?, ?, ?, ?, ?,?,?,?, ?,?,?,?,?,?)",
       [
         eventName,
         eventDescription,
@@ -36,7 +37,8 @@ exports.createEvent = async (
         cost,
         banner,
         loaOfSpeaker,
-        notice
+        notice,
+        eventDeadline
       ]
     );
     return result;
@@ -84,11 +86,12 @@ exports.updateEvent = async (
   cost,
   banner,
   loaOfSpeaker,
-  notice
+  notice,
+  eventDeadline
 ) => {
   try {
     const [rows] = await connection.query(
-      `UPDATE tpo_events SET eventName = ?,eventDescription = ?, nameOfSpeaker = ?,organizationOfSpeaker = ?,locationOfSpeaker =?, date = ?, category = ?, time = ?, department = ?, eligibleYear = ?, isPaid = ?, cost = ?, banner = ?, loaOfSpeaker = ?, notice = ? WHERE eventId = ?;`,
+      `UPDATE tpo_events SET eventName = ?,eventDescription = ?, nameOfSpeaker = ?,organizationOfSpeaker = ?,locationOfSpeaker =?, date = ?, category = ?, time = ?, department = ?, eligibleYear = ?, isPaid = ?, cost = ?, banner = ?, loaOfSpeaker = ?, notice = ?, eventDeadline = ? WHERE eventId = ?;`,
       [
         eventName,
         eventDescription,
@@ -105,6 +108,7 @@ exports.updateEvent = async (
         banner,
         loaOfSpeaker,
         notice,
+        eventDeadline,
         id,
       ]
     );
@@ -204,5 +208,14 @@ exports.deleteBanner = async (id)=> {
     return result
   } catch (error) {
     throw new Error("Error making banner null: " + error.message);    
+  }
+}
+
+//handle event deadlines, remove the event if deadline is met
+exports.handleDeadline = async (eventId) => {
+  try {
+
+    
+  } catch (error) {
   }
 }
