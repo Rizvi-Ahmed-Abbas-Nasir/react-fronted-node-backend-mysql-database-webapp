@@ -11,6 +11,7 @@ function CreateEvent() {
     locationOfSpeaker: "",
     eventNotice: "",
     date: "",
+    eventDeadline:"",
     category: "",
     time: "",
     department: [],
@@ -69,13 +70,14 @@ function CreateEvent() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    if (!formData.eventName || !formData.nameOfSpeaker || !formData.date) {
+    if (!formData.eventName || !formData.nameOfSpeaker || !formData.date || !formData.eventDeadline) {
       setError("Please fill all required fields.");
       return;
     }
 
     try {
       const formattedDate = formatDate(formData.date);
+      const formattedDeadlineDate = formatDate(formData.eventDeadline);
       const data = new FormData();
       data.append("eventName", formData.eventName);
       data.append("eventDescription", formData.eventDescription); // New field
@@ -84,6 +86,7 @@ function CreateEvent() {
       data.append("locationOfSpeaker", formData.locationOfSpeaker); // New field
       data.append('eventNotice',formData.eventNotice); // New field
       data.append("date", formattedDate);
+      data.append("eventDeadline", formattedDeadlineDate);
       data.append("category", formData.category);
       data.append("time", formData.time);
       data.append("department", formData.department);
@@ -111,6 +114,7 @@ function CreateEvent() {
         locationOfSpeaker: "", // Reset new field
         eventNotice:"",
         date: "",
+        eventDeadline:"",
         category: "",
         time: "",
         department: [],
@@ -173,6 +177,17 @@ function CreateEvent() {
             type="date"
             name="date"
             value={formData.date}
+            onChange={handleChange}
+            className="w-2/3 p-2 rounded-lg bg-gray-100 text-black border border-gray-300 focus:border-blue-400"
+            required
+          />
+        </div>
+        <div className="flex items-center">
+          <label className="w-1/3 font-semibold">Event Deadline:</label>
+          <input
+            type="date"
+            name="eventDeadline"
+            value={formData.eventDeadline}
             onChange={handleChange}
             className="w-2/3 p-2 rounded-lg bg-gray-100 text-black border border-gray-300 focus:border-blue-400"
             required
