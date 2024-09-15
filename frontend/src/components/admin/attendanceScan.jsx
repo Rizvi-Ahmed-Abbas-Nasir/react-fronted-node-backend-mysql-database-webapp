@@ -15,7 +15,7 @@ function Scan() {
 
   // Handle successful QR code scan
   const handleScanSuccess = async (result) => {
-    console.log('Scanned result:', result); // Log the result to the console
+    // console.log('Scanned result:', result); // Log the result to the console
     setScannedData(result.data);
     const qrcodedata = JSON.parse(result.data);
     // console.log(qrcodedata);
@@ -26,7 +26,7 @@ function Scan() {
 
   // Handle scanning errors
   const handleScanError = (error) => {
-    console.error('Scan error:', error); // Log the error to the console
+    // console.error('Scan error:', error); // Log the error to the console
   };
 
   useEffect(() => {

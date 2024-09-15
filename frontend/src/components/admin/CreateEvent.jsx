@@ -63,7 +63,7 @@ function CreateEvent() {
       const updatedYears = checked
         ? [...formData.eligibleYear, value]
         : formData?.eligibleYear?.filter((year) => year !== value);
-      console.log(updatedYears);
+      // console.log(updatedYears);
       setFormData({ ...formData, eligibleYear: updatedYears });
     } else if (name === "department") {
       // Handle department as a checkbox

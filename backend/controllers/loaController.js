@@ -25,7 +25,7 @@ exports.createPDF = async (data) => {
 
     // Create the PDF directory if it doesn't exist
     const pdfDir = path.join(process.cwd(), "public", "assets", "loa");
-    console.log("pdf specified directory: "+pdfDir)
+    // console.log("pdf specified directory: "+pdfDir)
 
     if (!fs.existsSync(pdfDir)) {
       fs.mkdirSync(pdfDir);
@@ -38,7 +38,7 @@ exports.createPDF = async (data) => {
       `LOA-${data.recipientName}-${timestamp}.pdf`
     );
     const pdfName = `LOA-${data.recipientName}-${timestamp}.pdf`
-    console.log("pdf Name: "+pdfName)
+    // console.log("pdf Name: "+pdfName)
 
     // Puppeteer options
     const options = {
@@ -76,7 +76,7 @@ exports.createPDF = async (data) => {
     loaPath = path.join("assets", "loa", pdfName)
     return loaPath;
   } catch (error) {
-    console.error("Error generating PDF:", error);
+    // console.error("Error generating PDF:", error);
     return false;
   }
 };

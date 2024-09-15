@@ -141,7 +141,7 @@ exports.createPDF = async (data) => {
 
     // Create the PDF directory if it doesn't exist
     const pdfDir = path.join(process.cwd(), "public", "assets", "notice");
-    console.log("notice specified directory: " + pdfDir);
+    // console.log("notice specified directory: " + pdfDir);
 
     if (!fs.existsSync(pdfDir)) {
       fs.mkdirSync(pdfDir);
@@ -151,7 +151,7 @@ exports.createPDF = async (data) => {
     const timestamp = Date.now();
     const pdfPath = path.join(pdfDir, `Notice-${timestamp}.pdf`);
     const pdfName = `Notice-${timestamp}.pdf`;
-    console.log("Notice Name: " + pdfName);
+    // console.log("Notice Name: " + pdfName);
 
     // Puppeteer options
     const options = {
@@ -189,7 +189,7 @@ exports.createPDF = async (data) => {
     noticePath = path.join("assets", "notice", pdfName);
     return noticePath;
   } catch (error) {
-    console.error("Error generating notice:", error);
+    // console.error("Error generating notice:", error);
     return false;
   }
 };
