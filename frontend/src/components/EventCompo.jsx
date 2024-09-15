@@ -6,6 +6,7 @@ const EventCompo = () => {
   // const [openBoxes, setOpenBoxes] = useState([false, false]); // Track which event boxes are open
   const [openPayBoxes, setOpenPayBoxes] = useState([false, false]); // Track which payment sections are open
   const [data, setData] = useState([]);
+  const [sdata, setSdata] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [transactionIds, setTransactionIds] = useState({}); // Transaction IDs state for each event
@@ -130,7 +131,7 @@ const EventCompo = () => {
                     {openPayBoxes[index] && (
                       <div>
                         <img
-                          src={qr}
+                          src={`http://localhost:8000/${event.paymentQR}`}
                           alt="QR Code for Payment"
                           className="w-full h-32 object-contain"
                         />

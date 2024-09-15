@@ -22,6 +22,7 @@ function EditEventForm() {
     isPaid: false,
     cost: "",
     banner: null,
+    paymentQR:null,
   });
   const [editEventId, setEditEventId] = useState(null);
   const [events, setEvents] = useState([]); // For storing existing events
@@ -53,10 +54,17 @@ function EditEventForm() {
   const handleChange = (e) => {
     const { name, value, type, checked, files } = e.target;
     if (type === "file") {
-      setFormData({
-        ...formData,
-        banner: files[0],
-      });
+      if (name === "banner") {
+        setFormData({
+          ...formData,
+          banner: files[0],  // Store banner image
+        });
+      } else if (name === "paymentQR") {
+        setFormData({
+          ...formData,
+          paymentQR: files[0],  // Store payment QR image
+        });
+      }
     } else if (name === "eligibleYear") {
       const updatedYears = checked
         ? [...formData.eligibleYear, value]
@@ -99,6 +107,9 @@ function EditEventForm() {
       data.append("cost", formData.isPaid ? parseInt(formData.cost, 10) : null);
       if (formData.banner) {
         data.append("banner", formData.banner);
+      }
+      if (formData.paymentQR) {
+        data.append("paymentQR", formData.paymentQR);
       }
       if (editEventId) {
         const response = await axios.put(
@@ -170,6 +181,7 @@ function EditEventForm() {
       isPaid: event.isPaid,
       cost: event.isPaid ? event.cost : "",
       banner: null,
+      paymentQR:null
     });
     setEditEventId(event.eventId);
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -378,6 +390,8 @@ function EditEventForm() {
         </div>
 
         {formData.isPaid && (
+          <div>
+
           <div className="flex items-center">
             <label className="w-1/3 font-semibold">Cost:</label>
             <input
@@ -386,8 +400,18 @@ function EditEventForm() {
               value={formData.cost || ""}
               onChange={handleChange}
               className="w-2/3 p-2 rounded-lg bg-gray-100 text-black border border-gray-300 focus:border-blue-400"
-            />
+              />
           </div>
+          <div className="flex items-center mt-2">
+          <label className="w-1/3 font-semibold">paymentQR:</label>
+          <input
+            type="file"
+            name="paymentQR"
+            onChange={handleChange}
+            className="w-2/3 p-2 rounded-lg bg-gray-100 text-black border border-gray-300 focus:border-blue-400"
+            />
+            </div>
+        </div>
         )}
 
 <div className="flex justify-center">
@@ -514,10 +538,7 @@ function EditEventForm() {
         .custom-checkbox input:checked + .checkbox-label::before {
           background-color: #007BFF; /* Background color when checked */
           border-color: #007BFF; /* Border color when checked */
-        }
-    
-        
-           
+        }       
           `}</style>
     </div>
   );

@@ -203,14 +203,14 @@ exports.getAllAttendance = async () => {
             AND FIND_IN_SET((${inferYear}), '${e.eligibleYear}') > 0 
             THEN 1 ELSE 0 
           END
-        ) AS \`${e.eventName}_E\`,
+        ) AS \`${e.eventName}(${e.date.toLocaleDateString()})_E\`,
         MAX(
           CASE 
             -- Registration (R)
             WHEN r.event_id = ${e.eventId} 
             THEN 1 ELSE 0 
           END
-        ) AS \`${e.eventName}_R\`,
+        ) AS \`${e.eventName}(${e.date.toLocaleDateString()})_R\`,
         MAX(
           CASE 
             -- Participation (P)
@@ -218,8 +218,8 @@ exports.getAllAttendance = async () => {
             AND r.attended = 1 
             THEN 1 ELSE 0 
           END
-        ) AS \`${e.eventName}_P\`,
-        '${e.date.toLocaleDateString()}' AS \`${e.eventName}_Date\`
+        ) AS \`${e.eventName}(${e.date.toLocaleDateString()})_P\`,
+        '${e.date.toLocaleDateString()}' AS \`${e.eventName}(${e.date.toLocaleDateString()})_Date\`
       `
       )
       .join(", ");
