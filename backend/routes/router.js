@@ -24,6 +24,8 @@ router.put('/event/:eventId', eventMiddleware, eventController.updateEvent)
 router.delete('/event/:eventId', eventController.deleteEvent) // this delete removes the event permanently
 router.delete('/removeEvent/:eventId', eventController.removeEvent) // this movese the event to the event history
 router.post('/undoEvent/:eventId', eventController.undoEvent) // this moves the event back to the events tab
+//event photos upload
+router.post('/uploadPhotos/:eventId', eventController.uploadEventPhotos)
 
 // event status
 router.get('/eventStatus/:eventId', adminController.getStatus)
@@ -39,6 +41,8 @@ router.put('/markAsAttended', adminController.markAsAttended)
 router.get('/getAttendance/:eventId', adminController.getAttendance) //get a particular events attendance list
 router.get('/getAllAttendance', adminController.getAllAttendance) //for the all events attendance sheet
 
+
+
 //notice
 // router.post('/notice/:eventId', noticeController.createNotice)
 // router.put('/notice/:eventId', noticeController.updateNotice)
@@ -46,6 +50,5 @@ router.get('/getAllAttendance', adminController.getAllAttendance) //for the all 
 
 //qrcode send handler
 router.post('/sendAttendanceQrcode',qrCodeController.sendAttendanceQrcode)
-
 
 module.exports = router

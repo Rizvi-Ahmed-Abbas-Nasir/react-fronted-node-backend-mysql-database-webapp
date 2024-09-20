@@ -14,6 +14,7 @@ exports.createEvent = async (
   eligibleYear,
   isPaid,
   cost,
+  paymentQR,
   banner,
   loaOfSpeaker,
   notice,
@@ -21,7 +22,7 @@ exports.createEvent = async (
 ) => {
   try {
     const [result] = await connection.query(
-      "INSERT INTO tpo_events (eventName, eventDescription, nameOfSpeaker, organizationOfSpeaker,locationOfSpeaker, date, category, time, department, eligibleYear, isPaid, cost, banner, loaOfSpeaker, notice, eventDeadline) VALUES (?, ?, ?, ?, ?, ?, ?,?,?,?, ?,?,?,?,?,?)",
+      "INSERT INTO tpo_events (eventName, eventDescription, nameOfSpeaker, organizationOfSpeaker,locationOfSpeaker, date, category, time, department, eligibleYear, isPaid, cost,paymentQR, banner, loaOfSpeaker, notice, eventDeadline) VALUES (?, ?, ?, ?, ?, ?, ?,?,?,?, ?,?,?,?,?,?,?)",
       [
         eventName,
         eventDescription,
@@ -35,6 +36,7 @@ exports.createEvent = async (
         eligibleYear,
         isPaid,
         cost,
+        paymentQR,
         banner,
         loaOfSpeaker,
         notice,
@@ -84,6 +86,7 @@ exports.updateEvent = async (
   eligibleYear,
   isPaid,
   cost,
+  paymentQR,
   banner,
   loaOfSpeaker,
   notice,
@@ -91,7 +94,7 @@ exports.updateEvent = async (
 ) => {
   try {
     const [rows] = await connection.query(
-      `UPDATE tpo_events SET eventName = ?,eventDescription = ?, nameOfSpeaker = ?,organizationOfSpeaker = ?,locationOfSpeaker =?, date = ?, category = ?, time = ?, department = ?, eligibleYear = ?, isPaid = ?, cost = ?, banner = ?, loaOfSpeaker = ?, notice = ?, eventDeadline = ? WHERE eventId = ?;`,
+      `UPDATE tpo_events SET eventName = ?,eventDescription = ?, nameOfSpeaker = ?,organizationOfSpeaker = ?,locationOfSpeaker =?, date = ?, category = ?, time = ?, department = ?, eligibleYear = ?, isPaid = ?, cost = ?,paymentQR = ?, banner = ?, loaOfSpeaker = ?, notice = ?, eventDeadline = ? WHERE eventId = ?;`,
       [
         eventName,
         eventDescription,
@@ -105,6 +108,7 @@ exports.updateEvent = async (
         eligibleYear,
         isPaid,
         cost,
+        paymentQR,
         banner,
         loaOfSpeaker,
         notice,
@@ -273,5 +277,25 @@ exports.makeDefault = async (eventId) => {
   } catch (error) {
     throw new Error("Error making deadline default: " + error.message);
     
+  }
+}
+
+exports.storePhoto = async (eventId, path) => {
+  try {
+    const result = await connection.query(`UPDATE tpo_events SET eventPhotos = ? WHERE eventId = ?`, [path, eventId])
+
+    return result
+  } catch (error) {
+    throw new Error("Error storing event photos: "+ error.message);
+  }
+}
+
+exports.changePhotosUploadStatus = async (eventId) => {
+  try {
+    const result = await connection.query(`UPDATE tpo_events SET photosUploaded = true WHERE eventId = ?`, [eventId])
+
+    return result
+  } catch (error) {
+    throw new Error("Error storing event photos: "+ error.message);
   }
 }

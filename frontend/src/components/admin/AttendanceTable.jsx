@@ -343,7 +343,7 @@ function AttendanceTable() {
         <button onClick={exportToExcel} className="px-4 py-2 bg-indigo-600 text-white rounded-lg shadow-md hover:bg-indigo-700 transition duration-200">Download Excel</button>
       </div>
       {filteredData.length > 0 ? (
-        <div className="overflow-x-auto w-full">
+        <div className="overflow-x-auto w-full rounded-xl">
           <table className="table-auto border-collapse w-full min-w-max bg-white shadow-lg rounded-lg">
             <thead className="bg-blue-600 text-white border-b border-gray-200">
               <tr>
@@ -358,7 +358,7 @@ function AttendanceTable() {
                       <th colSpan={3} className="border px-6 py-1 text-sm font-medium">
                         <div className="border-b py-3">{event}</div>
                         
-                        <div className="flex mt-1 w-full justify-between px-8 py-2">
+                        <div className="flex mt-1 w-full justify-between  py-2">
                           <div>                          <span className="  pt-1 text-[0.9rem]">E</span>
                           </div>
                           <div>                          <span className="  pt-1 text-[0.9rem]">R</span>

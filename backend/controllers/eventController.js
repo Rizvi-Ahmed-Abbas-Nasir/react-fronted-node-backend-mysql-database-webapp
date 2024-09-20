@@ -6,8 +6,10 @@ const noticeController = require("../controllers/noticeController");
 //runs after middleware data cleaning
 exports.createEvent = async (req, res) => {
   try {
+
+    //banner
     if (req.files && req.files.banner) {
-      console.log("Flie received, saving");
+      // console.log("Flie received, saving");
       let file = req.files.banner;
       let fileName = new Date().getTime().toString() + "-" + file.name;
       const savePath = path.join(
@@ -20,6 +22,25 @@ exports.createEvent = async (req, res) => {
       fileName = "assets/banner/" + fileName;
       req.body.banner = fileName;
     }
+
+    //payment qr
+
+    if (req.files && req.files.paymentQR) {
+      // console.log("paymentQR received, saving");
+      let file = req.files.paymentQR;
+      let fileName = new Date().getTime().toString() + "-" + file.name;
+      const savePath = path.join(
+        __dirname,
+        "../public/assets/",
+        "PaymentQR",
+        fileName
+      );
+      await file.mv(savePath);
+      fileName = "assets/PaymentQR/" + fileName;
+      req.body.paymentQR = fileName;
+    }
+    const paymentQR = req.body.paymentQR
+
     const {
       eventName,
       eventDescription,
@@ -38,8 +59,8 @@ exports.createEvent = async (req, res) => {
       eventDeadline
     } = req.body;
 
-    //notice here
-    if (eventNotice != null) {
+    //-------------------------------------------------notice-------------------------------
+    if (eventNotice && eventNotice.trim() !== "") {
       //generate a notice based on the data
       const noticeData = {
         date: date,
@@ -49,16 +70,16 @@ exports.createEvent = async (req, res) => {
 
       const isNoticeGenerated = await noticeController.createPDF(noticeData);
       if (!isNoticeGenerated) {
-        console.log("Error generating notice");
+        // console.log("Error generating notice");
         req.body.notice = null;
       } else {
-        console.log("notice generated successfully");
+        // console.log("notice generated successfully");
         req.body.notice = isNoticeGenerated;
       }
     }
     const notice = await req.body.notice;
 
-    //generate a loa based on the data
+    // ------------------------------------------------------------------loa--------------------------------------
     const data = {
       date: date,
       recipientName: nameOfSpeaker,
@@ -70,10 +91,10 @@ exports.createEvent = async (req, res) => {
 
     const isGenerated = await loaController.createPDF(data);
     if (!isGenerated) {
-      console.log("Error generating loa");
+      // console.log("Error generating loa");
       req.body.loaOfSpeaker = null;
     } else {
-      console.log("Loa generated successfully");
+      // console.log("Loa generated successfully");
       req.body.loaOfSpeaker = isGenerated;
     }
 
@@ -92,6 +113,7 @@ exports.createEvent = async (req, res) => {
       eligibleYear,
       isPaid,
       cost,
+      paymentQR,
       banner,
       loaOfSpeaker,
       notice,
@@ -116,7 +138,7 @@ exports.getAllEvents = async (req, res) => {
         const isDead = await Event.handleDeadline(event.eventDeadline);
         
         if (isDead) {
-          console.log(event.eventName, ": has met the deadline, removing event")
+          // console.log(event.eventName, ": has met the deadline, removing event")
           //make isDeadlineMet = true here:
           const isSet = await Event.changeDeadStatus(event.eventId, true)
 
@@ -127,7 +149,7 @@ exports.getAllEvents = async (req, res) => {
         
 
         } else {
-          console.log(event.eventId, ": has not met the deadline, moving on")
+          // console.log(event.eventId, ": has not met the deadline, moving on")
           const isSet = await Event.changeDeadStatus(event.eventId, false)
 
         }
@@ -146,29 +168,13 @@ exports.updateEvent = async (req, res) => {
     const event = await Event.getAEvent(id);
     const loa = event[0].loaOfSpeaker;
     const eNotice = await event[0].notice;
-  
-    // console.log(loa)
-    //if loa is present previously, delete it
-    if (loa) {
-      console.log("Deleting Previous loa: ", loa);
+    const prevQR = await event[0].paymentQR;
 
-      const prevPath = path.join(__dirname, "../public", loa);
+        
 
-      // ------------------------ Cautious code begins ---------------------------------------
-      fs.unlink(prevPath, (err) => {
-        if (err) {
-          console.error("Error deleting the loa:", err);
-        } else {
-          console.log("loa deleted successfully!");
-        }
-      });
-      // ------------------------ Cautious code ends ---------------------------------------
-    } else {
-      console.log("there was no loa to delete");
-    }
-    //if a new banner is chosen
+    // -----------------------------------------banner --------------------------------------------
     if (req.files && req.files.banner) {
-      console.log("Flie received, saving");
+      // console.log("Flie received, saving");
       let file = req.files.banner;
       let fileName = new Date().getTime().toString() + "-" + file.name;
       const savePath = path.join(
@@ -178,17 +184,14 @@ exports.updateEvent = async (req, res) => {
         fileName
       );
       await file.mv(savePath);
-      console.log("file saved in the server");
+      // console.log("file saved in the server");
       fileName = "assets/banner/" + fileName;
       req.body.banner = fileName;
 
-      //deleting the previous file
-
-      //getting the previous filename from the db if present
-      const event = await Event.getAEvent(id);
+      // deleting prev banner
       const prevFile = event[0].banner;
       if (prevFile) {
-        console.log("Deleting Previous file: ", prevFile);
+        // console.log("Deleting Previous file: ", prevFile);
 
         const prevPath = path.join(__dirname, "../public", prevFile);
         // console.log(prevPath)
@@ -196,19 +199,19 @@ exports.updateEvent = async (req, res) => {
         // ------------------------ Cautious code begins ---------------------------------------
         fs.unlink(prevPath, (err) => {
           if (err) {
-            console.error("Error deleting the file:", err);
+            // console.error("Error deleting the file:", err);
           } else {
-            console.log("File deleted successfully!");
+            // console.log("File deleted successfully!");
           }
         });
         // ------------------------ Cautious code ends ---------------------------------------
       } else {
-        console.log("there was no previous file to delete");
+        // console.log("there was no previous file to delete");
       }
     } else {
-      console.log("no new file specified");
+      // console.log("no new file specified");
       if (!req.body.banner) {
-        console.log("no new banner specified");
+        // console.log("no new banner specified");
 
         //getting the previous filename from the db if present
         const event = await Event.getAEvent(id);
@@ -220,7 +223,7 @@ exports.updateEvent = async (req, res) => {
           req.body.banner = null;
         }
       }
-      console.log("keeping the previous banner: ", req.body.banner);
+      // console.log("keeping the previous banner: ", req.body.banner);
     }
 
     const {
@@ -242,28 +245,29 @@ exports.updateEvent = async (req, res) => {
     } = await req.body;
 
     //if notice is modified, update it, and delete the previous in the process
-    console.log("Event Notice: "+ eventNotice);
-    console.log("Previous notice: "+ eNotice);
-
+    // console.log("Event Notice: "+ eventNotice);
+    // console.log("Previous notice: "+ eNotice);
+    
+    // ------------------------------------NOTICE------------------------------------------------------
     //notice here
     if (eventNotice && eventNotice.trim() !== "") {
       //if notice is present previously, delete it
       if (eNotice != null) {
-        console.log("Deleting Previous notice: ", eNotice);
+        // console.log("Deleting Previous notice: ", eNotice);
 
         const prevPath = path.join(__dirname, "../public", eNotice);
 
         // ------------------------ Cautious code begins ---------------------------------------
         fs.unlink(prevPath, (err) => {
           if (err) {
-            console.error("Error deleting the notice:", err);
+            // console.error("Error deleting the notice:", err);
           } else {
-            console.log("notice deleted successfully!");
+            // console.log("notice deleted successfully!");
           }
         });
         // ------------------------ Cautious code ends ---------------------------------------
       } else {
-        console.log("there was no notice to delete");
+        // console.log("there was no notice to delete");
       }
 
       //generate a notice based on the data
@@ -275,17 +279,42 @@ exports.updateEvent = async (req, res) => {
 
       const isNoticeGenerated = await noticeController.createPDF(noticeData);
       if (!isNoticeGenerated) {
-        console.log("Error generating notice");
+        // console.log("Error generating notice");
         req.body.notice = null;
       } else {
-        console.log("notice generated successfully");
+        // console.log("notice generated successfully");
         req.body.notice = isNoticeGenerated;
       }
     } else {
-      console.log("No notice defined");
+      // console.log("No notice defined");
       req.body.notice = eNotice
     }
     const notice = await req.body.notice;
+
+
+    // -------------------------------------------LOA--------------------------------------------------
+
+
+
+    //if loa is present previously, delete it
+    if (loa) {
+      // console.log("Deleting Previous loa: ", loa);
+
+      const prevPath = path.join(__dirname, "../public", loa);
+
+      // ------------------------ Cautious code begins ---------------------------------------
+      fs.unlink(prevPath, (err) => {
+        if (err) {
+          // console.error("Error deleting the loa:", err);
+        } else {
+          // console.log("loa deleted successfully!");
+        }
+      });
+      // ------------------------ Cautious code ends ---------------------------------------
+    } else {
+      // console.log("there was no loa to delete");
+    }
+
 
     //generate a new loa based on the data
     const data = {
@@ -299,14 +328,63 @@ exports.updateEvent = async (req, res) => {
 
     const isGenerated = await loaController.createPDF(data);
     if (!isGenerated) {
-      console.log("Error generating loa");
+      // console.log("Error generating loa");
       req.body.loaOfSpeaker = null;
     } else {
-      console.log("Loa generated successfully");
+      // console.log("Loa generated successfully");
       req.body.loaOfSpeaker = isGenerated;
     }
     const loaOfSpeaker = await req.body.loaOfSpeaker;
 
+    // ------------------------------------------------------- Payment QR -----------------------------------------------
+
+    //checking if file is selected
+    if (req.files && req.files.paymentQR){
+
+      //first delete the previous file
+      if (prevQR){
+        //delete code
+        // console.log("Deleting Previous file: ", prevQR);
+
+        const prevPath = path.join(__dirname, "../public", prevQR);
+        // console.log(prevPath)
+
+        // ------------------------ Cautious code begins ---------------------------------------
+        fs.unlink(prevPath, (err) => {
+          if (err) {
+            // console.error("Error deleting the payment QR:", err);
+          } else {
+            // console.log("payment QR deleted successfully!");
+          }
+        });
+
+      } else {
+        // console.log("No paymentQR file to delete")
+      }
+
+      //saving the file code
+      let file = req.files.paymentQR;
+      let fileName = new Date().getTime().toString() + "-" + file.name;
+      const savePath = path.join(
+        __dirname,
+        "../public/assets/",
+        "PaymentQR",
+        fileName
+      );
+      await file.mv(savePath);
+      // console.log("file saved in the server");
+      fileName = "assets/PaymentQR/" + fileName;
+      req.body.paymentQR = fileName;
+      
+    } else {
+      //no payment qr file specified, keeping the prev one
+      req.body.paymentQR = prevQR
+    }
+
+    const paymentQR = req.body.paymentQR
+
+
+    // --------------------------------------------------Actual UPDATE QUERY -----------------------------------------
     const result = await Event.updateEvent(
       id,
       eventName,
@@ -321,6 +399,7 @@ exports.updateEvent = async (req, res) => {
       eligibleYear,
       isPaid,
       cost,
+      paymentQR,
       banner,
       loaOfSpeaker,
       notice,
@@ -342,17 +421,17 @@ const removeEventById = async (eventId) => {
 
     // Deleting the previous notice:
     if (prevNotice) {
-      console.log("Deleting Previous notice: ", prevNotice);
+      // console.log("Deleting Previous notice: ", prevNotice);
       const prevPath = path.join(__dirname, "../public", prevNotice);
       fs.unlink(prevPath, (err) => {
         if (err) {
-          console.error("Error deleting the notice:", err);
+          // console.error("Error deleting the notice:", err);
         } else {
-          console.log("Notice deleted successfully!");
+          // console.log("Notice deleted successfully!");
         }
       });
     } else {
-      console.log("No previous notice to delete");
+      // console.log("No previous notice to delete");
     }
 
     // Remove the notice from the event
@@ -361,13 +440,13 @@ const removeEventById = async (eventId) => {
     // Deleting the banner file:
     const prevFile = event[0].banner;
     if (prevFile) {
-      console.log("Deleting Previous file: ", prevFile);
+      // console.log("Deleting Previous file: ", prevFile);
       const prevPath = path.join(__dirname, "../public", prevFile);
       fs.unlink(prevPath, (err) => {
         if (err) {
-          console.error("Error deleting the file:", err);
+          // console.error("Error deleting the file:", err);
         } else {
-          console.log("File deleted successfully!");
+          // console.log("File deleted successfully!");
         }
       });
       await Event.deleteBanner(eventId);
@@ -425,7 +504,7 @@ exports.deleteEvent = async (req, res) => {
     const loa = event[0].loaOfSpeaker;
     if (prevFile) {
       // checks if the previous file is present to perform the deletion
-      console.log("Deleting Previous file: ", prevFile);
+      // console.log("Deleting Previous file: ", prevFile);
 
       const prevPath = path.join(__dirname, "../public", prevFile);
       // console.log(prevPath)
@@ -433,9 +512,9 @@ exports.deleteEvent = async (req, res) => {
       // ------------------------ Cautious code begins ---------------------------------------
       fs.unlink(prevPath, (err) => {
         if (err) {
-          console.error("Error deleting the file:", err);
+          // console.error("Error deleting the file:", err);
         } else {
-          console.log("File deleted successfully!");
+          // console.log("File deleted successfully!");
         }
       });
       // ------------------------ Cautious code ends ---------------------------------------
@@ -443,26 +522,26 @@ exports.deleteEvent = async (req, res) => {
       //make the banner null here
       const result = await Event.deleteBanner(id);
     } else {
-      console.log("No previous banner to delete");
+      // console.log("No previous banner to delete");
     }
 
     //if loa is present previously, delete it
     if (loa) {
-      console.log("Deleting Previous loa: ", loa);
+      // console.log("Deleting Previous loa: ", loa);
 
       const prevPath = path.join(__dirname, "../public", loa);
 
       // ------------------------ Cautious code begins ---------------------------------------
       fs.unlink(prevPath, (err) => {
         if (err) {
-          console.error("Error deleting the loa:", err);
+          // console.error("Error deleting the loa:", err);
         } else {
-          console.log("loa deleted successfully!");
+          // console.log("loa deleted successfully!");
         }
       });
       // ------------------------ Cautious code ends ---------------------------------------
     } else {
-      console.log("there was no loa to delete");
+      // console.log("there was no loa to delete");
     }
 
     //delete notice
@@ -470,7 +549,7 @@ exports.deleteEvent = async (req, res) => {
     const prevNotice = event[0].notice;
     if (prevNotice) {
       // checks if the previous file is present to perform the deletion
-      console.log("Deleting Previous notice: ", prevNotice);
+      // console.log("Deleting Previous notice: ", prevNotice);
 
       const prevPath = path.join(__dirname, "../public", prevNotice);
       // console.log(prevPath)
@@ -478,23 +557,100 @@ exports.deleteEvent = async (req, res) => {
       // ------------------------ Cautious code begins ---------------------------------------
       fs.unlink(prevPath, (err) => {
         if (err) {
-          console.error("Error deleting the file:", err);
+          // console.error("Error deleting the file:", err);
         } else {
-          console.log("File deleted successfully!");
+          // console.log("File deleted successfully!");
         }
       });
       // ------------------------ Cautious code ends ---------------------------------------
       const result = await Event.deleteNotice(id);
     } else {
-      console.log("No previous notice to delete");
+      // console.log("No previous notice to delete");
     }
 
     const result = await Event.deleteEvent(id);
+
+//deleting the event photos if they exist
+    const prevZipFile = await event[0].eventPhotos
+    
+    if(prevZipFile){
+      //previous file exists, delete it
+      // console.log("Deleting Previous file: ", prevZipFile);
+      const prevPath = path.join(__dirname, "../public", prevZipFile);
+      fs.unlink(prevPath, (err) => {
+        if (err) {
+          // console.error("Error deleting previous event photos:", err);
+        } else {
+          // console.log("Previous photos deleted successfully!");
+        }
+      });
+
+    } else {
+      // console.log("No previous photos to delete")
+    }
+
+
     res.status(200).json({ message: "Event Deleted Successfully", result });
   } catch (error) {
     return res.status(500).json({ error: error.message });
   }
 };
+
+
+//upload event photos:
+exports.uploadEventPhotos = async (req, res)=> {
+  try {
+    const eventId = req.params.eventId
+
+    //check if previous file exists
+    const event = await Event.getAEvent(eventId);
+    const prevFile = await event[0].eventPhotos
+    
+    if(prevFile){
+      //previous file exists, delete it
+      // console.log("Deleting Previous file: ", prevFile);
+      const prevPath = path.join(__dirname, "../public", prevFile);
+      fs.unlink(prevPath, (err) => {
+        if (err) {
+          // console.error("Error deleting previous event photos:", err);
+        } else {
+          // console.log("Previous photos deleted successfully!");
+        }
+      });
+
+    } else {
+      // console.log("No previous photos to delete")
+    }
+
+    if (req.files && req.files.photos) {
+      // console.log("Zip File Received, saving");
+
+      let file = req.files.photos;
+      let fileName = new Date().getTime().toString() + "-" + file.name;
+      const savePath = path.join(
+        __dirname,
+        "../public/assets/",
+        "uploads",
+        fileName
+      );
+      await file.mv(savePath);
+      fileName = "assets/uploads/" + fileName;
+      req.body.photos = fileName;
+
+      const result = await Event.storePhoto(eventId, req.body.photos)
+      const isStored = await Event.changePhotosUploadStatus(eventId)
+      res.status(200).json({message: "Successfully stored the event photos", result: result});
+
+
+    } else {
+      // console.log("no file received")
+      res.status(400).json({ message: "No file received"})
+    }
+    
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+}
 
 
 

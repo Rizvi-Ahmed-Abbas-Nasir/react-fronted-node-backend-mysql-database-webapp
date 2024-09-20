@@ -17,15 +17,17 @@ exports.createTables = async () => {
       eligibleYear varchar(255), 
       isPaid bool DEFAULT NULL, 
       cost int DEFAULT NULL,
+      paymentQR text,
       banner text,
       loaOfSpeaker text,
       notice text,
       eventNotice varchar(1000),
-      eventDeadline date,
+      eventDeadline date DEFAULT '3000-01-01',
       attendanceFlag bool DEFAULT false,
       photosUploaded bool DEFAULT false,
       isDeleted bool DEFAULT false,
-      isDead bool DEFAULT false
+      isDead bool DEFAULT false,
+      eventPhotos text
       );
 
       CREATE TABLE IF NOT EXISTS tpo_student_details (
