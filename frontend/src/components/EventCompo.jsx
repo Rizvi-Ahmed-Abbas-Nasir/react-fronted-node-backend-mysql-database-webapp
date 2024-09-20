@@ -1,21 +1,20 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import qr from "../assets/qrcodedemo.png"; // Example QR code image
 
 const EventCompo = () => {
-  // const [openBoxes, setOpenBoxes] = useState([false, false]); // Track which event boxes are open
-  const [openPayBoxes, setOpenPayBoxes] = useState([false, false]); // Track which payment sections are open
+  const [openPayBoxes, setOpenPayBoxes] = useState([]); // Adjust to handle dynamic number of events
   const [data, setData] = useState([]);
-  const [sdata, setSdata] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [transactionIds, setTransactionIds] = useState({}); // Transaction IDs state for each event
-
+  const [transactionIds, setTransactionIds] = useState({}); 
+  const StdID = "11"
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("http://localhost:8000/event");
+        const response = await axios.get(`${process.env.REACT_APP_URL}/event`);
+        console.log(process.env.REACT_APP_URL)
         setData(response.data);
+        setOpenPayBoxes(new Array(response.data.length).fill(false)); // Initialize openPayBoxes for each event
       } catch (err) {
         setError(err.message);
       } finally {
@@ -39,7 +38,7 @@ const EventCompo = () => {
   };
 
   const registerClicked = async (event, eventId, isPaid) => {
-    event.preventDefault(); // Prevent default form submission
+    event.preventDefault(); 
 
     const transactionId = isPaid ? transactionIds[eventId] : null;
 
@@ -47,7 +46,7 @@ const EventCompo = () => {
       const response = await axios.post(
         `http://localhost:8000/userEventReg/${eventId}`,
         {
-          student_id: "5", 
+          student_id: StdID, 
           transaction_id: transactionId,
         }
       );
@@ -58,7 +57,7 @@ const EventCompo = () => {
         alert("Registration failed.");
       }
     } catch (err) {
-      alert("An error occurred during registration."+ err);
+      alert("An error occurred during registration." + err);
     }
   };
 
@@ -69,13 +68,13 @@ const EventCompo = () => {
   return (
     <>
       {data.length > 0 ? (
-        <div className="flex w-full flex-row flex-wrap gap-4 justify-start items-start py-12 pl-10 mt-16">
+        <div className="flex w-full flex-wrap gap-4  items-start py-12 pl-10 mt-16">
           {data.map(
             (event, index) =>
               !event.isDeleted && (
                 <div
                   key={index}
-                  className="bg-white border rounded-lg shadow-md p-4 w-90 max-w-lg flex flex-col "
+                  className="bg-white border rounded-lg shadow-md p-4 w-full sm:w-1/2 lg:w-1/3 xl:w-1/4 h-auto flex flex-col justify-between"
                 >
                   <div className="flex justify-between items-center p-2 bg-blue-600 rounded-lg">
                     <h3 className="text-white text-[1.2rem] font-semibold">
@@ -97,6 +96,9 @@ const EventCompo = () => {
                       <strong>Date:</strong> {event.date.split("T")[0]}
                     </p>
                     <p>
+                      <strong>Deadline:</strong> {event.eventDeadline.split("T")[0]}
+                    </p>
+                    <p>
                       <strong>Time:</strong> {event.time}
                     </p>
                     <p>
@@ -108,7 +110,14 @@ const EventCompo = () => {
                     <p>
                       <strong>Eligible Year:</strong> {event.eligibleYear}
                     </p>
-                    <a className="text-blue-700 font-bold underline" href={`http://localhost:8000/${event.notice}`} target="_blank">Notice</a>
+                    <a
+                      className="text-blue-700 font-bold underline"
+                      href={`http://localhost:8000/${event.notice}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      Notice
+                    </a>
 
                     {event.isPaid ? (
                       <p>
@@ -123,9 +132,7 @@ const EventCompo = () => {
                         </button>
                       </p>
                     ) : (
-                      <p>
-                        <strong>FREE</strong>
-                      </p>
+                      <p className="mb-20 font-bold">Free</p>
                     )}
 
                     {openPayBoxes[index] && (
@@ -138,15 +145,8 @@ const EventCompo = () => {
                         <p>
                           <strong>Cost:</strong> {event.cost}
                         </p>
-                      </div>
-                    )}
 
-                    <form
-                      onSubmit={(e) =>
-                        registerClicked(e, event.eventId, event.isPaid)
-                      }
-                    >
-                      {event.isPaid ? (
+                        {/* Show transaction input when payment section is visible */}
                         <div>
                           <p>
                             <strong>Transaction Id:</strong>
@@ -166,8 +166,14 @@ const EventCompo = () => {
                             placeholder="Enter Transaction Id"
                           />
                         </div>
-                      ) : null}
+                      </div>
+                    )}
 
+                    <form
+                      onSubmit={(e) =>
+                        registerClicked(e, event.eventId, event.isPaid)
+                      }
+                    >
                       <div className="w-full justify-center flex mt-10">
                         <button 
                         

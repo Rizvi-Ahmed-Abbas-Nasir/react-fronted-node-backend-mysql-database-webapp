@@ -139,10 +139,10 @@ function History() {
       {error && <div className="text-red-500 text-center mb-4">{error}</div>}
 
       {events.length > 0 ? (
-        <div className="overflow-x-auto">
-          <table className="table-auto w-full min-w-[700px] text-left bg-white rounded-lg shadow-md">
+        <div className="overflow-x-auto rounded-xl">
+          <table className="table-auto w-full min-w-[700px]  text-left bg-white rounded-lg shadow-md">
             <thead className="bg-gray-200">
-              <tr className="text-gray-700">
+              <tr className=" bg-blue-600 text-white border-b border-gray-200">
                 <th className="p-4 font-semibold">Event Name</th>
                 <th className="p-4 font-semibold">Speaker</th>
                 <th className="p-4 font-semibold">Date</th>
