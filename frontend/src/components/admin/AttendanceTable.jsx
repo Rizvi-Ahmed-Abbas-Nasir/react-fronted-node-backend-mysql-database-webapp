@@ -164,67 +164,80 @@ function AttendanceTable() {
   const uniqueBranches = [...new Set(attendanceData.map(item => item.branch))];
 
   return (
-    <div className="flex flex-col gap-6 justify-start items-start md:ml-72 md:mt-32 w-auto p-4 bg-gray-50 rounded-lg shadow-lg">
-      <h1 className="text-3xl font-bold text-gray-800 mb-4">Registration Details</h1>
-
-      <div className="mb-4 flex gap-4">
-        <select 
-          value={degreeYearFilter} 
-          onChange={(e) => setDegreeYearFilter(e.target.value)} 
-          className="border rounded-lg p-2"
-        >
-          <option value="">Select Degree Year</option>
-          {uniqueDegreeYears.map((year, index) => (
-            <option key={index} value={year}>{year}</option>
-          ))}
-        </select>
-
-        <select 
-          value={branchFilter} 
-          onChange={(e) => setBranchFilter(e.target.value)} 
-          className="border rounded-lg p-2"
-        >
-          <option value="">Select Branch</option>
-          {uniqueBranches.map((branch, index) => (
-            <option key={index} value={branch}>{branch}</option>
-          ))}
-        </select>
-
+    <div className="flex flex-col gap-8 justify-start items-start md:ml-72 md:mt-32 w-auto p-10 bg-white rounded-2xl shadow-2xl transition-all duration-500 ease-in-out transform hover:scale-[1.01]">
+      <h1 className="text-5xl font-extrabold text-gray-800 mb-8 tracking-wider border-b pb-4 border-gray-200 w-full">
+        Attendance Management
+      </h1>
+  
+      <div className="mb-6 flex gap-6 items-center w-full">
+        <div className="flex flex-col w-1/3">
+          <label className="text-gray-600 font-semibold mb-2">Degree Year</label>
+          <select 
+            value={degreeYearFilter} 
+            onChange={(e) => setDegreeYearFilter(e.target.value)} 
+            className="border border-gray-300 rounded-lg p-3 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition ease-in-out duration-200"
+          >
+            <option value="">Select Degree Year</option>
+            {uniqueDegreeYears.map((year, index) => (
+              <option key={index} value={year}>{year}</option>
+            ))}
+          </select>
+        </div>
+  
+        <div className="flex flex-col w-1/3">
+          <label className="text-gray-600 font-semibold mb-2">Branch</label>
+          <select 
+            value={branchFilter} 
+            onChange={(e) => setBranchFilter(e.target.value)} 
+            className="border border-gray-300 rounded-lg p-3 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition ease-in-out duration-200"
+          >
+            <option value="">Select Branch</option>
+            {uniqueBranches.map((branch, index) => (
+              <option key={index} value={branch}>{branch}</option>
+            ))}
+          </select>
+        </div>
+  
         <button 
           onClick={handleFilterChange} 
-          className="px-4 py-2 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700 transition duration-200"
+          className="px-6 py-3 mt-7 bg-blue-600 text-white font-semibold rounded-lg shadow-lg hover:bg-blue-700 transition transform hover:scale-105 ease-in-out duration-300"
         >
           Apply Filters
         </button>
       </div>
-
-      <div className="mb-4">
-        <button onClick={exportToCSV} className="mr-4 px-4 py-2 bg-green-600 text-white rounded-lg shadow-md hover:bg-green-700 transition duration-200">
+  
+      <div className="mb-6 flex gap-4">
+        <button 
+          onClick={exportToCSV} 
+          className="px-6 py-3 bg-green-600 text-white font-semibold rounded-lg shadow-lg hover:bg-green-700 transition transform hover:scale-105 ease-in-out duration-300"
+        >
           Export to CSV
         </button>
-        <button onClick={exportToExcel} className="px-4 py-2 bg-indigo-600 text-white rounded-lg shadow-md hover:bg-indigo-700 transition duration-200">
+        <button 
+          onClick={exportToExcel} 
+          className="px-6 py-3 bg-indigo-600 text-white font-semibold rounded-lg shadow-lg hover:bg-indigo-700 transition transform hover:scale-105 ease-in-out duration-300"
+        >
           Export to Excel
         </button>
       </div>
-
+  
       {filteredData.length > 0 ? (
-        <div className="overflow-x-auto w-full rounded-xl">
-          <table className="table-auto border-collapse w-full min-w-max bg-white shadow-lg rounded-lg">
-            <thead className="bg-blue-600 text-white border-b border-gray-200">
+        <div className="overflow-x-auto w-full rounded-lg shadow-2xl border border-gray-200 bg-gradient-to-r from-gray-100 to-gray-50">
+          <table className="table-auto border-collapse w-full text-left bg-white">
+            <thead className="bg-blue-700 text-white">
               <tr>
-                <th className="border px-6 py-3 text-sm font-medium">Student ID</th>
-                <th className="border px-6 py-3 text-sm font-medium">College ID</th>
-                <th className="border px-6 py-3 text-sm font-medium">Name</th>
-                <th className="border px-6 py-3 text-sm font-medium">Branch</th>
-                <th className="border px-6 py-3 text-sm font-medium">Degree Year</th>
-                {filteredData.length > 0 &&
-                  Object.keys(filteredData[0].events).map((event, index) => (
-                    <React.Fragment key={index}>
-                      <th colSpan={3} className="border px-6 py-1 text-sm font-medium">
-                        <div className="border-b py-1">{event}</div>
-                      </th>
-                    </React.Fragment>
-                  ))}
+                <th className="border px-6 py-4 text-sm font-semibold tracking-wide">Student ID</th>
+                <th className="border px-6 py-4 text-sm font-semibold tracking-wide">College ID</th>
+                <th className="border px-6 py-4 text-sm font-semibold tracking-wide">Name</th>
+                <th className="border px-6 py-4 text-sm font-semibold tracking-wide">Branch</th>
+                <th className="border px-6 py-4 text-sm font-semibold tracking-wide">Degree Year</th>
+                {Object.keys(filteredData[0].events).map((event, index) => (
+                  <React.Fragment key={index}>
+                    <th colSpan={3} className="border px-6 py-4 text-sm font-semibold tracking-wide">
+                      <div className="border-b pb-2">{event}</div>
+                    </th>
+                  </React.Fragment>
+                ))}
               </tr>
               <tr>
                 <th className="border"></th>
@@ -232,24 +245,23 @@ function AttendanceTable() {
                 <th className="border"></th>
                 <th className="border"></th>
                 <th className="border"></th>
-                {filteredData.length > 0 &&
-                  Object.keys(filteredData[0].events).map((event, index) => (
-                    <React.Fragment key={index}>
-                      <th className="border px-6 py-1 text-sm font-medium">E</th>
-                      <th className="border px-6 py-1 text-sm font-medium">R</th>
-                      <th className="border px-6 py-1 text-sm font-medium">P</th>
-                    </React.Fragment>
-                  ))}
+                {Object.keys(filteredData[0].events).map((event, index) => (
+                  <React.Fragment key={index}>
+                    <th className="border px-6 py-2 text-sm font-semibold tracking-wide">E</th>
+                    <th className="border px-6 py-2 text-sm font-semibold tracking-wide">R</th>
+                    <th className="border px-6 py-2 text-sm font-semibold tracking-wide">P</th>
+                  </React.Fragment>
+                ))}
               </tr>
             </thead>
-            <tbody>
+            <tbody className="text-gray-700">
               {filteredData.map((row, index) => (
-                <tr key={index} className="border-b hover:bg-gray-100">
-                  <td className="border px-6 py-2">{row.student_id}</td>
-                  <td className="border px-6 py-2">{row.clg_id}</td>
-                  <td className="border px-6 py-2">{`${row.first_name} ${row.middle_name || ''} ${row.last_name}`}</td>
-                  <td className="border px-6 py-2">{row.branch}</td>
-                  <td className="border px-6 py-2">{row.degree_year}</td>
+                <tr key={index} className="hover:bg-gray-100">
+                  <td className="border px-6 py-3">{row.student_id}</td>
+                  <td className="border px-6 py-3">{row.clg_id}</td>
+                  <td className="border px-6 py-3">{`${row.first_name} ${row.middle_name || ''} ${row.last_name}`}</td>
+                  <td className="border px-6 py-3">{row.branch}</td>
+                  <td className="border px-6 py-3">{row.degree_year}</td>
                   {Object.values(row.events).map((eventDetail, eventIndex) => (
                     <React.Fragment key={eventIndex}>
                       <td className="border px-6 py-2">{eventDetail.E}</td>
@@ -263,10 +275,11 @@ function AttendanceTable() {
           </table>
         </div>
       ) : (
-        <div className="text-gray-600">{error || 'Loading...'}</div>
+        <div className="text-gray-500 text-lg italic">{error || 'Loading...'}</div>
       )}
     </div>
   );
+  
 }
 
 export default AttendanceTable;
