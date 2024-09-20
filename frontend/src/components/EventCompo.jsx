@@ -7,11 +7,13 @@ const EventCompo = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [transactionIds, setTransactionIds] = useState({}); 
-
+  const StdID = "11"
+  // const DegreeYear
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("http://localhost:8000/event");
+        const response = await axios.get(`${process.env.REACT_APP_URL}/event`);
+        console.log(process.env.REACT_APP_URL)
         setData(response.data);
         setOpenPayBoxes(new Array(response.data.length).fill(false)); // Initialize openPayBoxes for each event
       } catch (err) {
@@ -45,7 +47,7 @@ const EventCompo = () => {
       const response = await axios.post(
         `http://localhost:8000/userEventReg/${eventId}`,
         {
-          student_id: 1, 
+          student_id: StdID, 
           transaction_id: transactionId,
         }
       );
@@ -67,7 +69,7 @@ const EventCompo = () => {
   return (
     <>
       {data.length > 0 ? (
-        <div className="flex w-full flex-wrap gap-4 justify-center items-start py-12 pl-10 mt-16">
+        <div className="flex w-full flex-wrap gap-4  items-start py-12 pl-10 mt-16">
           {data.map(
             (event, index) =>
               !event.isDeleted && (
@@ -93,6 +95,9 @@ const EventCompo = () => {
                     </p>
                     <p>
                       <strong>Date:</strong> {event.date.split("T")[0]}
+                    </p>
+                    <p>
+                      <strong>Deadline:</strong> {event.eventDeadline.split("T")[0]}
                     </p>
                     <p>
                       <strong>Time:</strong> {event.time}
@@ -128,9 +133,7 @@ const EventCompo = () => {
                         </button>
                       </p>
                     ) : (
-                      <p>
-                        <strong>FREE</strong>
-                      </p>
+                      <p className="mb-20 font-bold">Free</p>
                     )}
 
                     {openPayBoxes[index] && (
@@ -173,7 +176,8 @@ const EventCompo = () => {
                       }
                     >
                       <div className="w-full justify-center flex mt-10">
-                        <button
+                        <button 
+                        
                           type="submit"
                           className="ml-2 text-white hover:underline py-3 px-5 bg-blue-500 rounded-lg"
                         >

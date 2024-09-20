@@ -5,38 +5,57 @@
     <title>Notice</title>
     <style>
       @page { size: A4; margin: 0; } 
+      
       body { 
         font-family: Arial, sans-serif;
         margin: 0; 
         padding: 0; 
-        } 
-    
-    .letter-head { 
+      }
+
+      .letter-head { 
         text-align: center; 
         width: 100%;
         overflow: hidden; 
-    } 
-    .letter-head img { 
+      } 
+
+      .letter-head img { 
         width: 100%; 
         height: 20rem; 
-    }
-    .content { 
+        object-fit: cover;
+      }
+
+      .content { 
         margin: 20px; 
-    } 
-    .footer { 
+      }
+
+      .footer { 
         margin-top: 50px; 
         margin: 20px; 
-    } 
-    /*  Aligning the date to the right */ 
-    .date { 
+      }
+
+      /* Aligning the date and notice content */
+      .date{ 
         display: flex; 
         justify-content: space-between; 
-    }
+        align-items: center;
+      }
+      .notice{
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
 
-    .notice { 
-        display: flex; 
-        justify-content: center; 
-    }
+      .notice p { 
+        font-size: 1.5rem; 
+        text-align: center;
+        margin-top: 20px;
+      }
+
+      /* Style for justified paragraphs */
+      .content p { 
+        text-align: justify; 
+        margin-bottom: 1rem; 
+      }
     </style>
   </head>
   <body>
@@ -49,33 +68,25 @@
     <!-- Letter Body -->
     <div class="content">
       <div class="notice">
-
         <p><b>Notice</b></p>
       </div>
       <div class="date">
-
         <p>Ref. No.: VPPCOE&VA/T&P Office/2024-25</p>
-
         <!-- Date aligned to the right -->
         <p>Date: {{date}}</p>
       </div>
-      <p>Event Name: {{eventName}}</p>
 
-      <p>Event Notice: {{eventNotice}}</p>
+      <p><b>Event Name:</b> {{eventName}}</p>
+      <p><b>Event Notice:</b> {{eventNotice}}</p>
     </div>
 
     <!-- Footer -->
-    <br />
-    <br />
-    <br />
-    <br />
-    <br />
     <div class="footer">
-        <b>
-      <p>Swapnil Desai<br />
+      <b>
+        <p>Swapnil Desai<br />
         Head, T&P Department,<br />
         VPPCOE&VA</p>
-        </b>
+      </b>
     </div>
 
   </body>
