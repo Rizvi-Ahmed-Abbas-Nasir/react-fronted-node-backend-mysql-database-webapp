@@ -314,3 +314,15 @@ exports.changeAttendanceFlag = async (eventId) => {
     console.log(error)
   }
 };
+
+exports.getStudentData = async (student_id) => {
+  try {
+    const student = await connection.query(`SELECT * FROM tpo_student_details WHERE student_id = ?`, 
+      [student_id])
+
+      return student[0]
+  } catch (error) {
+    console.log(error)
+    
+  }
+}
