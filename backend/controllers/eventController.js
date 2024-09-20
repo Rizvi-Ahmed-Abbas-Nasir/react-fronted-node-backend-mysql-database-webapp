@@ -51,7 +51,7 @@ exports.createEvent = async (req, res) => {
       category,
       time,
       department,
-      eligibleYear,
+      eligible_degree_year,
       isPaid,
       cost,
       banner,
@@ -99,7 +99,8 @@ exports.createEvent = async (req, res) => {
     }
 
     const loaOfSpeaker = await req.body.loaOfSpeaker;
-
+    const currentBatch = await Event.getCurrentBatch()
+    // console.log(currentBatch)
     const result = await Event.createEvent(
       eventName,
       eventDescription,
@@ -110,7 +111,8 @@ exports.createEvent = async (req, res) => {
       category,
       time,
       department,
-      eligibleYear,
+      eligible_degree_year,
+      currentBatch,
       isPaid,
       cost,
       paymentQR,
@@ -236,7 +238,7 @@ exports.updateEvent = async (req, res) => {
       category,
       time,
       department,
-      eligibleYear,
+      eligible_degree_year,
       isPaid,
       cost,
       banner,
@@ -396,7 +398,7 @@ exports.updateEvent = async (req, res) => {
       category,
       time,
       department,
-      eligibleYear,
+      eligible_degree_year,
       isPaid,
       cost,
       paymentQR,

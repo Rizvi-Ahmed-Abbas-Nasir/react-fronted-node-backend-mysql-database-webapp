@@ -18,8 +18,8 @@ exports.createTables = async (req,res)=> {
 
 exports.insertStudents = async (req,res)=> {
     try {
-        const { email_id, first_name, middle_name, last_name, clg_id, branch, ac_yr, degree} = req.body;
-        const result = await Setup.createStudent(email_id, first_name, middle_name, last_name, clg_id, branch, ac_yr, degree)
+        const { email_id, first_name, middle_name, last_name, clg_id, branch, ac_yr, degree, degree_year} = req.body;
+        const result = await Setup.createStudent(email_id, first_name, middle_name, last_name, clg_id, branch, ac_yr, degree, degree_year)
 
         if(result){
             res.status(200).json({message: "Successfully registered student"})

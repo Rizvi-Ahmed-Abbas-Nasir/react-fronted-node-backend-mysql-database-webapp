@@ -40,7 +40,7 @@ router.delete('/deleteRegistration/:eventId', adminController.deleteRegistration
 router.put('/markAsAttended', adminController.markAsAttended)
 router.get('/getAttendance/:eventId', adminController.getAttendance) //get a particular events attendance list
 router.get('/getAllAttendance', adminController.getAllAttendance) //for the all events attendance sheet
-
+router.get('/getStudentDetail/:student_id', adminController.getStudentData)
 
 
 //notice

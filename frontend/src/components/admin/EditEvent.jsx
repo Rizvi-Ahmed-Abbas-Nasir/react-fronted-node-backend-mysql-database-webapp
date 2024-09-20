@@ -18,7 +18,7 @@ function EditEventForm() {
     category: "",
     time: "",
     department: [],
-    eligibleYear: [],
+    eligible_degree_year: [],
     isPaid: false,
     cost: "",
     banner: null,
@@ -29,7 +29,7 @@ function EditEventForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const departments = ["Comps", "IT", "AIDS"];
-  const eligibleYears = [
+  const eligible_degree_year = [
     "FE",
     "SE",
     "TE",
@@ -65,11 +65,11 @@ function EditEventForm() {
           paymentQR: files[0],  // Store payment QR image
         });
       }
-    } else if (name === "eligibleYear") {
+    } else if (name === "eligible_degree_year") {
       const updatedYears = checked
-        ? [...formData.eligibleYear, value]
-        : formData.eligibleYear.filter((year) => year !== value);
-      setFormData({ ...formData, eligibleYear: updatedYears });
+        ? [...formData.eligible_degree_year, value]
+        : formData.eligible_degree_year.filter((year) => year !== value);
+      setFormData({ ...formData, eligible_degree_year: updatedYears });
     } else if (name === "department") {
       const updatedDepartments = checked
         ? [...formData.department, value]
@@ -102,7 +102,7 @@ function EditEventForm() {
       data.append("category", formData.category);
       data.append("time", formData.time);
       data.append("department", formData.department);
-      data.append("eligibleYear", formData.eligibleYear);
+      data.append("eligible_degree_year", formData.eligible_degree_year);
       data.append("isPaid", formData.isPaid);
       data.append("cost", formData.isPaid ? parseInt(formData.cost, 10) : null);
       if (formData.banner) {
@@ -163,7 +163,7 @@ function EditEventForm() {
 
   // Handle edit button click
   const handleEdit = (event) => {
-    event.eligibleYear = [];
+    event.eligible_degree_year = [];
     event.department = [];
     setFormData({
       eventName: event.eventName,
@@ -177,7 +177,7 @@ function EditEventForm() {
       category: event.category,
       time: event.time,
       department: event.department,
-      eligibleYear: event.eligibleYear,
+      eligible_degree_year: event.eligible_degree_year,
       isPaid: event.isPaid,
       cost: event.isPaid ? event.cost : "",
       banner: null,
@@ -271,14 +271,14 @@ function EditEventForm() {
         <div className="flex items-center">
           <label className="w-1/3 font-semibold">Year:</label>
           <div className="w-2/3 space-x-4 border border-gray-300 p-4 rounded-lg">
-            {["FE", "SE", "TE", "BE"].map(
+            {["2025", "2026", "2027", "2028"].map(
               (year) => (
                 <label key={year} className="inline-flex items-center">
                   <input
                     type="checkbox"
-                    name="eligibleYear"
+                    name="eligible_degree_year"
                     value={year}
-                    checked={formData.eligibleYear.includes(year)}
+                    checked={formData.eligible_degree_year.includes(year)}
                     onChange={handleChange}
                     className="mr-2 custom-checkbox rounded-lg"
                   />

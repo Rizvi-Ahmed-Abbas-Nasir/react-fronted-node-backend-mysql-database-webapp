@@ -150,3 +150,14 @@ exports.getStatus = async (req, res) => {
   }
 };
 
+exports.getStudentData = async (req, res) => {
+  try {
+    const student_id = req.params.student_id
+    const student = await Admin.getStudentData(student_id)
+    
+    res.status(200).json({ message: "success",result: student})
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+    
+  }
+}

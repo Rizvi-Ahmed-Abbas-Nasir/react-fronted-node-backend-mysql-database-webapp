@@ -181,46 +181,47 @@ exports.getAllAttendance = async () => {
   try {
     const events = await Event.getAllEvents();
   
-    // Define how to infer the academic year of a student based on degree and ac_yr
-    const inferYear = `
-      CASE
-        WHEN SUBSTRING(s.degree, 6, 4) - 4 = SUBSTRING(s.ac_yr, 1, 4) THEN 'FE'
-        WHEN SUBSTRING(s.degree, 6, 4) - 3 = SUBSTRING(s.ac_yr, 1, 4) THEN 'SE'
-        WHEN SUBSTRING(s.degree, 6, 4) - 2 = SUBSTRING(s.ac_yr, 1, 4) THEN 'TE'
-        WHEN SUBSTRING(s.degree, 6, 4) - 1 = SUBSTRING(s.ac_yr, 1, 4) THEN 'BE'
-        ELSE 'UNKNOWN'
-      END
-    `;
-    // 
+    // Define how to infer the academic year of a student based on degree_year and batch
+    // const inferYear = `
+    //   CASE
+    //     WHEN s.degree_year - e.batch = 3 THEN 'FE'
+    //     WHEN s.degree_year - e.batch = 2 THEN 'SE'
+    //     WHEN s.degree_year - e.batch = 1 THEN 'TE'
+    //     WHEN s.degree_year - e.batch = 0 THEN 'BE'
+    //     ELSE 'UNKNOWN'
+    //   END
+    // `;
+  
     // Create a query for each event to determine eligibility (E), registration (R), and participation (P)
     let selectColumns = events
       .map(
         (e) => `
-        MAX(
-          CASE 
-            -- Eligibility (E) based on matching department and inferred academic year
-            WHEN FIND_IN_SET(s.branch, '${e.department}') > 0 
-            AND FIND_IN_SET((${inferYear}), '${e.eligibleYear}') > 0 
-            THEN 1 ELSE 0 
-          END
-        ) AS \`${e.eventName}(${e.date.toLocaleDateString()})_E\`,
-        MAX(
-          CASE 
-            -- Registration (R)
-            WHEN r.event_id = ${e.eventId} 
-            THEN 1 ELSE 0 
-          END
-        ) AS \`${e.eventName}(${e.date.toLocaleDateString()})_R\`,
-        MAX(
-          CASE 
-            -- Participation (P)
-            WHEN r.event_id = ${e.eventId} 
-            AND r.attended = 1 
-            THEN 1 ELSE 0 
-          END
-        ) AS \`${e.eventName}(${e.date.toLocaleDateString()})_P\`,
-        '${e.date.toLocaleDateString()}' AS \`${e.eventName}(${e.date.toLocaleDateString()})_Date\`
-      `
+          MAX(
+            CASE 
+              -- Eligibility (E) based on department and degree_year
+              WHEN FIND_IN_SET(s.branch, '${e.department}') > 0 
+              AND FIND_IN_SET(s.degree_year, '${e.eligible_degree_year}') > 0 
+              THEN 1 ELSE 0 
+            END
+          ) AS \`${e.eventName}(${e.date.toLocaleDateString()})_E\`,
+          MAX(
+            CASE 
+              -- Registration (R)
+              WHEN r.event_id = ${e.eventId} 
+              THEN 1 ELSE 0 
+            END
+          ) AS \`${e.eventName}(${e.date.toLocaleDateString()})_R\`,
+          MAX(
+            CASE 
+              -- Participation (P)
+              WHEN r.event_id = ${e.eventId} 
+              AND r.attended = 1 
+              THEN 1 ELSE 0 
+            END
+          ) AS \`${e.eventName}(${e.date.toLocaleDateString()})_P\`,
+          '${e.date.toLocaleDateString()}' AS \`${e.eventName}(${e.date.toLocaleDateString()})_Date\`,
+          '${e.batch}' AS \`${e.eventName}(${e.date.toLocaleDateString()})_Batch\`
+        `
       )
       .join(", ");
   
@@ -233,6 +234,7 @@ exports.getAllAttendance = async () => {
         s.last_name,
         s.branch,
         s.ac_yr,
+        s.degree_year,
         ${selectColumns}
       FROM tpo_student_details s
       LEFT JOIN tpo_event_registrations r ON r.student_id = s.student_id
@@ -244,17 +246,19 @@ exports.getAllAttendance = async () => {
   
     // Format the result to have the desired structure
     const formattedResult = result[0].map((student) => {
-      const { student_id, clg_id, first_name, middle_name, last_name, branch, ac_yr, ...events } = student;
+      const { student_id, clg_id, first_name, middle_name, last_name, branch, ac_yr, degree_year, ...events } = student;
       
       // Organize events into the new structure
       let eventDetails = {};
       Object.keys(events).forEach((key) => {
         const [eventName, type] = key.split('_');
         if (!eventDetails[eventName]) {
-          eventDetails[eventName] = { E: 0, R: 0, P: 0, Date: "" };
+          eventDetails[eventName] = { E: 0, R: 0, P: 0, Date: "", Batch: "" };
         }
         if (type === "Date") {
           eventDetails[eventName]["Date"] = events[key];
+        } else if (type === "Batch") {
+          eventDetails[eventName]["Batch"] = events[key];
         } else {
           eventDetails[eventName][type] = events[key];
         }
@@ -268,6 +272,7 @@ exports.getAllAttendance = async () => {
         last_name,
         branch,
         ac_yr,
+        degree_year,
         events: eventDetails,
       };
     });
@@ -276,6 +281,7 @@ exports.getAllAttendance = async () => {
   } catch (error) {
     console.log(error);
   }
+  
   
   
 };
@@ -308,3 +314,15 @@ exports.changeAttendanceFlag = async (eventId) => {
     console.log(error)
   }
 };
+
+exports.getStudentData = async (student_id) => {
+  try {
+    const student = await connection.query(`SELECT * FROM tpo_student_details WHERE student_id = ?`, 
+      [student_id])
+
+      return student[0]
+  } catch (error) {
+    console.log(error)
+    
+  }
+}

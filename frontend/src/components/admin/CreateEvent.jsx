@@ -15,7 +15,7 @@ function CreateEvent() {
     category: "",
     time: "",
     department: [],
-    eligibleYear: [],
+    eligible_degree_year: [],
     isPaid: false,
     cost: null,
     banner: null,
@@ -58,13 +58,13 @@ function CreateEvent() {
           paymentQR: files[0],  // Store payment QR image
         });
       }
-    } else if (name === "eligibleYear") {
+    } else if (name === "eligible_degree_year") {
       // Handle eligible years as a checkbox
       const updatedYears = checked
-        ? [...formData.eligibleYear, value]
-        : formData?.eligibleYear?.filter((year) => year !== value);
+        ? [...formData.eligible_degree_year, value]
+        : formData?.eligible_degree_year?.filter((year) => year !== value);
       // console.log(updatedYears);
-      setFormData({ ...formData, eligibleYear: updatedYears });
+      setFormData({ ...formData, eligible_degree_year: updatedYears });
     } else if (name === "department") {
       // Handle department as a checkbox
       const updatedDepartments = checked
@@ -108,7 +108,7 @@ function CreateEvent() {
       data.append("category", formData.category);
       data.append("time", formData.time);
       data.append("department", formData.department);
-      data.append("eligibleYear", formData.eligibleYear);
+      data.append("eligible_degree_year", formData.eligible_degree_year);
       data.append("isPaid", formData.isPaid);
       data.append("cost", formData.isPaid ? parseInt(formData.cost, 10) : null);
       if (formData.banner) {
@@ -141,7 +141,7 @@ function CreateEvent() {
         category: "",
         time: "",
         department: [],
-        eligibleYear: [],
+        eligible_degree_year: [],
         isPaid: false,
         cost: null,
         banner: null,
@@ -244,15 +244,15 @@ function CreateEvent() {
         </div>
 
         <div className="flex items-center">
-          <label className="w-1/3 font-semibold">Year:</label>
+          <label className="w-1/3 font-semibold">Degree Year:</label>
           <div className="w-2/3 space-x-4 border border-gray-300 p-4 rounded-lg">
-            {["FE", "SE", "TE", "BE"].map((year) => (
+            {["2025", "2026", "2027", "2028"].map((year) => (
               <label key={year} className="inline-flex items-center">
                 <input
                   type="checkbox"
-                  name="eligibleYear"
+                  name="eligible_degree_year"
                   value={year}
-                  checked={formData.eligibleYear.includes(year)}
+                  checked={formData.eligible_degree_year.includes(year)}
                   onChange={handleChange}
                   className="mr-2 custom-checkbox rounded-lg"
                 />

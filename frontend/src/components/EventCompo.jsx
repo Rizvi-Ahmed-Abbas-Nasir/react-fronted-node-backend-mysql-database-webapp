@@ -6,12 +6,14 @@ const EventCompo = () => {
   const [openPayBoxes, setOpenPayBoxes] = useState([]);
   const [openPaymentBoxes, setOpenPaymentBoxes] = useState([]); // New state for payment section
   const [data, setData] = useState([]);
+  const [filteredEvents, setFilteredEvents] = useState([]); // Store the filtered events here
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [transactionIds, setTransactionIds] = useState({});
   const [transactionErrors, setTransactionErrors] = useState({});
   const [alertMessage, setAlertMessage] = useState(""); // State for custom alert message
   const [showAlert, setShowAlert] = useState(false); // State to show or hide the custom alert
+  const [student, setStudent] = useState(null); // Store student details here
 
   const StdID = "1";
 
@@ -28,6 +30,7 @@ const EventCompo = () => {
         setLoading(false);
       }
     };
+
     fetchData();
   }, []);
 
@@ -56,6 +59,7 @@ const EventCompo = () => {
   };
 
   const registerClicked = async (event, eventId, isPaid) => {
+    event.preventDefault();
     event.preventDefault();
 
     // Check if transaction ID is required for paid events
@@ -93,6 +97,10 @@ const EventCompo = () => {
 
   if (loading) {
     return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>Error: {error}</div>;
   }
 
   return (
