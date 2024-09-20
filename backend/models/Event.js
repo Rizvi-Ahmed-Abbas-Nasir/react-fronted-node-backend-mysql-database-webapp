@@ -11,7 +11,8 @@ exports.createEvent = async (
   category,
   time,
   department,
-  eligibleYear,
+  eligible_degree_year,
+  batch,
   isPaid,
   cost,
   paymentQR,
@@ -22,7 +23,7 @@ exports.createEvent = async (
 ) => {
   try {
     const [result] = await connection.query(
-      "INSERT INTO tpo_events (eventName, eventDescription, nameOfSpeaker, organizationOfSpeaker,locationOfSpeaker, date, category, time, department, eligibleYear, isPaid, cost,paymentQR, banner, loaOfSpeaker, notice, eventDeadline) VALUES (?, ?, ?, ?, ?, ?, ?,?,?,?, ?,?,?,?,?,?,?)",
+      "INSERT INTO tpo_events (eventName, eventDescription, nameOfSpeaker, organizationOfSpeaker,locationOfSpeaker, date, category, time, department, eligible_degree_year, batch, isPaid, cost,paymentQR, banner, loaOfSpeaker, notice, eventDeadline) VALUES (?, ?, ?, ?, ?, ?, ?,?,?,?, ?,?,?,?,?,?,?,?)",
       [
         eventName,
         eventDescription,
@@ -33,7 +34,8 @@ exports.createEvent = async (
         category,
         time,
         department,
-        eligibleYear,
+        eligible_degree_year,
+        batch,
         isPaid,
         cost,
         paymentQR,
@@ -83,7 +85,7 @@ exports.updateEvent = async (
   category,
   time,
   department,
-  eligibleYear,
+  eligible_degree_year,
   isPaid,
   cost,
   paymentQR,
@@ -94,7 +96,7 @@ exports.updateEvent = async (
 ) => {
   try {
     const [rows] = await connection.query(
-      `UPDATE tpo_events SET eventName = ?,eventDescription = ?, nameOfSpeaker = ?,organizationOfSpeaker = ?,locationOfSpeaker =?, date = ?, category = ?, time = ?, department = ?, eligibleYear = ?, isPaid = ?, cost = ?,paymentQR = ?, banner = ?, loaOfSpeaker = ?, notice = ?, eventDeadline = ? WHERE eventId = ?;`,
+      `UPDATE tpo_events SET eventName = ?,eventDescription = ?, nameOfSpeaker = ?,organizationOfSpeaker = ?,locationOfSpeaker =?, date = ?, category = ?, time = ?, department = ?, eligible_degree_year = ?, isPaid = ?, cost = ?,paymentQR = ?, banner = ?, loaOfSpeaker = ?, notice = ?, eventDeadline = ? WHERE eventId = ?;`,
       [
         eventName,
         eventDescription,
@@ -105,7 +107,7 @@ exports.updateEvent = async (
         category,
         time,
         department,
-        eligibleYear,
+        eligible_degree_year,
         isPaid,
         cost,
         paymentQR,
@@ -255,47 +257,66 @@ exports.changeDeadStatus = async (eventId, value) => {
         `UPDATE tpo_events SET isDead = true WHERE eventId = ?`,
         [eventId]
       );
-      return result
+      return result;
     } else {
       //runs when setting false
-      
+
       const result = await connection.query(
         `UPDATE tpo_events SET isDead = false WHERE eventId = ?`,
         [eventId]
       );
-      return result
+      return result;
     }
   } catch (error) {
     throw new Error("Error updating isDead status: " + error.message);
   }
 };
 
-
 exports.makeDefault = async (eventId) => {
   try {
-    const result = await connection.query(`UPDATE tpo_events SET eventDeadline = '3000-01-01' WHERE eventId = ?`, [eventId])
+    const result = await connection.query(
+      `UPDATE tpo_events SET eventDeadline = '3000-01-01' WHERE eventId = ?`,
+      [eventId]
+    );
   } catch (error) {
     throw new Error("Error making deadline default: " + error.message);
-    
   }
-}
+};
 
 exports.storePhoto = async (eventId, path) => {
   try {
-    const result = await connection.query(`UPDATE tpo_events SET eventPhotos = ? WHERE eventId = ?`, [path, eventId])
+    const result = await connection.query(
+      `UPDATE tpo_events SET eventPhotos = ? WHERE eventId = ?`,
+      [path, eventId]
+    );
 
-    return result
+    return result;
   } catch (error) {
-    throw new Error("Error storing event photos: "+ error.message);
+    throw new Error("Error storing event photos: " + error.message);
   }
-}
+};
 
 exports.changePhotosUploadStatus = async (eventId) => {
   try {
-    const result = await connection.query(`UPDATE tpo_events SET photosUploaded = true WHERE eventId = ?`, [eventId])
+    const result = await connection.query(
+      `UPDATE tpo_events SET photosUploaded = true WHERE eventId = ?`,
+      [eventId]
+    );
 
-    return result
+    return result;
   } catch (error) {
-    throw new Error("Error storing event photos: "+ error.message);
+    throw new Error("Error storing event photos: " + error.message);
   }
+};
+
+exports.getCurrentBatch = async () => {
+  try {
+    const [row] = await connection.query(
+      `SELECT * FROM current_batch WHERE batch_id = 1`,
+    );
+
+    return row[0].batch;
+  } catch (error) {
+    throw new Error("Error checking current batch" + error.message);
+  } 
 }

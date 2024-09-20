@@ -7,7 +7,7 @@ module.exports = (req, res, next) => {
     category,
     time,
     department,
-    eligibleYear,
+    eligible_degree_year,
     isPaid,
     cost,
   } = req.body;
@@ -31,7 +31,7 @@ module.exports = (req, res, next) => {
     !category ||
     !time ||
     !department ||
-    !eligibleYear
+    !eligible_degree_year
   ) {
     return res
       .status(400)

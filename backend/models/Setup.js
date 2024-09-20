@@ -14,14 +14,14 @@ exports.createTables = async () => {
       category varchar(255), 
       time time, 
       department varchar(255), 
-      eligibleYear varchar(255), 
+      eligible_degree_year varchar(255), 
+      batch varchar(25) DEFAULT NULL, 
       isPaid bool DEFAULT NULL, 
       cost int DEFAULT NULL,
       paymentQR text,
       banner text,
       loaOfSpeaker text,
       notice text,
-      eventNotice varchar(1000),
       eventDeadline date DEFAULT '3000-01-01',
       attendanceFlag bool DEFAULT false,
       photosUploaded bool DEFAULT false,
@@ -38,6 +38,7 @@ exports.createTables = async () => {
       last_name varchar(45) DEFAULT NULL,
       clg_id varchar(45) DEFAULT NULL,
       branch varchar(45) DEFAULT NULL,
+      degree_year varchar(25) DEFAULT NULL,
       ac_yr varchar(255) DEFAULT NULL,
       degree varchar(25) DEFAULT NULL,
       UNIQUE KEY email_id (email_id),
@@ -55,15 +56,14 @@ exports.createTables = async () => {
       FOREIGN KEY (event_id) REFERENCES tpo_events(eventId) ON DELETE CASCADE,
       FOREIGN KEY (student_id) REFERENCES tpo_student_details(student_id)
       );
+      
+      CREATE TABLE current_batch(
+      batch_id INT PRIMARY KEY AUTO_INCREMENT,
+      batch varchar(25) DEFAULT NULL
+      )
+      
       `
-      // CREATE TABLE IF NOT EXISTS attendance_records (
-      // student_id INT,
-      // clg_id VARCHAR(255),
-      // first_name VARCHAR(255),
-      // middle_name VARCHAR(255),
-      // last_name VARCHAR(255),
-      // PRIMARY KEY (student_id)
-      // );
+      
     );
     return result;
   } catch (error) {
@@ -80,11 +80,12 @@ exports.createStudent = async (
   clg_id,
   branch,
   ac_yr,
-  degree
+  degree,
+  degree_year
 ) => {
   try {
     const [result] = await connection.query(
-      "INSERT INTO tpo_student_details (email_id, first_name, middle_name, last_name, clg_id, branch, ac_yr, degree) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+      "INSERT INTO tpo_student_details (email_id, first_name, middle_name, last_name, clg_id, branch, ac_yr, degree, degree_year) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
       [
         email_id,
         first_name,
@@ -93,7 +94,8 @@ exports.createStudent = async (
         clg_id,
         branch,
         ac_yr,
-        degree
+        degree,
+        degree_year
       ]
     );
     return result;
