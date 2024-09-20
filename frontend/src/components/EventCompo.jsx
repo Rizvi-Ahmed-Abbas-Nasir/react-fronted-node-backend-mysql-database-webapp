@@ -169,7 +169,8 @@ const EventCompo = () => {
                       ) : null}
 
                       <div className="w-full justify-center flex mt-10">
-                        <button
+                        <button 
+                        
                           type="submit"
                           className="ml-2 text-white hover:underline py-3 px-5 bg-blue-500 rounded-lg"
                         >
