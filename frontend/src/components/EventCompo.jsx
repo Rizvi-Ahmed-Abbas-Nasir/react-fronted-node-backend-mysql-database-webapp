@@ -8,6 +8,7 @@ const EventCompo = () => {
   const [error, setError] = useState(null);
   const [transactionIds, setTransactionIds] = useState({}); 
   const StdID = "11"
+  // const DegreeYear
   useEffect(() => {
     const fetchData = async () => {
       try {

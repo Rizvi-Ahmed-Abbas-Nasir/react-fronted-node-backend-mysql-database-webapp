@@ -191,7 +191,7 @@ exports.getAllAttendance = async () => {
         ELSE 'UNKNOWN'
       END
     `;
-  
+    // 
     // Create a query for each event to determine eligibility (E), registration (R), and participation (P)
     let selectColumns = events
       .map(

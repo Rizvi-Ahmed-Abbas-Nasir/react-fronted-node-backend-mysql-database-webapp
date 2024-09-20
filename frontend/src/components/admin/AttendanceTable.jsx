@@ -183,6 +183,7 @@ function AttendanceTable() {
 
   // Excel Export
   const exportToExcel = () => {
+    // First sheet: Original data with E, R, P
     const flattenedData = filteredData.map(item => {
       const events = item.events;
       let flatData = {
@@ -199,15 +200,80 @@ function AttendanceTable() {
       }
       return flatData;
     });
-
-    const worksheet = XLSX.utils.json_to_sheet(flattenedData);
+  
+    // Second sheet: Only E values
+    const flattenedDataE = filteredData.map(item => {
+      const events = item.events;
+      let flatData = {
+        student_id: item.student_id,
+        clg_id: item.clg_id,
+        name: `${item.first_name} ${item.middle_name || ''} ${item.last_name}`,
+        department: item.branch,
+        ac_yr: item.ac_yr,
+      };
+      for (const [eventName, eventDetails] of Object.entries(events)) {
+        flatData[`${eventName}_E`] = eventDetails.E;
+      }
+      return flatData;
+    });
+  
+    // Third sheet: Only R values
+    const flattenedDataR = filteredData.map(item => {
+      const events = item.events;
+      let flatData = {
+        student_id: item.student_id,
+        clg_id: item.clg_id,
+        name: `${item.first_name} ${item.middle_name || ''} ${item.last_name}`,
+        department: item.branch,
+        ac_yr: item.ac_yr,
+      };
+      for (const [eventName, eventDetails] of Object.entries(events)) {
+        flatData[`${eventName}_R`] = eventDetails.R;
+      }
+      return flatData;
+    });
+  
+    // Fourth sheet: Only P values
+    const flattenedDataP = filteredData.map(item => {
+      const events = item.events;
+      let flatData = {
+        student_id: item.student_id,
+        clg_id: item.clg_id,
+        name: `${item.first_name} ${item.middle_name || ''} ${item.last_name}`,
+        department: item.branch,
+        ac_yr: item.ac_yr,
+      };
+      for (const [eventName, eventDetails] of Object.entries(events)) {
+        flatData[`${eventName}_P`] = eventDetails.P;
+      }
+      return flatData;
+    });
+  
+    // Create workbook and add all sheets
     const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Attendance Data');
-
+  
+    // First sheet: All event data (E, R, P)
+    const worksheet = XLSX.utils.json_to_sheet(flattenedData);
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'All Data');
+  
+    // Second sheet: Only E
+    const worksheetE = XLSX.utils.json_to_sheet(flattenedDataE);
+    XLSX.utils.book_append_sheet(workbook, worksheetE, 'Only E');
+  
+    // Third sheet: Only R
+    const worksheetR = XLSX.utils.json_to_sheet(flattenedDataR);
+    XLSX.utils.book_append_sheet(workbook, worksheetR, 'Only R');
+  
+    // Fourth sheet: Only P
+    const worksheetP = XLSX.utils.json_to_sheet(flattenedDataP);
+    XLSX.utils.book_append_sheet(workbook, worksheetP, 'Only P');
+  
+    // Write the workbook to an Excel file and download
     const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
     const excelBlob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8' });
     saveAs(excelBlob, 'attendance-data.xlsx');
   };
+  
  
   const handleYearChange = (event) => {
     setSelectedYear(event.target.value);
