@@ -108,7 +108,7 @@ function RegistrationPage() {
     <>
       <Header />
       <AdminHeader />
-      <div className="flex flex-col gap-4 md:ml-72 md:mt-32 w-full px-4">
+      <div className="flex flex-col gap-4 ml-[18rem] md:mt-32 w-[70%] px-4">
         <h1 className="text-2xl font-bold mb-4">Registration Details</h1>
         
         {/* Buttons for bulk actions */}
@@ -132,16 +132,16 @@ function RegistrationPage() {
         ) : null}
 
         {registrations.length ? (
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200 bg-white shadow-md rounded-lg">
-              <thead className="bg-gray-50">
+          <div className="w-full rounded-xl">
+            <table className="w-[80%] divide-y divide-gray-200 bg-white shadow-md rounded-xl">
+              <thead className="bg-blue-600 text-white rounded-xl p-8 ">
                 <tr>
-                  <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">College ID</th>
-                  <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Email</th>
-                  <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Name</th>
-                  <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Approved</th>
-                  <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Transaction ID</th>
-                  <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Actions</th>
+                  <th className="px-4 py-2 text-left text-sm font-medium">College ID</th>
+                  <th className="px-4 py-2 text-left text-sm font-medium">Email</th>
+                  <th className="px-4 py-2 text-left text-sm font-medium">Name</th>
+                  <th className="px-4 py-2 text-left text-sm font-medium">Approved</th>
+                  <th className="px-4 py-2 text-left text-sm font-medium">Transaction ID</th>
+                  <th className="px-4 py-2 text-left text-sm font-medium">Actions</th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
