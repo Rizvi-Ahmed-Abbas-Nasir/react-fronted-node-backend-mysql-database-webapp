@@ -133,7 +133,7 @@ function RegistrationPage() {
 
         {registrations.length ? (
           <div className="w-full rounded-xl">
-            <table className="w-[80%] divide-y divide-gray-200 bg-white shadow-md rounded-xl">
+            <table className="w-[100%] divide-y divide-gray-200 bg-white shadow-md rounded-xl">
               <thead className="bg-blue-600 text-white rounded-xl p-8 ">
                 <tr>
                   <th className="px-4 py-2 text-left text-sm font-medium">College ID</th>
