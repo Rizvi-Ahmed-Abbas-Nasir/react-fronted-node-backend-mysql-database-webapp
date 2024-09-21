@@ -36,13 +36,13 @@ function History() {
         [id]: mappedValue,
       }));
     } catch (error) {
-      setError('Failed to update progress.');
+      console.log('Failed to update progress.');
     }
   };
 
   useEffect(() => {
     fetchEvents();
-  }, );
+  },[events] );
 
   const fetchEvents = async () => {
     try {
@@ -50,7 +50,7 @@ function History() {
       setEvents(response.data);
       response.data.forEach((event) => updateProgress(event.eventId));
     } catch (error) {
-      setError('Failed to fetch events.');
+      console.log('Failed to fetch events.');
     }
   };
 
