@@ -11,11 +11,10 @@ function AttendanceTable() {
   const [degreeYearFilter, setDegreeYearFilter] = useState("");
   const [branchFilter, setBranchFilter] = useState("");
 
-
   useEffect(() => {
     const fetchAttendanceData = async () => {
       try {
-        const response = await axios.get(`${process.env.REACT_APP_URL}/getAllAttendance`);
+        const response = await axios.get("http://localhost:8000/getAllAttendance");
         setAttendanceData(response.data.result);
         setFilteredData(response.data.result); // Initialize filteredData
       } catch (err) {
@@ -39,135 +38,158 @@ function AttendanceTable() {
 
   useEffect(() => {
     handleFilterChange();
-  },);
+  }, [degreeYearFilter, branchFilter]);
 
   const exportToExcel = () => {
     // Complete data for the first sheet
-    const completeData = filteredData.map(item => {
-      const events = item.events;
-      let flatData = {
-        student_id: item.student_id,
-        clg_id: item.clg_id,
-        name: `${item.first_name} ${item.middle_name || ''} ${item.last_name}`,
-        branch: item.branch,
-        degree_year: item.degree_year,
+    const completeData = filteredData.map(row => {
+      const rowData = {
+        "Student ID": row.student_id,
+        "College ID": row.clg_id,
+        "Name": `${row.first_name} ${row.middle_name || ''} ${row.last_name}`,
+        "Branch": row.branch,
+        "Degree Year": row.degree_year,
       };
-      for (const [eventName, eventDetails] of Object.entries(events)) {
-        flatData[`${eventName}_E`] = eventDetails.E;
-        flatData[`${eventName}_R`] = eventDetails.R;
-        flatData[`${eventName}_P`] = eventDetails.P;
-      }
-      return flatData;
+  
+      // Add each event's E, R, P values (convert non-1 values to 0)
+      Object.keys(row.events).forEach(event => {
+        rowData[`${event} - E`] = row.events[event].E === 1 ? 1 : 0;
+        rowData[`${event} - R`] = row.events[event].R === 1 ? 1 : 0;
+        rowData[`${event} - P`] = row.events[event].P === 1 ? 1 : 0;
+      });
+  
+      // Add total E, R, P values
+      const totalE = Object.values(row.events).reduce((sum, event) => sum + (event.E === 1 ? 1 : 0), 0);
+      const totalR = Object.values(row.events).reduce((sum, event) => sum + (event.R === 1 ? 1 : 0), 0);
+      const totalP = Object.values(row.events).reduce((sum, event) => sum + (event.P === 1 ? 1 : 0), 0);
+      
+      rowData["Total E"] = totalE;
+      rowData["Total R"] = totalR;
+      rowData["Total P"] = totalP;
+  
+      return rowData;
     });
   
-    // E column data
-    const eData = filteredData.map(item => {
-      const events = item.events;
-      let flatData = {
-        student_id: item.student_id,
-        clg_id: item.clg_id,
-        name: `${item.first_name} ${item.middle_name || ''} ${item.last_name}`,
-        branch: item.branch,
-        degree_year: item.degree_year,
+    // E column data for the second sheet
+    const eData = filteredData.map(row => {
+      const rowData = {
+        "Student ID": row.student_id,
+        "College ID": row.clg_id,
+        "Name": `${row.first_name} ${row.middle_name || ''} ${row.last_name}`,
+        "Branch": row.branch,
+        "Degree Year": row.degree_year,
       };
-      for (const [eventName, eventDetails] of Object.entries(events)) {
-        flatData[`${eventName}_E`] = eventDetails.E;
-      }
-      return flatData;
+  
+      // Only add the E values
+      Object.keys(row.events).forEach(event => {
+        rowData[`${event} - E`] = row.events[event].E === 1 ? 1 : 0;
+      });
+  
+      return rowData;
     });
   
-    // R column data
-    const rData = filteredData.map(item => {
-      const events = item.events;
-      let flatData = {
-        student_id: item.student_id,
-        clg_id: item.clg_id,
-        name: `${item.first_name} ${item.middle_name || ''} ${item.last_name}`,
-        branch: item.branch,
-        degree_year: item.degree_year,
+    // R column data for the third sheet
+    const rData = filteredData.map(row => {
+      const rowData = {
+        "Student ID": row.student_id,
+        "College ID": row.clg_id,
+        "Name": `${row.first_name} ${row.middle_name || ''} ${row.last_name}`,
+        "Branch": row.branch,
+        "Degree Year": row.degree_year,
       };
-      for (const [eventName, eventDetails] of Object.entries(events)) {
-        flatData[`${eventName}_R`] = eventDetails.R;
-      }
-      return flatData;
+  
+      // Only add the R values
+      Object.keys(row.events).forEach(event => {
+        rowData[`${event} - R`] = row.events[event].R === 1 ? 1 : 0;
+      });
+  
+      return rowData;
     });
   
-    // P column data
-    const pData = filteredData.map(item => {
-      const events = item.events;
-      let flatData = {
-        student_id: item.student_id,
-        clg_id: item.clg_id,
-        name: `${item.first_name} ${item.middle_name || ''} ${item.last_name}`,
-        branch: item.branch,
-        degree_year: item.degree_year,
+    // P column data for the fourth sheet
+    const pData = filteredData.map(row => {
+      const rowData = {
+        "Student ID": row.student_id,
+        "College ID": row.clg_id,
+        "Name": `${row.first_name} ${row.middle_name || ''} ${row.last_name}`,
+        "Branch": row.branch,
+        "Degree Year": row.degree_year,
       };
-      for (const [eventName, eventDetails] of Object.entries(events)) {
-        flatData[`${eventName}_P`] = eventDetails.P;
-      }
-      return flatData;
+  
+      // Only add the P values
+      Object.keys(row.events).forEach(event => {
+        rowData[`${event} - P`] = row.events[event].P === 1 ? 1 : 0;
+      });
+  
+      return rowData;
     });
   
-    // Create new workbook and append sheets
+    // Create a new workbook
     const workbook = XLSX.utils.book_new();
   
-    // Sheet with complete data
+    // First sheet: complete data with total columns
     const completeSheet = XLSX.utils.json_to_sheet(completeData);
     XLSX.utils.book_append_sheet(workbook, completeSheet, 'Complete Data');
   
-    // E sheet
+    // Second sheet: E columns only
     const eSheet = XLSX.utils.json_to_sheet(eData);
     XLSX.utils.book_append_sheet(workbook, eSheet, 'Events E');
   
-    // R sheet
+    // Third sheet: R columns only
     const rSheet = XLSX.utils.json_to_sheet(rData);
     XLSX.utils.book_append_sheet(workbook, rSheet, 'Events R');
   
-    // P sheet
+    // Fourth sheet: P columns only
     const pSheet = XLSX.utils.json_to_sheet(pData);
     XLSX.utils.book_append_sheet(workbook, pSheet, 'Events P');
   
-    // Generate Excel file and prompt download
+    // Write the workbook and download it
     const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
-    const excelBlob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8' });
-    saveAs(excelBlob, 'attendance-data.xlsx');
+    const excelBlob = new Blob([excelBuffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+    saveAs(excelBlob, 'attendance_data.xlsx');
   };
-  if(!attendanceData){
-    return (
-    <div className="flex flex-col gap-8 justify-start items-start md:ml-72 md:mt-32 w-auto p-10 bg-white rounded-2xl shadow-2xl transition-all duration-500 ease-in-out transform hover:scale-[1.01]">
-    <h1 className="text-5xl font-extrabold text-gray-800 mb-8 tracking-wider border-b pb-4 border-gray-200 w-full">
-      No Event Data
-    </h1>
-    </div>)
-  }
+  
+  
   
   const exportToCSV = async () => {
-    try {
-      const dataToExport = filteredData.map(item => {
-        const events = item.events;
-        let flatData = {
-          student_id: item.student_id,
-          clg_id: item.clg_id,
-          name: `${item.first_name} ${item.middle_name || ''} ${item.last_name}`,
-          branch: item.branch,
-          degree_year: item.degree_year,
-        };
-        for (const [eventName, eventDetails] of Object.entries(events)) {
-          flatData[`${eventName}_E`] = eventDetails.E;
-          flatData[`${eventName}_R`] = eventDetails.R;
-          flatData[`${eventName}_P`] = eventDetails.P;
-        }
-        return flatData;
+    // Prepare the data for CSV export
+    const csvData = filteredData.map(row => {
+      const rowData = {
+        "Student ID": row.student_id,
+        "College ID": row.clg_id,
+        "Name": `${row.first_name} ${row.middle_name || ''} ${row.last_name}`,
+        "Branch": row.branch,
+        "Degree Year": row.degree_year,
+      };
+  
+      // Add each event's E, R, P values (convert non-1 values to 0)
+      Object.keys(row.events).forEach(event => {
+        rowData[`${event} - E`] = row.events[event].E === 1 ? 1 : 0;
+        rowData[`${event} - R`] = row.events[event].R === 1 ? 1 : 0;
+        rowData[`${event} - P`] = row.events[event].P === 1 ? 1 : 0;
       });
-
-      const csv = await converter.json2csv(dataToExport);
-      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-      saveAs(blob, 'attendance-data.csv');
-    } catch (error) {
-      console.error('Error generating CSV:', error);
-    }
+  
+      // Add total E, R, P values
+      const totalE = Object.values(row.events).reduce((sum, event) => sum + (event.E === 1 ? 1 : 0), 0);
+      const totalR = Object.values(row.events).reduce((sum, event) => sum + (event.R === 1 ? 1 : 0), 0);
+      const totalP = Object.values(row.events).reduce((sum, event) => sum + (event.P === 1 ? 1 : 0), 0);
+      
+      rowData["Total E"] = totalE;
+      rowData["Total R"] = totalR;
+      rowData["Total P"] = totalP;
+  
+      return rowData;
+    });
+  
+    // Convert JSON data to CSV format
+    const csvString = await converter.json2csv(csvData);
+  
+    // Create a Blob from the CSV string and trigger the download
+    const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+    saveAs(blob, 'attendance_data.csv');
   };
-  console.log(attendanceData)
+  
+
   // Get unique degree years and branches for the filter options
   const uniqueDegreeYears = [...new Set(attendanceData.map(item => item.degree_year))];
   const uniqueBranches = [...new Set(attendanceData.map(item => item.branch))];
@@ -247,6 +269,9 @@ function AttendanceTable() {
                     </th>
                   </React.Fragment>
                 ))}
+                <th className="border px-6 py-4 text-sm font-semibold tracking-wide">Total E</th>
+                <th className="border px-6 py-4 text-sm font-semibold tracking-wide">Total R</th>
+                <th className="border px-6 py-4 text-sm font-semibold tracking-wide">Total P</th>
               </tr>
               <tr>
                 <th className="border"></th>
@@ -261,34 +286,46 @@ function AttendanceTable() {
                     <th className="border px-6 py-2 text-sm font-semibold tracking-wide">P</th>
                   </React.Fragment>
                 ))}
+                <th className="border"></th>
+                <th className="border"></th>
+                <th className="border"></th>
               </tr>
             </thead>
             <tbody className="text-gray-700">
-              {filteredData.map((row, index) => (
-                <tr key={index} className="hover:bg-gray-100">
-                  <td className="border px-6 py-3">{row.student_id}</td>
-                  <td className="border px-6 py-3">{row.clg_id}</td>
-                  <td className="border px-6 py-3">{`${row.first_name} ${row.middle_name || ''} ${row.last_name}`}</td>
-                  <td className="border px-6 py-3">{row.branch}</td>
-                  <td className="border px-6 py-3">{row.degree_year}</td>
-                  {Object.values(row.events).map((eventDetail, eventIndex) => (
-                    <React.Fragment key={eventIndex}>
-                      <td className="border px-6 py-2">{eventDetail.E}</td>
-                      <td className="border px-6 py-2">{eventDetail.R}</td>
-                      <td className="border px-6 py-2">{eventDetail.P}</td>
-                    </React.Fragment>
-                  ))}
-                </tr>
-              ))}
+              {filteredData.map((row, index) => {
+                // Calculate total E, R, P values
+                const totalE = Object.values(row.events).reduce((sum, event) => sum + (event.E || 0), 0);
+                const totalR = Object.values(row.events).reduce((sum, event) => sum + (event.R || 0), 0);
+                const totalP = Object.values(row.events).reduce((sum, event) => sum + (event.P || 0), 0);
+
+                return (
+                  <tr key={index} className="hover:bg-gray-100">
+                    <td className="border px-6 py-3">{row.student_id}</td>
+                    <td className="border px-6 py-3">{row.clg_id}</td>
+                    <td className="border px-6 py-3">{`${row.first_name} ${row.middle_name || ''} ${row.last_name}`}</td>
+                    <td className="border px-6 py-3">{row.branch}</td>
+                    <td className="border px-6 py-3">{row.degree_year}</td>
+                    {Object.values(row.events).map((eventDetail, eventIndex) => (
+                      <React.Fragment key={eventIndex}>
+                        <td className="border px-6 py-2">{eventDetail.E || 0}</td>
+                        <td className="border px-6 py-2">{eventDetail.R || 0}</td>
+                        <td className="border px-6 py-2">{eventDetail.P || 0}</td>
+                      </React.Fragment>
+                    ))}
+                    <td className="border px-6 py-3">{totalE}</td>
+                    <td className="border px-6 py-3">{totalR}</td>
+                    <td className="border px-6 py-3">{totalP}</td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
       ) : (
-        <div className="text-gray-500 text-lg italic">{error || 'Loading...'}</div>
+        <p className="text-red-600 font-semibold text-lg">No attendance data found.</p>
       )}
     </div>
   );
-  
 }
 
 export default AttendanceTable;
