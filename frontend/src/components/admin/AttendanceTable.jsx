@@ -11,6 +11,7 @@ function AttendanceTable() {
   const [degreeYearFilter, setDegreeYearFilter] = useState("");
   const [branchFilter, setBranchFilter] = useState("");
 
+
   useEffect(() => {
     const fetchAttendanceData = async () => {
       try {
@@ -131,6 +132,14 @@ function AttendanceTable() {
     const excelBlob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8' });
     saveAs(excelBlob, 'attendance-data.xlsx');
   };
+  if(!attendanceData){
+    return (
+    <div className="flex flex-col gap-8 justify-start items-start md:ml-72 md:mt-32 w-auto p-10 bg-white rounded-2xl shadow-2xl transition-all duration-500 ease-in-out transform hover:scale-[1.01]">
+    <h1 className="text-5xl font-extrabold text-gray-800 mb-8 tracking-wider border-b pb-4 border-gray-200 w-full">
+      No Event Data
+    </h1>
+    </div>)
+  }
   
   const exportToCSV = async () => {
     try {
@@ -158,7 +167,7 @@ function AttendanceTable() {
       console.error('Error generating CSV:', error);
     }
   };
-
+  console.log(attendanceData)
   // Get unique degree years and branches for the filter options
   const uniqueDegreeYears = [...new Set(attendanceData.map(item => item.degree_year))];
   const uniqueBranches = [...new Set(attendanceData.map(item => item.branch))];
