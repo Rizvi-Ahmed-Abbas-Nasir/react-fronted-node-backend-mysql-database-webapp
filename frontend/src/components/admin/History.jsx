@@ -28,7 +28,7 @@ function History() {
 
   const updateProgress = async (id) => {
     try {
-      const response = await axios.get(`http://localhost:8000/eventStatus/${id}`);
+      const response = await axios.get(`${process.env.REACT_APP_URL}/eventStatus/${id}`);
       const progressStatus = response.data.status;
       const mappedValue = getProgressValue(progressStatus);
       setProgresses((prevProgresses) => ({
@@ -42,11 +42,11 @@ function History() {
 
   useEffect(() => {
     fetchEvents();
-  }, []);
+  }, );
 
   const fetchEvents = async () => {
     try {
-      const response = await axios.get('http://localhost:8000/event');
+      const response = await axios.get(`${process.env.REACT_APP_URL}/event`);
       setEvents(response.data);
       response.data.forEach((event) => updateProgress(event.eventId));
     } catch (error) {
@@ -57,7 +57,7 @@ function History() {
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this event?')) {
       try {
-        const data = await axios.delete(`http://localhost:8000/event/${id}`);
+        const data = await axios.delete(`${process.env.REACT_APP_URL}/event/${id}`);
         fetchEvents();
         alert(data.data.message);
       } catch (error) {
@@ -69,7 +69,7 @@ function History() {
   const handleRemove = async (id) => {
     if (window.confirm('Are you sure you want to remove this event?')) {
       try {
-        const data = await axios.delete(`http://localhost:8000/removeEvent/${id}`);
+        const data = await axios.delete(`${process.env.REACT_APP_URL}/removeEvent/${id}`);
         fetchEvents();
         alert(data.data.message);
       } catch (error) {
@@ -80,7 +80,7 @@ function History() {
 
   const handleUndo = async (id) => {
     try {
-      const data = await axios.post(`http://localhost:8000/undoEvent/${id}`);
+      const data = await axios.post(`${process.env.REACT_APP_URL}/undoEvent/${id}`);
       fetchEvents();
       alert(data.data.message);
     } catch (error) {
@@ -108,7 +108,7 @@ function History() {
     formData.append('photos', file);
 
     try {
-      const response = await axios.post(`http://localhost:8000/uploadPhotos/${currentEventId}`, formData, {
+      const response = await axios.post(`${process.env.REACT_APP_URL}/uploadPhotos/${currentEventId}`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -247,7 +247,7 @@ function History() {
             Upload File
           </Button>
           <Button
-            onClick={() => window.open(`http://localhost:8000/${currentPhotosPath}`)}
+            onClick={() => window.open(`${process.env.REACT_APP_URL}/${currentPhotosPath}`)}
             color="primary"
             variant="contained"
           >

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import axios from "axios";
 import ClipLoader from "react-spinners/ClipLoader";
 
@@ -22,24 +22,10 @@ function CreateEvent() {
     paymentQR: null,
   });
 
-  const [events, setEvents] = useState([]);
   const [editEventId, setEditEventId] = useState(null);
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   // const [bannerPreview, setBannerPreview] = useState(null);
-
-  useEffect(() => {
-    fetchEvents();
-  }, []);
-
-  const fetchEvents = async () => {
-    try {
-      const response = await axios.get("http://localhost:8000/event");
-      setEvents(response.data);
-    } catch (error) {
-      setError("Failed to fetch events.");
-    }
-  };
 
   const handleChange = (e) => {
     const { name, value, type, checked, files } = e.target;
@@ -119,13 +105,13 @@ function CreateEvent() {
       }      
       if (editEventId) {
         const response = await axios.put(
-          `http://localhost:8000/event/${editEventId}`,
+          `${process.env.REACT_APP_URL}/event/${editEventId}`,
           data
         );
         setEditEventId(null);
         alert(response.data.message);
       } else {
-        const response = await axios.post("http://localhost:8000/event", data);
+        const response = await axios.post(`${process.env.REACT_APP_URL}/event`, data);
         alert(response.data.message);
       }
 
@@ -148,7 +134,6 @@ function CreateEvent() {
         paymentQR: null,
       });
       setError("");
-      fetchEvents();
       setIsLoading(false);
     } catch (error) {
       setError(error.message);

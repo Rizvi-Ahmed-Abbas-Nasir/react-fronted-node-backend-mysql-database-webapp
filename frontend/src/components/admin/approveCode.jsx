@@ -11,7 +11,7 @@ function ApproveCode() {
   useEffect(() => {
     async function fetchRegistrations() {
       try {
-        const response = await axios.get(`http://localhost:8000/event/?id=${eventid}`); // Adjust endpoint as needed
+        const response = await axios.get(`${process.env.REACT_APP_URL}/event/?id=${eventid}`); // Adjust endpoint as needed
         setEvents(response.data);
       } catch (err) {
         setError(err.message);

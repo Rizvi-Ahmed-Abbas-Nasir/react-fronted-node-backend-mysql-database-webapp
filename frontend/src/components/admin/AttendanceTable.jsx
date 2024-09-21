@@ -14,7 +14,7 @@ function AttendanceTable() {
   useEffect(() => {
     const fetchAttendanceData = async () => {
       try {
-        const response = await axios.get("http://localhost:8000/getAllAttendance");
+        const response = await axios.get(`${process.env.REACT_APP_URL}/getAllAttendance`);
         setAttendanceData(response.data.result);
         setFilteredData(response.data.result); // Initialize filteredData
       } catch (err) {
@@ -38,7 +38,7 @@ function AttendanceTable() {
 
   useEffect(() => {
     handleFilterChange();
-  }, [degreeYearFilter, branchFilter]);
+  },);
 
   const exportToExcel = () => {
     // Complete data for the first sheet

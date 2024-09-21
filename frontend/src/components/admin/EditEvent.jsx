@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import Header from "../header";
-import AdminHeader from "./AdminHeader";
 import ClipLoader from "react-spinners/ClipLoader";
 
 
@@ -28,13 +26,6 @@ function EditEventForm() {
   const [events, setEvents] = useState([]); // For storing existing events
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
-  const departments = ["Comps", "IT", "AIDS"];
-  const eligible_degree_year = [
-    "FE",
-    "SE",
-    "TE",
-    "BE",
-  ];
 
   useEffect(() => {
     fetchAllEvents(); // Load all events when component mounts
@@ -43,7 +34,7 @@ function EditEventForm() {
   // Fetch all existing events
   const fetchAllEvents = async () => {
     try {
-      const response = await axios.get("http://localhost:8000/event");
+      const response = await axios.get(`${process.env.REACT_APP_URL}/event`);
       setEvents(response.data);
     } catch (error) {
       setError("Failed to load events.");
@@ -113,7 +104,7 @@ function EditEventForm() {
       }
       if (editEventId) {
         const response = await axios.put(
-          `http://localhost:8000/event/${editEventId}`,
+          `${process.env.REACT_APP_URL}/event/${editEventId}`,
           data
         );
         setEditEventId(null);
@@ -136,7 +127,7 @@ function EditEventForm() {
   // Handle event deletion
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`http://localhost:8000/event/${id}`);
+      await axios.delete(`${process.env.REACT_APP_URL}/event/${id}`);
       alert("Event deleted successfully");
       fetchAllEvents(); // Refresh the event list after delete
     } catch (error) {
@@ -149,7 +140,7 @@ function EditEventForm() {
     ) {
       try {
         const data = await axios.delete(
-          `http://localhost:8000/removeEvent/${id}`
+          `${process.env.REACT_APP_URL}/removeEvent/${id}`
         );
         fetchAllEvents();
         alert(data.data.message);
@@ -250,7 +241,7 @@ function EditEventForm() {
             value={formData.time}
             onChange={handleChange}
             className="w-2/3 p-2 rounded-lg bg-gray-100 text-black border border-gray-300 focus:border-blue-400"
-          />
+          />  
         </div>
 
         <div className="flex items-center">
@@ -477,7 +468,7 @@ function EditEventForm() {
                       </button>
                       {event.loaOfSpeaker && (
                         <a
-                          href={`http://localhost:8000/${event.loaOfSpeaker}`}
+                          href={`${process.env.REACT_APP_URL}/${event.loaOfSpeaker}`}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600"

@@ -2,12 +2,9 @@ import React, { useState, useRef, useEffect } from 'react';
 import QrScanner from 'qr-scanner'; // Import QrScanner from the appropriate package
 import Header from '../header'; // Adjust imports based on your project structure
 import AdminHeader from './AdminHeader';
-import { useParams } from 'react-router-dom';
 import axios from 'axios'; // Ensure axios is installed and imported
-import { toast } from 'react-toastify'; // Import toast if used for notifications
 
 function Scan() {
-  const { id } = useParams(); // Get event id from the URL
   const videoRef = useRef(null); // Reference for the video element
   const [scannedData, setScannedData] = useState('');
   const [scanner, setScanner] = useState(null); // State to hold scanned QR code data
@@ -19,7 +16,7 @@ function Scan() {
     setScannedData(result.data);
     const qrcodedata = JSON.parse(result.data);
     // console.log(qrcodedata);
-    const data = await axios.put(`http://localhost:8000/markAsAttended/`, { student_id: qrcodedata.student_id, event_id: qrcodedata.event_id });
+    const data = await axios.put(`${process.env.REACT_APP_URL}/markAsAttended/`, { student_id: qrcodedata.student_id, event_id: qrcodedata.event_id });
     // console.log(data.data.message);
     alert(data.data.message)
   };
