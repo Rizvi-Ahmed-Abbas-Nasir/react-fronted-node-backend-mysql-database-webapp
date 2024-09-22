@@ -156,9 +156,9 @@ const EventCompo = () => {
               !event.isDeleted && (
                 <div
                   key={index}
-                  className="bg-white border rounded-lg shadow-md p-4 w-full sm:w-1/2 lg:w-1/3 xl:w-1/4 h-auto flex flex-col justify-between"
+                  className="bg-white border  rounded-lg shadow-md p-4 w-full sm:w-1/2 lg:w-1/3 xl:w-1/4 min-h-[600px] max-h-[600px] overflow-y-hidden hover:overflow-y-scroll flex flex-col justify-start"
                 >
-                  <div className="flex justify-between items-center p-2 bg-blue-600 rounded-lg">
+                  <div className="flex justify-between  items-center p-2 bg-blue-600 rounded-lg">
                     <div>
                       <h3 className="text-white text-[1.2rem] font-semibold">
                         <strong>Event:</strong> {event.eventName}
@@ -174,7 +174,7 @@ const EventCompo = () => {
                     </div>
                   </div>
 
-                  <div className="mt-4">
+                  <div className="mt-2">
                     {/* Event Details */}
                     {event.banner && (
                       <img
