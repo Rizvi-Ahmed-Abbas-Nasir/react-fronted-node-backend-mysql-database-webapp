@@ -17,6 +17,7 @@ const EventCompo = () => {
 
   const StdID = "1"; // Placeholder student ID, adjust as needed
 
+
   useEffect(() => {
     const fetchStudentData = async () => {
       try {
