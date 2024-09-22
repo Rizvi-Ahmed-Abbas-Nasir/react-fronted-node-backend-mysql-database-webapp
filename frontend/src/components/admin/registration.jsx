@@ -108,7 +108,7 @@ function RegistrationPage() {
     <>
       <Header />
       <AdminHeader />
-      <div className="flex flex-col gap-4 ml-[18rem] md:mt-32 w-[70%] px-4">
+      <div className="flex flex-col gap-4 ml-[18rem] md:mt-32 w-[70%]  px-4 registrationshow">
         <h1 className="text-2xl font-bold mb-4">Registration Details</h1>
         
         {/* Buttons for bulk actions */}
@@ -132,8 +132,8 @@ function RegistrationPage() {
         ) : null}
 
         {registrations.length ? (
-          <div className="w-full rounded-xl">
-            <table className="w-[100%] divide-y divide-gray-200 bg-white shadow-md rounded-xl">
+          <div className="w-full relative rounded-xl tablediv">
+            <table className="w-[100%]  tablereg divide-y divide-gray-200 bg-white shadow-md rounded-xl">
               <thead className="bg-blue-600 text-white rounded-xl p-8 ">
                 <tr>
                   <th className="px-4 py-2 text-left text-sm font-medium">College ID</th>
@@ -154,7 +154,7 @@ function RegistrationPage() {
                     <td className="px-4 py-2 text-sm text-gray-700">{transaction_id}</td>
                     <td className="px-4 py-2 text-sm text-gray-700">
                       {!isApproved && (
-                        <>
+                        <div className='flex'>
                           <button
                             onClick={() => approveStudent(student_id, email_id)}
                             disabled={actionStatus[student_id] === 'approving'}
@@ -169,7 +169,7 @@ function RegistrationPage() {
                           >
                             {actionStatus[student_id] === 'declining' ? <CircularProgress size={20} color="inherit" /> : 'Decline'}
                           </button>
-                        </>
+                        </div>
                       )}
                     </td>
                   </tr>
