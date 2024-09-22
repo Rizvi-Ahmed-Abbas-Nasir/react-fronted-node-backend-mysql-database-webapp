@@ -89,7 +89,7 @@ exports.createEvent = async (req, res) => {
       activity: eventDescription,
       serverUrl: process.env.NODE_APP_URL
     };
-    console.log("serverUrl: ", data.serverUrl)
+    // console.log("serverUrl: ", data.serverUrl)
 
     const isGenerated = await loaController.createPDF(data);
     if (!isGenerated) {

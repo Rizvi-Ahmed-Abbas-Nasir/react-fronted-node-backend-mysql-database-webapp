@@ -1,6 +1,6 @@
 const Admin = require("../models/Admin");
 const Event = require("../models/Event");
-const Attendance = require("../models/Attendance");
+// const Attendance = require("../models/Attendance");
 //get all the registered students for a particular event (even not attended)
 
 exports.getAllRegistrations = async (req, res) => {

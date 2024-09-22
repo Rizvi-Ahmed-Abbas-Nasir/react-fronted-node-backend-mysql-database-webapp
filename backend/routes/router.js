@@ -1,7 +1,7 @@
 const express = require("express")
 const router = express.Router();
 const eventMiddleware = require("../middlewares/eventMiddleware")
-const setupController = require("../controllers/setupController")
+// const setupController = require("../controllers/setupController")
 const eventController = require("../controllers/eventController")
 const userController = require("../controllers/userController")
 const adminController = require("../controllers/adminController")
@@ -11,8 +11,8 @@ const qrCodeController = require("../controllers/qrCodeController")
 router.get('/', (req, res)=> {
     res.status(200).json({message:"Hello world"});
 })
-router.post('/setup',  setupController.createTables)
-router.post('/student', setupController.insertStudents)
+// router.post('/setup',  setupController.createTables)
+// router.post('/student', setupController.insertStudents)
 router.get('/createEvent', (req, res)=> {
     res.render('test')
 })
