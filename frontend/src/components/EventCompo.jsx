@@ -150,13 +150,13 @@ const EventCompo = () => {
       )}
 
       {filteredEvents.length > 0 ? (
-        <div className="flex w-full flex-wrap gap-4 items-start py-12 pl-10 mt-16">
+        <div className="flex w-full flex-wrap gap-4 items-start md:py-12  mt-16 md:pl-10 ">
           {filteredEvents.map(
             (event, index) =>
               !event.isDeleted && (
                 <div
                   key={index}
-                  className="bg-white border  rounded-lg shadow-md p-4 w-full sm:w-1/2 lg:w-1/3 xl:w-1/4 min-h-[600px] max-h-[600px] overflow-y-hidden hover:overflow-y-scroll flex flex-col justify-start"
+                  className="bg-white border  rounded-lg shadow-md p-4 w-full sm:w-1/2 lg:w-1/3 xl:w-1/4 md:min-h-[600px] md:max-h-[600px]  overflow-y-hidden hover:overflow-y-scroll flex flex-col justify-start"
                 >
                   <div className="flex justify-between  items-center p-2 bg-blue-600 rounded-lg">
                     <div>
