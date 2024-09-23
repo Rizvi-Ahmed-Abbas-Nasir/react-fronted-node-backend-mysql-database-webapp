@@ -15,7 +15,7 @@ const EventCompo = () => {
   const [showAlert, setShowAlert] = useState(false); // State to show or hide the custom alert
   const [student, setStudent] = useState(null); // Store student details here
 
-  const StdID = "1"; // Placeholder student ID, adjust as needed
+  const StdID = "2"; // Placeholder student ID, adjust as needed
 
   useEffect(() => {
     const fetchStudentData = async () => {
