@@ -87,7 +87,9 @@ exports.createEvent = async (req, res) => {
       recipientLocation: locationOfSpeaker,
       subject: eventName,
       activity: eventDescription,
+      serverUrl: process.env.NODE_APP_URL
     };
+    // console.log("serverUrl: ", data.serverUrl)
 
     const isGenerated = await loaController.createPDF(data);
     if (!isGenerated) {
@@ -277,6 +279,7 @@ exports.updateEvent = async (req, res) => {
         date: date,
         eventName: eventName,
         eventNotice: eventNotice,
+        serverUrl: process.env.NODE_APP_URL
       };
 
       const isNoticeGenerated = await noticeController.createPDF(noticeData);

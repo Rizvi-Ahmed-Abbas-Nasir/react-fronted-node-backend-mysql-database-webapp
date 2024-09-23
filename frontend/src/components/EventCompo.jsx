@@ -15,7 +15,7 @@ const EventCompo = () => {
   const [showAlert, setShowAlert] = useState(false); // State to show or hide the custom alert
   const [student, setStudent] = useState(null); // Store student details here
 
-  const StdID = "2"; // Placeholder student ID, adjust as needed
+  const StdID = "3"; // Placeholder student ID, adjust as needed
 
   useEffect(() => {
     const fetchStudentData = async () => {
@@ -150,15 +150,15 @@ const EventCompo = () => {
       )}
 
       {filteredEvents.length > 0 ? (
-        <div className="flex w-full flex-wrap gap-4 items-start py-12 pl-10 mt-16">
+        <div className="flex w-full flex-wrap gap-4 items-start md:py-12  mt-16 md:pl-10 ">
           {filteredEvents.map(
             (event, index) =>
               !event.isDeleted && (
                 <div
                   key={index}
-                  className="bg-white border rounded-lg shadow-md p-4 w-full sm:w-1/2 lg:w-1/3 xl:w-1/4 h-auto flex flex-col justify-between"
+                  className="bg-white border  rounded-lg shadow-md p-4 w-full sm:w-1/2 lg:w-1/3 xl:w-1/4 md:min-h-[600px] md:max-h-[600px]  overflow-y-hidden hover:overflow-y-scroll flex flex-col justify-start"
                 >
-                  <div className="flex justify-between items-center p-2 bg-blue-600 rounded-lg">
+                  <div className="flex justify-between  items-center p-2 bg-blue-600 rounded-lg">
                     <div>
                       <h3 className="text-white text-[1.2rem] font-semibold">
                         <strong>Event:</strong> {event.eventName}
@@ -174,7 +174,7 @@ const EventCompo = () => {
                     </div>
                   </div>
 
-                  <div className="mt-4">
+                  <div className="mt-2">
                     {/* Event Details */}
                     {event.banner && (
                       <img
