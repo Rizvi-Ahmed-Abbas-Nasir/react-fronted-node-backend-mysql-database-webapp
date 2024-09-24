@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import axios from 'axios';
+import nodeApi from '../../axiosConfig';;
 
 function EventScan() {
   const [events, setEvents] = useState([]);
@@ -11,7 +11,7 @@ function EventScan() {
   useEffect(() => {
     async function fetchRegistrations() {
       try {
-        const response = await axios.get(`${process.env.REACT_APP_URL}/event/?id=${eventid}`); // Adjust endpoint as needed
+        const response = await nodeApi.get(`/event/?id=${eventid}`); // Adjust endpoint as needed
         setEvents(response.data);
       } catch (err) {
         setError(err.message);

@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import nodeApi from '../../axiosConfig';
 import { CircularProgress, Box, Typography, Dialog, DialogTitle, DialogContent, DialogActions, Button } from '@mui/material';
 
 function History() {
   const [events, setEvents] = useState([]);
-  const [deadEvents, setDeadEvents] = useState([]);
   const [progresses, setProgresses] = useState({});
   const [selectedFiles, setSelectedFiles] = useState({});
   const [openDialog, setOpenDialog] = useState(false);
@@ -29,7 +28,7 @@ function History() {
 
   const updateProgress = async (id) => {
     try {
-      const response = await axios.get(`${process.env.REACT_APP_URL}/eventStatus/${id}`);
+      const response = await nodeApi.get(`/eventStatus/${id}`);
       const progressStatus = response.data.status;
       const mappedValue = getProgressValue(progressStatus);
       setProgresses((prevProgresses) => ({
@@ -47,31 +46,20 @@ function History() {
 
   const fetchEvents = async () => {
     try {
-      const response = await axios.get(`${process.env.REACT_APP_URL}/allEvents`);
+      const response = await nodeApi.get(`/allEvents`);
       setEvents(response.data);
       response.data.forEach((event) => updateProgress(event.eventId));
     } catch (error) {
       console.log('Failed to fetch events.');
     }
   };
-  useEffect(() => {
-    fetchDeadEvents();
-  },[events] );
 
-  const fetchDeadEvents = async () => {
-    try {
-      const response = await axios.get(`${process.env.REACT_APP_URL}/getDeadEvents`);
-      setDeadEvents(response.data);
-      response.data.forEach((event) => updateProgress(event.eventId));
-    } catch (error) {
-      console.log('Failed to fetch events.');
-    }
-  };
 
+  
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this event?')) {
       try {
-        const data = await axios.delete(`${process.env.REACT_APP_URL}/event/${id}`);
+        const data = await nodeApi.delete(`/event/${id}`);
         fetchEvents();
         alert(data.data.message);
       } catch (error) {
@@ -83,7 +71,7 @@ function History() {
   const handleRemove = async (id) => {
     if (window.confirm('Are you sure you want to remove this event?')) {
       try {
-        const data = await axios.delete(`${process.env.REACT_APP_URL}/removeEvent/${id}`);
+        const data = await nodeApi.delete(`/removeEvent/${id}`);
         fetchEvents();
         alert(data.data.message);
       } catch (error) {
@@ -94,9 +82,9 @@ function History() {
 
   const handleUndo = async (id) => {
     try {
-      const data = await axios.post(`${process.env.REACT_APP_URL}/undoEvent/${id}`);
+      const data = await nodeApi.post(`/undoEvent/${id}`);
       fetchEvents();
-      alert(data.data.message);
+      alert("Event has been undo, you will have to manually update event deadline");
     } catch (error) {
       setError('Failed to undo the event deletion.');
     }
@@ -122,7 +110,7 @@ function History() {
     formData.append('photos', file);
 
     try {
-      const response = await axios.post(`${process.env.REACT_APP_URL}/uploadPhotos/${currentEventId}`, formData, {
+      const response = await nodeApi.post(`/uploadPhotos/${currentEventId}`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -263,7 +251,7 @@ function History() {
             Upload File
           </Button>
           <Button
-            onClick={() => window.open(`${process.env.REACT_APP_URL}/${currentPhotosPath}`)}
+            onClick={() => window.open(`/${currentPhotosPath}`)}
             color="primary"
             variant="contained"
           >

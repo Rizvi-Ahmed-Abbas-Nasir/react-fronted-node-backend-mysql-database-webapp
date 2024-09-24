@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import axios from "axios";
+import nodeApi from "../../axiosConfig";
 import ClipLoader from "react-spinners/ClipLoader";
 
 function CreateEvent() {
@@ -104,14 +104,14 @@ function CreateEvent() {
         data.append("paymentQR", formData.paymentQR);
       }      
       if (editEventId) {
-        const response = await axios.put(
-          `${process.env.REACT_APP_URL}/event/${editEventId}`,
+        const response = await nodeApi.put(
+          `/event/${editEventId}`,
           data
         );
         setEditEventId(null);
         alert(response.data.message);
       } else {
-        const response = await axios.post(`${process.env.REACT_APP_URL}/event`, data);
+        const response = await nodeApi.post(`/event`, data);
         alert(response.data.message);
       }
 

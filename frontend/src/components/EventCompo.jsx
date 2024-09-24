@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import nodeApi from "../axiosConfig";
 import CustomAlert from "../components/customAlert";
 
 const EventCompo = () => {
@@ -18,7 +18,7 @@ const EventCompo = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(`${process.env.REACT_APP_URL}/getEligibleEvents/${StdID}`);
+        const response = await nodeApi.get(`/getEligibleEvents/${StdID}`);
         setData(response.data.result);
         console.log(response.data)
         setOpenPayBoxes(new Array(response.data.length).fill(false));
@@ -77,8 +77,8 @@ const EventCompo = () => {
     const transactionId = isPaid ? transactionIds[eventId].trim() : null;
 
     try {
-      const response = await axios.post(
-        `${process.env.REACT_APP_URL}/userEventReg/${eventId}`,
+      const response = await nodeApi.post(
+        `/userEventReg/${eventId}`,
         {
           student_id: StdID,
           transaction_id: transactionId,
@@ -141,7 +141,7 @@ const EventCompo = () => {
                     {/* Event Details */}
                     {event.banner && (
                       <img
-                        src={`${process.env.REACT_APP_URL}/${event.banner}`}
+                        src={`/${event.banner}`}
                         alt="Event Banner"
                         className="w-full h-48 object-cover rounded-md mb-4"
                       />
@@ -177,7 +177,7 @@ const EventCompo = () => {
                         </p>
                         <a
                           className="text-blue-700 font-bold underline"
-                          href={`${process.env.REACT_APP_URL}/${event.notice}`}
+                          href={`/${event.notice}`}
                           target="_blank"
                           rel="noopener noreferrer"
                         >
@@ -199,7 +199,7 @@ const EventCompo = () => {
                             {openPaymentBoxes[index] && (
                               <div className="mt-4">
                                 <img
-                                  src={`${process.env.REACT_APP_URL}/${event.paymentQR}`}
+                                  src={`/${event.paymentQR}`}
                                   alt="QR Code for Payment"
                                   className="w-full h-32 object-contain"
                                 />
