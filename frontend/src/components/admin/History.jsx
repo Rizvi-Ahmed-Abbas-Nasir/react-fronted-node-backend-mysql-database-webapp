@@ -4,6 +4,7 @@ import { CircularProgress, Box, Typography, Dialog, DialogTitle, DialogContent, 
 
 function History() {
   const [events, setEvents] = useState([]);
+  const [deadEvents, setDeadEvents] = useState([]);
   const [progresses, setProgresses] = useState({});
   const [selectedFiles, setSelectedFiles] = useState({});
   const [openDialog, setOpenDialog] = useState(false);
@@ -48,6 +49,19 @@ function History() {
     try {
       const response = await axios.get(`${process.env.REACT_APP_URL}/allEvents`);
       setEvents(response.data);
+      response.data.forEach((event) => updateProgress(event.eventId));
+    } catch (error) {
+      console.log('Failed to fetch events.');
+    }
+  };
+  useEffect(() => {
+    fetchDeadEvents();
+  },[events] );
+
+  const fetchDeadEvents = async () => {
+    try {
+      const response = await axios.get(`${process.env.REACT_APP_URL}/getDeadEvents`);
+      setDeadEvents(response.data);
       response.data.forEach((event) => updateProgress(event.eventId));
     } catch (error) {
       console.log('Failed to fetch events.');
@@ -146,6 +160,7 @@ function History() {
                 <th className="p-4 font-semibold">Event Name</th>
                 <th className="p-4 font-semibold">Speaker</th>
                 <th className="p-4 font-semibold">Date</th>
+                <th className="p-4 font-semibold">DeadLine</th>
                 <th className="p-4 font-semibold">Paid</th>
                 <th className="p-4 font-semibold">Cost</th>
                 <th className="p-4 font-semibold">Progress</th>
@@ -159,6 +174,7 @@ function History() {
                   <td className="p-4 text-gray-800">{event.eventName}</td>
                   <td className="p-4 text-gray-800">{event.nameOfSpeaker}</td>
                   <td className="p-4 text-gray-800">{new Date(event.date).toLocaleDateString()}</td>
+                  <td className="p-4 text-gray-800">{new Date(event.eventDeadline).toLocaleDateString()}</td>
                   <td className="p-4 text-gray-800">{event.isPaid ? 'Paid' : 'Not Paid'}</td>
                   <td className="p-4 text-gray-800">{event.cost ? event.cost : 'Free'}</td>
                   <td className="p-4">
