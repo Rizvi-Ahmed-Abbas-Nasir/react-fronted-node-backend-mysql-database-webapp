@@ -180,7 +180,7 @@ exports.deleteRegistration = async (eventId, student_id) => {
 //get all attendance
 exports.getAllAttendance = async () => {
   try {
-    const events = await Event.getAllEvents();
+    const events = await Event.getEventHistory();
   
     // Define how to infer the academic year of a student based on degree_year and batch
     // const inferYear = `

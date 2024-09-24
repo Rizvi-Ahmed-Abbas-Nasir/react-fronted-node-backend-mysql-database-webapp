@@ -79,7 +79,7 @@ exports.getEventHistory = async () => {
 exports.getDeadEvents = async () => {
   try {
     const [result] = await connection.query(
-      "SELECT * FROM tpo_events WHERE eventDeadline < NOW() AND isDeleted = false ORDER BY date DESC"
+      "SELECT * FROM tpo_events WHERE eventDeadline < NOW() ORDER BY date DESC"
     );
     return result;
   } catch (error) {

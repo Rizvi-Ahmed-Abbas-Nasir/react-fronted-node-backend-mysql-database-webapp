@@ -224,7 +224,7 @@ function EditEventForm() {
         <div className="flex items-center">
           <label className="w-1/3 font-semibold">Event Deadline:</label>
           <input
-            type="date"
+            type="datetime-local"
             name="eventDeadline"
             value={formData.eventDeadline}
             onChange={handleChange}

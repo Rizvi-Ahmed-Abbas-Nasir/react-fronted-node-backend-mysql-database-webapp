@@ -175,6 +175,20 @@ exports.getEventHistory = async (req, res) => {
   }
 }
 
+//get all events
+exports.getDeadEvents = async (req, res) => {
+  try {
+    const events = await Event.getDeadEvents()
+    if (events.length === 0) {
+      res.status(200).json({ message: "No Dead Events yet" });
+    } else {
+      res.status(200).json(events);
+    }
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}
+
 //get user's eligible events only:
 exports.getEligibleEvents = async (req, res) => {
 try {

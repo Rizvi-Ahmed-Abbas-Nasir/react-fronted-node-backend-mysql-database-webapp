@@ -18,6 +18,8 @@ router.post('/undoEvent/:eventId', eventController.undoEvent) // this moves the 
 
 //get all events from the table
 router.get('/allEvents', eventController.getEventHistory)
+//get dead events
+router.get('/getDeadEvents', eventController.getDeadEvents)
 
 //event photos upload
 router.post('/uploadPhotos/:eventId', eventController.uploadEventPhotos)
