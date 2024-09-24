@@ -2,7 +2,7 @@ const fs = require("fs");
 const path = require("path");
 const puppeteer = require("puppeteer");
 const handlebars = require("handlebars");
-const Event = require("../models/Event");
+const Event = require("../helpers/Event");
 
 // exports.createNotice = async (req, res) => {
 //   try {

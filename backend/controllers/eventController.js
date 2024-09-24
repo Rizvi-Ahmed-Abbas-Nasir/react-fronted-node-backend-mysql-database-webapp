@@ -1,4 +1,4 @@
-const Event = require("../models/Event");
+const Event = require("../helpers/Event");
 const path = require("path");
 const fs = require("fs");
 const loaController = require("../controllers/loaController");
@@ -130,6 +130,7 @@ exports.createEvent = async (req, res) => {
   }
 };
 
+//get all events whose deadline is not met
 exports.getAllEvents = async (req, res) => {
   try {
     
@@ -137,33 +138,61 @@ exports.getAllEvents = async (req, res) => {
     if (events.length === 0) {
       res.status(200).json({ message: "No Events yet" });
     } else {
-      const eventPromises = events.map(async (event) => {
-        
-        const isDead = await Event.handleDeadline(event.eventDeadline);
-        
-        if (isDead) {
-          // console.log(event.eventName, ": has met the deadline, removing event")
-          //make isDeadlineMet = true here:
-          const isSet = await Event.changeDeadStatus(event.eventId, true)
+      // const eventPromises = events.map(async (event) => {
+      //   const isDead = await Event.handleDeadline(event.eventDeadline);
+      //   if (isDead) {
+      //     // console.log(event.eventName, ": has met the deadline, removing event")
+      //     //make isDeadlineMet = true here:
+      //     const isSet = await Event.changeDeadStatus(event.eventId, true)
+      //     await removeEventById(event.eventId); //removes the event
+      //     //make default 3000
+      //     const makeDefault = Event.makeDefault(event.eventId)
+      //   } else {
+      //     // console.log(event.eventId, ": has not met the deadline, moving on")
+      //     const isSet = await Event.changeDeadStatus(event.eventId, false)
+      //   }
+      // })
 
-          await removeEventById(event.eventId); //removes the event
-          
-          //make default 3000
-          const makeDefault = Event.makeDefault(event.eventId)
-        
 
-        } else {
-          // console.log(event.eventId, ": has not met the deadline, moving on")
-          const isSet = await Event.changeDeadStatus(event.eventId, false)
-
-        }
-      })
       res.status(200).json(events);
     }
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
+
+//get all events
+exports.getEventHistory = async (req, res) => {
+  try {
+    const events = await Event.getEventHistory()
+    if (events.length === 0) {
+      res.status(200).json({ message: "No Events yet" });
+    } else {
+      res.status(200).json(events);
+    }
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}
+
+//get user's eligible events only:
+exports.getEligibleEvents = async (req, res) => {
+try {
+  const student_id = req.params.student_id
+
+  const result = await Event.getEligibleEvents(student_id)
+  
+  if (result.length > 0 ){
+    res.status(200).json({ result: result})
+  } else {
+    res.status(200).json({ message: "No eligible events found"})
+  }
+} catch (error) {
+  console.log(error.message)
+  res.status(500).json({ message: error.message });  
+}
+
+}
 
 exports.updateEvent = async (req, res) => {
   try {
@@ -486,7 +515,7 @@ exports.undoEvent = async (req, res) => {
     const id = req.params.eventId;
 
     const result = await Event.flagEventAsNotDeleted(id);
-    const isSet = await Event.changeDeadStatus(id, false)
+    // const isSet = await Event.changeDeadStatus(id, false)
 
     res
       .status(200)

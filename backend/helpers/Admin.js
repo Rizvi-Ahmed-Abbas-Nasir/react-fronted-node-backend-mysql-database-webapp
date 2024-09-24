@@ -1,4 +1,5 @@
-const connection = require("../db");
+const { connection } = require("../dbConfig");
+
 const Event = require("./Event");
 exports.getAllRegistrations = async (eventId) => {
   try {
