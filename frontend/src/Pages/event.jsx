@@ -7,7 +7,7 @@ function Event() {
    
     <div>
     <Header />
-    <EventCompo/>
+    <EventCompo />
     </div>
    
   );
