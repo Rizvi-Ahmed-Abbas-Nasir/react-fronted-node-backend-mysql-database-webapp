@@ -1,4 +1,5 @@
-const connection = require("../db");
+const { connection } = require("../dbConfig");
+
 
 exports.registerForEvent = async (event_id, student_id,transaction_id) => {
   try {

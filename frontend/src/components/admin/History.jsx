@@ -46,7 +46,7 @@ function History() {
 
   const fetchEvents = async () => {
     try {
-      const response = await axios.get(`${process.env.REACT_APP_URL}/event`);
+      const response = await axios.get(`${process.env.REACT_APP_URL}/allEvents`);
       setEvents(response.data);
       response.data.forEach((event) => updateProgress(event.eventId));
     } catch (error) {

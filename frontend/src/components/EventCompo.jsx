@@ -6,33 +6,21 @@ const EventCompo = () => {
   const [openPayBoxes, setOpenPayBoxes] = useState([]);
   const [openPaymentBoxes, setOpenPaymentBoxes] = useState([]); // New state for payment section
   const [data, setData] = useState([]);
-  const [filteredEvents, setFilteredEvents] = useState([]); // Store the filtered events here
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [transactionIds, setTransactionIds] = useState({});
   const [transactionErrors, setTransactionErrors] = useState({});
   const [alertMessage, setAlertMessage] = useState(""); // State for custom alert message
   const [showAlert, setShowAlert] = useState(false); // State to show or hide the custom alert
-  const [student, setStudent] = useState(null); // Store student details here
 
-  const StdID = "3"; // Placeholder student ID, adjust as needed
+  const StdID = "1"; // Placeholder student ID, adjust as needed
 
   useEffect(() => {
-    const fetchStudentData = async () => {
-      try {
-        const studentResponse = await axios.get(
-          `${process.env.REACT_APP_URL}/getStudentDetail/${StdID}`
-        );
-        setStudent(studentResponse.data.result[0]);
-      } catch (err) {
-        setError("Error fetching student data");
-      }
-    };
-
     const fetchData = async () => {
       try {
-        const response = await axios.get(`${process.env.REACT_APP_URL}/event`);
-        setData(response.data);
+        const response = await axios.get(`${process.env.REACT_APP_URL}/getEligibleEvents/${StdID}`);
+        setData(response.data.result);
+        console.log(response.data)
         setOpenPayBoxes(new Array(response.data.length).fill(false));
         setOpenPaymentBoxes(new Array(response.data.length).fill(false)); // Initialize payment state
       } catch (err) {
@@ -41,34 +29,9 @@ const EventCompo = () => {
         setLoading(false);
       }
     };
-
-    fetchStudentData();
     fetchData();
   }, []);
 
-  useEffect(() => {
-    // Filter events after student data is fetched
-    if (student && data.length > 0) {
-      const eligibleEvents = data.filter((event) => {
-        // Add null checks for department and eligible_degree_year fields
-        const eventDepartments = event.department
-          ? event.department.split(",").map(dept => dept.trim())
-          : [];
-        const eventYears = event.eligible_degree_year
-          ? event.eligible_degree_year.split(",").map(year => year.trim())
-          : [];
-        // Check if the student's department is included in the event's department list
-        const isEligibleDepartment = eventDepartments.includes(student.branch);
-  
-        // Check if the student's degree year matches any of the eligible years for the event
-        const isEligibleYear = eventYears.includes(student.degree_year.toString());
-  
-        return isEligibleDepartment && isEligibleYear;
-      });
-  
-      setFilteredEvents(eligibleEvents);
-    }
-  }, [student, data]);
   
 
   const handleTogglePay = (index) => {
@@ -149,9 +112,9 @@ const EventCompo = () => {
         />
       )}
 
-      {filteredEvents.length > 0 ? (
+      {data.length > 0 ? (
         <div className="flex w-full flex-wrap gap-4 items-start md:py-12  mt-16 md:pl-10 ">
-          {filteredEvents.map(
+          {data.map(
             (event, index) =>
               !event.isDeleted && (
                 <div
