@@ -23,6 +23,7 @@ function AttendanceTable() {
         console.error(err);
       }
     };
+    
     fetchAttendanceData();
   }, []);
 
