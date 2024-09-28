@@ -13,7 +13,7 @@ const EventCompo = () => {
   const [alertMessage, setAlertMessage] = useState(""); // State for custom alert message
   const [showAlert, setShowAlert] = useState(false); // State to show or hide the custom alert
 
-  const StdID = "3"; // Placeholder student ID, adjust as needed
+  const StdID = "1"; // Placeholder student ID, adjust as needed
 
   useEffect(() => {
     const fetchData = async () => {
