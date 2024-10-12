@@ -8,7 +8,8 @@ function History() {
   const [selectedFiles, setSelectedFiles] = useState({});
   const [openDialog, setOpenDialog] = useState(false);
   const [currentEventId, setCurrentEventId] = useState(null);
-  const [currentPhotosPath, setCurrentPhotosPath] = useState(null); // Fixed state variable name
+  const [currentPhotosPath, setCurrentPhotosPath] = useState(null);
+  const [currentFileType, setCurrentFileType] = useState(null); // New state to track file type
   const [error, setError] = useState('');
 
   const getProgressValue = (value) => {
@@ -42,20 +43,20 @@ function History() {
 
   useEffect(() => {
     fetchEvents();
-  },[events] );
-
+  }, []);
+  
   const fetchEvents = async () => {
     try {
       const response = await nodeApi.get(`/allEvents`);
-      setEvents(response.data);
-      response.data.forEach((event) => updateProgress(event.eventId));
+      const fetchedEvents = response.data;
+      setEvents(fetchedEvents);
+      
+      fetchedEvents.forEach((event) => updateProgress(event.eventId));
     } catch (error) {
       console.log('Failed to fetch events.');
     }
   };
 
-
-  
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this event?')) {
       try {
@@ -84,13 +85,12 @@ function History() {
     try {
       const data = await nodeApi.post(`/undoEvent/${id}`);
       fetchEvents();
-      alert("Event has been undo, you will have to manually update event deadline");
+      alert("Event has been undone, you will have to manually update the event deadline");
     } catch (error) {
       setError('Failed to undo the event deletion.');
     }
   };
 
-  // Handle file selection
   const handleFileSelect = (file) => {
     setSelectedFiles((prevSelectedFiles) => ({
       ...prevSelectedFiles,
@@ -98,7 +98,7 @@ function History() {
     }));
   };
 
-  // Handle file upload
+  // Handle file upload for Photos
   const handleFileUpload = async () => {
     const file = selectedFiles[currentEventId];
     if (!file) {
@@ -116,17 +116,67 @@ function History() {
         },
       });
       alert(response.data.message);
-      setOpenDialog(false); // Close dialog after upload
+      setOpenDialog(false);
       window.location.reload();
     } catch (error) {
       setError('Failed to upload the file.');
     }
   };
 
-  // Open dialog for file actions (upload and download)
-  const handleOpenDialog = (eventId, photoPath) => {
+  // Handle file upload for Signed LOA
+  const handleSignedLOAUpload = async () => {
+    const file = selectedFiles[currentEventId];
+    if (!file) {
+      alert('Please select a file first.');
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('signedLOA', file);
+
+    try {
+      const response = await nodeApi.post(`/uploadSignedLOA/${currentEventId}`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      alert(response.data.message);
+      setOpenDialog(false);
+      window.location.reload();
+    } catch (error) {
+      setError('Failed to upload the Signed LOA.');
+    }
+  };
+
+  // Handle file upload for Online Attendance
+  const handleOnlineAttendanceUpload = async () => {
+    const file = selectedFiles[currentEventId];
+    if (!file) {
+      alert('Please select a file first.');
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('onlineAttendance', file);
+
+    try {
+      const response = await nodeApi.post(`/uploadOnlineAttendance/${currentEventId}`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      alert(response.data.message);
+      setOpenDialog(false);
+      window.location.reload();
+    } catch (error) {
+      setError('Failed to upload the Online Attendance.');
+    }
+  };
+
+  const handleOpenDialog = (eventId, photoPath, fileType) => {
     setCurrentEventId(eventId);
-    setCurrentPhotosPath(photoPath); // Fixed state variable name
+    setCurrentPhotosPath(photoPath);
+    setCurrentFileType(fileType); // Track file type
     setOpenDialog(true);
   };
 
@@ -142,9 +192,9 @@ function History() {
 
       {events.length > 0 ? (
         <div className="overflow-x-auto rounded-xl">
-          <table className="table-auto w-full min-w-[700px]  text-left bg-white rounded-lg shadow-md">
+          <table className="table-auto w-full min-w-[700px] text-left bg-white rounded-lg shadow-md">
             <thead className="bg-gray-200">
-              <tr className=" bg-blue-600 text-white border-b border-gray-200">
+              <tr className="bg-blue-600 text-white border-b border-gray-200">
                 <th className="p-4 font-semibold">Event Name</th>
                 <th className="p-4 font-semibold">Speaker</th>
                 <th className="p-4 font-semibold">Date</th>
@@ -153,7 +203,9 @@ function History() {
                 <th className="p-4 font-semibold">Cost</th>
                 <th className="p-4 font-semibold">Progress</th>
                 <th className="p-4 font-semibold">Actions</th>
-                <th className="p-4 font-semibold">File Actions</th>
+                <th className="p-4 font-semibold"></th>
+                <th className="p-4 font-semibold">File Uploads</th>
+                <th className="p-4 font-semibold"></th>
               </tr>
             </thead>
             <tbody>
@@ -189,42 +241,59 @@ function History() {
                             justifyContent: 'center',
                           }}
                         >
-                          <Typography variant="caption" component="div" color="textSecondary" fontSize={16} fontWeight="bold">
-                            {`${Math.round(progresses[event.eventId] || 0)}%`}
+                          <Typography variant="caption" component="div" color="text.secondary">
+                            {`${progresses[event.eventId] || 0}%`}
                           </Typography>
                         </Box>
                       </Box>
                     </div>
                   </td>
-                  <td className="p-4 flex space-x-2">
+                  <td className="p-4">
                     <button
                       onClick={() => handleDelete(event.eventId)}
                       className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition duration-200"
                     >
                       Delete
                     </button>
-                    {event.isDeleted === 0 ? (
-                      <button
-                        onClick={() => handleRemove(event.eventId)}
-                        className="bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-600 transition duration-200"
-                      >
-                        Remove
-                      </button>
-                    ) : (
-                      <button
-                        onClick={() => handleUndo(event.eventId)}
-                        className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition duration-200"
-                      >
-                        Undo
-                      </button>
-                    )}
                   </td>
                   <td className="p-4">
                     <button
-                      onClick={() => handleOpenDialog(event.eventId, event.eventPhotos)}
+                      onClick={() => handleRemove(event.eventId)}
+                      className="bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-600 transition duration-200"
+                    >
+                      Remove
+                    </button>
+                  </td>
+                  <td className="p-4">
+                    <button
+                      onClick={() => handleUndo(event.eventId)}
+                      className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition duration-200"
+                    >
+                      Undo
+                    </button>
+                  </td>
+                  <td className="p-4">
+                    <button
+                      onClick={() => handleOpenDialog(event.eventId, event.photos, 'photos')}
                       className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition duration-200"
                     >
-                      File Actions
+                      Upload Photos
+                    </button>
+                    </td>
+                    <td>
+                    <button
+                      onClick={() => handleOpenDialog(event.eventId, event.signedLOA, 'signedLOA')}
+                      className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition duration-200"
+                    >
+                      Signed LOA
+                    </button>
+                    </td>
+                    <td>
+                    <button
+                      onClick={() => handleOpenDialog(event.eventId, event.onlineAttendance, 'onlineAttendance')}
+                      className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition duration-200"
+                    >
+                      Attendance
                     </button>
                   </td>
                 </tr>
@@ -233,33 +302,37 @@ function History() {
           </table>
         </div>
       ) : (
-        <p className="text-gray-500 text-center">No events available.</p>
+        <div className="text-center text-gray-500">No events found.</div>
       )}
 
-      {/* File Actions Dialog */}
       <Dialog open={openDialog} onClose={handleCloseDialog}>
-        <DialogTitle>File Actions</DialogTitle>
+        <DialogTitle>Upload File</DialogTitle>
         <DialogContent>
           <input
             type="file"
+            accept=".zip" // Adjust file types as needed
             onChange={(e) => handleFileSelect(e.target.files[0])}
-            accept=".zip"
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleFileUpload} color="primary" variant="contained">
-            Upload File
+          <Button onClick={handleCloseDialog} color="primary">
+            Cancel
           </Button>
-          <Button
-            onClick={() => window.open(`/${currentPhotosPath}`)}
-            color="primary"
-            variant="contained"
-          >
-            Download ZIP
-          </Button>
-          <Button onClick={handleCloseDialog} color="secondary">
-            Close
-          </Button>
+          {currentFileType === 'photos' && (
+            <Button onClick={handleFileUpload} color="primary">
+              Upload Photos
+            </Button>
+          )}
+          {currentFileType === 'signedLOA' && (
+            <Button onClick={handleSignedLOAUpload} color="primary">
+              Upload Signed LOA
+            </Button>
+          )}
+          {currentFileType === 'onlineAttendance' && (
+            <Button onClick={handleOnlineAttendanceUpload} color="primary">
+              Upload Online Attendance
+            </Button>
+          )}
         </DialogActions>
       </Dialog>
     </div>
