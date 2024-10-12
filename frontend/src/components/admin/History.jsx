@@ -1,6 +1,15 @@
-import React, { useState, useEffect } from 'react';
-import nodeApi from '../../axiosConfig';
-import { CircularProgress, Box, Typography, Dialog, DialogTitle, DialogContent, DialogActions, Button } from '@mui/material';
+import React, { useState, useEffect } from "react";
+import nodeApi from "../../axiosConfig";
+import {
+  CircularProgress,
+  Box,
+  Typography,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button,
+} from "@mui/material";
 
 function History() {
   const [events, setEvents] = useState([]);
@@ -10,7 +19,7 @@ function History() {
   const [currentEventId, setCurrentEventId] = useState(null);
   const [currentPhotosPath, setCurrentPhotosPath] = useState(null);
   const [currentFileType, setCurrentFileType] = useState(null); // New state to track file type
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
   const getProgressValue = (value) => {
     switch (value) {
@@ -39,46 +48,46 @@ function History() {
         [id]: mappedValue,
       }));
     } catch (error) {
-      console.log('Failed to update progress.');
+      console.log("Failed to update progress.");
     }
   };
 
   useEffect(() => {
     fetchEvents();
   }, []);
-  
+
   const fetchEvents = async () => {
     try {
       const response = await nodeApi.get(`/allEvents`);
       const fetchedEvents = response.data;
       setEvents(fetchedEvents);
-      
+
       fetchedEvents.forEach((event) => updateProgress(event.eventId));
     } catch (error) {
-      console.log('Failed to fetch events.');
+      console.log("Failed to fetch events.");
     }
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm('Are you sure you want to delete this event?')) {
+    if (window.confirm("Are you sure you want to delete this event?")) {
       try {
         const data = await nodeApi.delete(`/event/${id}`);
         fetchEvents();
         alert(data.data.message);
       } catch (error) {
-        setError('Failed to delete the event.');
+        setError("Failed to delete the event.");
       }
     }
   };
 
   const handleRemove = async (id) => {
-    if (window.confirm('Are you sure you want to remove this event?')) {
+    if (window.confirm("Are you sure you want to remove this event?")) {
       try {
         const data = await nodeApi.delete(`/removeEvent/${id}`);
         fetchEvents();
         alert(data.data.message);
       } catch (error) {
-        setError('Failed to remove the event.');
+        setError("Failed to remove the event.");
       }
     }
   };
@@ -87,9 +96,11 @@ function History() {
     try {
       const data = await nodeApi.post(`/undoEvent/${id}`);
       fetchEvents();
-      alert("Event has been undone, you will have to manually update the event deadline");
+      alert(
+        "Event has been undone, you will have to manually update the event deadline"
+      );
     } catch (error) {
-      setError('Failed to undo the event deletion.');
+      setError("Failed to undo the event deletion.");
     }
   };
 
@@ -104,24 +115,28 @@ function History() {
   const handleFileUpload = async () => {
     const file = selectedFiles[currentEventId];
     if (!file) {
-      alert('Please select a file first.');
+      alert("Please select a file first.");
       return;
     }
 
     const formData = new FormData();
-    formData.append('photos', file);
+    formData.append("photos", file);
 
     try {
-      const response = await nodeApi.post(`/uploadPhotos/${currentEventId}`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
+      const response = await nodeApi.post(
+        `/uploadPhotos/${currentEventId}`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
       alert(response.data.message);
       setOpenDialog(false);
       window.location.reload();
     } catch (error) {
-      setError('Failed to upload the file.');
+      setError("Failed to upload the file.");
     }
   };
 
@@ -129,24 +144,28 @@ function History() {
   const handleSignedLOAUpload = async () => {
     const file = selectedFiles[currentEventId];
     if (!file) {
-      alert('Please select a file first.');
+      alert("Please select a file first.");
       return;
     }
 
     const formData = new FormData();
-    formData.append('signedLOA', file);
+    formData.append("signedLOA", file);
 
     try {
-      const response = await nodeApi.post(`/uploadSignedLOA/${currentEventId}`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
+      const response = await nodeApi.post(
+        `/uploadSignedLOA/${currentEventId}`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
       alert(response.data.message);
       setOpenDialog(false);
       window.location.reload();
     } catch (error) {
-      setError('Failed to upload the Signed LOA.');
+      setError("Failed to upload the Signed LOA.");
     }
   };
 
@@ -154,24 +173,28 @@ function History() {
   const handleOnlineAttendanceUpload = async () => {
     const file = selectedFiles[currentEventId];
     if (!file) {
-      alert('Please select a file first.');
+      alert("Please select a file first.");
       return;
     }
 
     const formData = new FormData();
-    formData.append('onlineAttendance', file);
+    formData.append("onlineAttendance", file);
 
     try {
-      const response = await nodeApi.post(`/uploadOnlineAttendance/${currentEventId}`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
+      const response = await nodeApi.post(
+        `/uploadOnlineAttendance/${currentEventId}`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
       alert(response.data.message);
       setOpenDialog(false);
       window.location.reload();
     } catch (error) {
-      setError('Failed to upload the Online Attendance.');
+      setError("Failed to upload the Online Attendance.");
     }
   };
 
@@ -188,7 +211,9 @@ function History() {
 
   return (
     <div className="md:ml-72 md:mt-32 md:w-[80%] w-full mt-9 flex justify-center p-8 flex-col bg-gray-50 rounded-lg shadow-lg">
-      <h2 className="text-2xl mb-6 text-center font-bold text-gray-800">Event History</h2>
+      <h2 className="text-2xl mb-6 text-center font-bold text-gray-800">
+        Event History
+      </h2>
 
       {error && <div className="text-red-500 text-center mb-4">{error}</div>}
 
@@ -206,6 +231,7 @@ function History() {
                 <th className="p-4 font-semibold">Progress</th>
                 <th className="p-4 font-semibold">Actions</th>
                 <th className="p-4 font-semibold"></th>
+                <th className="p-4 font-semibold"></th>
                 <th className="p-4 font-semibold">File Uploads</th>
                 <th className="p-4 font-semibold"></th>
               </tr>
@@ -215,20 +241,38 @@ function History() {
                 <tr key={event.eventId} className="border-b border-gray-300">
                   <td className="p-4 text-gray-800">{event.eventName}</td>
                   <td className="p-4 text-gray-800">{event.nameOfSpeaker}</td>
-                  <td className="p-4 text-gray-800">{new Date(event.date).toLocaleDateString()}</td>
-                  <td className="p-4 text-gray-800">{new Date(event.eventDeadline).toLocaleDateString()}</td>
-                  <td className="p-4 text-gray-800">{event.isPaid ? 'Paid' : 'Not Paid'}</td>
-                  <td className="p-4 text-gray-800">{event.cost ? event.cost : 'Free'}</td>
+                  <td className="p-4 text-gray-800">
+                    {new Date(event.date).toLocaleDateString()}
+                  </td>
+                  <td className="p-4 text-gray-800">
+                    {new Date(event.eventDeadline).toLocaleDateString()}
+                  </td>
+                  <td className="p-4 text-gray-800">
+                    {event.isPaid ? "Paid" : "Not Paid"}
+                  </td>
+                  <td className="p-4 text-gray-800">
+                    {event.cost ? event.cost : "Free"}
+                  </td>
                   <td className="p-4">
                     <div className="flex items-center">
-                      <Box sx={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <Box
+                        sx={{
+                          position: "relative",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                        }}
+                      >
                         <CircularProgress
                           variant="determinate"
                           value={progresses[event.eventId] || 0}
                           size={60}
                           thickness={6}
                           style={{
-                            color: (progresses[event.eventId] || 0) === 100 ? 'green' : 'blue',
+                            color:
+                              (progresses[event.eventId] || 0) === 100
+                                ? "green"
+                                : "blue",
                           }}
                         />
                         <Box
@@ -237,13 +281,17 @@ function History() {
                             left: 0,
                             bottom: 0,
                             right: 0,
-                            position: 'absolute',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
+                            position: "absolute",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
                           }}
                         >
-                          <Typography variant="caption" component="div" color="text.secondary">
+                          <Typography
+                            variant="caption"
+                            component="div"
+                            color="text.secondary"
+                          >
                             {`${progresses[event.eventId] || 0}%`}
                           </Typography>
                         </Box>
@@ -258,41 +306,58 @@ function History() {
                       Delete
                     </button>
                   </td>
+                  {event.isDeleted === 0 ? (
+                    <td>
+                      <button
+                        onClick={() => handleRemove(event.eventId)}
+                        className="bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-600 transition duration-200"
+                      >
+                        Remove
+                      </button>
+                    </td>
+                  ) : (
+                    <td>
+                      <button
+                        onClick={() => handleUndo(event.eventId)}
+                        className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition duration-200"
+                      >
+                        Undo
+                      </button>
+                    </td>
+                  )}
                   <td className="p-4">
                     <button
-                      onClick={() => handleRemove(event.eventId)}
-                      className="bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-600 transition duration-200"
-                    >
-                      Remove
-                    </button>
-                  </td>
-                  <td className="p-4">
-                    <button
-                      onClick={() => handleUndo(event.eventId)}
-                      className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition duration-200"
-                    >
-                      Undo
-                    </button>
-                  </td>
-                  <td className="p-4">
-                    <button
-                      onClick={() => handleOpenDialog(event.eventId, event.photos, 'photos')}
+                      onClick={() =>
+                        handleOpenDialog(event.eventId, event.photos, "photos")
+                      }
                       className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition duration-200"
                     >
                       Upload Photos
                     </button>
-                    </td>
-                    <td>
+                  </td>
+                  <td>
                     <button
-                      onClick={() => handleOpenDialog(event.eventId, event.signedLOA, 'signedLOA')}
+                      onClick={() =>
+                        handleOpenDialog(
+                          event.eventId,
+                          event.signedLOA,
+                          "signedLOA"
+                        )
+                      }
                       className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition duration-200"
                     >
                       Signed LOA
                     </button>
-                    </td>
-                    <td>
+                  </td>
+                  <td>
                     <button
-                      onClick={() => handleOpenDialog(event.eventId, event.onlineAttendance, 'onlineAttendance')}
+                      onClick={() =>
+                        handleOpenDialog(
+                          event.eventId,
+                          event.onlineAttendance,
+                          "onlineAttendance"
+                        )
+                      }
                       className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition duration-200"
                     >
                       Attendance
@@ -320,20 +385,29 @@ function History() {
           <Button onClick={handleCloseDialog} color="primary">
             Cancel
           </Button>
-          {currentFileType === 'photos' && (
-            <Button onClick={handleFileUpload} color="primary">
-              Upload Photos
-            </Button>
+          {currentFileType === "photos" && (
+            <>
+              <Button onClick={handleFileUpload} color="primary">
+                Upload
+              </Button>
+              <Button color="primary">Download</Button>
+            </>
           )}
-          {currentFileType === 'signedLOA' && (
-            <Button onClick={handleSignedLOAUpload} color="primary">
-              Upload Signed LOA
-            </Button>
+          {currentFileType === "signedLOA" && (
+            <>
+              <Button onClick={handleSignedLOAUpload} color="primary">
+                Upload Signed LOA
+              </Button>
+              <Button color="primary">Download</Button>
+            </>
           )}
-          {currentFileType === 'onlineAttendance' && (
-            <Button onClick={handleOnlineAttendanceUpload} color="primary">
-              Upload Online Attendance
-            </Button>
+          {currentFileType === "onlineAttendance" && (
+            <>
+              <Button onClick={handleOnlineAttendanceUpload} color="primary">
+                Upload Online Attendance
+              </Button>
+              <Button color="primary">Download</Button>
+            </>
           )}
         </DialogActions>
       </Dialog>
