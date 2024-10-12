@@ -15,6 +15,8 @@ exports.createEvent = async (
   batch,
   isPaid,
   cost,
+  isOnline,
+  eventLink,
   paymentQR,
   banner,
   loaOfSpeaker,
@@ -23,7 +25,7 @@ exports.createEvent = async (
 ) => {
   try {
     const [result] = await connection.query(
-      "INSERT INTO tpo_events (eventName, eventDescription, nameOfSpeaker, organizationOfSpeaker,locationOfSpeaker, date, category, time, department, eligible_degree_year, batch, isPaid, cost,paymentQR, banner, loaOfSpeaker, notice, eventDeadline) VALUES (?, ?, ?, ?, ?, ?, ?,?,?,?, ?,?,?,?,?,?,?,?)",
+      "INSERT INTO tpo_events (eventName, eventDescription, nameOfSpeaker, organizationOfSpeaker,locationOfSpeaker, date, category, time, department, eligible_degree_year, batch, isPaid, cost, isOnline, eventLink, paymentQR, banner, loaOfSpeaker, notice, eventDeadline) VALUES (?, ?, ?, ?, ?, ?, ?,?,?,?, ?,?,?,?,?,?,?,?,?,?)",
       [
         eventName,
         eventDescription,
@@ -38,6 +40,8 @@ exports.createEvent = async (
         batch,
         isPaid,
         cost,
+        isOnline,
+        eventLink,
         paymentQR,
         banner,
         loaOfSpeaker,
@@ -106,6 +110,8 @@ exports.getEligibleEvents = async (student_id) => {
         e.batch,
         e.isPaid,
         e.cost,
+        e.isOnline,
+        e.eventLink,
         e.paymentQR,
         e.banner,
         e.notice,
@@ -153,6 +159,8 @@ exports.updateEvent = async (
   eligible_degree_year,
   isPaid,
   cost,
+  isOnline,
+  eventLink,
   paymentQR,
   banner,
   loaOfSpeaker,
@@ -161,7 +169,7 @@ exports.updateEvent = async (
 ) => {
   try {
     const [rows] = await connection.query(
-      `UPDATE tpo_events SET eventName = ?,eventDescription = ?, nameOfSpeaker = ?,organizationOfSpeaker = ?,locationOfSpeaker =?, date = ?, category = ?, time = ?, department = ?, eligible_degree_year = ?, isPaid = ?, cost = ?,paymentQR = ?, banner = ?, loaOfSpeaker = ?, notice = ?, eventDeadline = ? WHERE eventId = ?;`,
+      `UPDATE tpo_events SET eventName = ?,eventDescription = ?, nameOfSpeaker = ?,organizationOfSpeaker = ?,locationOfSpeaker =?, date = ?, category = ?, time = ?, department = ?, eligible_degree_year = ?, isPaid = ?, cost = ?, isOnline =? , eventLink = ?,paymentQR = ?, banner = ?, loaOfSpeaker = ?, notice = ?, eventDeadline = ? WHERE eventId = ?;`,
       [
         eventName,
         eventDescription,
@@ -175,6 +183,8 @@ exports.updateEvent = async (
         eligible_degree_year,
         isPaid,
         cost,
+        isOnline,
+        eventLink,
         paymentQR,
         banner,
         loaOfSpeaker,

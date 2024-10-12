@@ -55,6 +55,7 @@ exports.approveStudent = async (req, res) => {
   try {
     const eventId = req.params.eventId;
     const { student_id } = req.body;
+    console.log("sid: ",student_id," Event id: ",eventId);
 
     //check if the student is already approved
     const isApproved = await Admin.isApproved(eventId, student_id);

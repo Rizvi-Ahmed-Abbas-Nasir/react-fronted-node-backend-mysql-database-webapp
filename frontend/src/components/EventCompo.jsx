@@ -141,7 +141,7 @@ const EventCompo = () => {
                     {/* Event Details */}
                     {event.banner && (
                       <img
-                        src={`/${event.banner}`}
+                        src={`http://localhost:8000/${event.banner}`}
                         alt="Event Banner"
                         className="w-full h-48 object-cover rounded-md mb-4"
                       />
@@ -159,13 +159,10 @@ const EventCompo = () => {
                     <p>
                       <strong>Time:</strong> {event.time}
                     </p>
-                    {event.cost > 0 ? (
-                      <p>
-                        <strong>Cost:</strong> {event.cost}
-                      </p>
-                    ) : (
-                      <p>Free</p>
-                    )}
+                    <p>
+                      <strong>Mode:</strong> {event.isOnline ? "online" : "offline"}
+                    </p>
+                    
 
                     {openPayBoxes[index] && (
                       <>
@@ -177,7 +174,7 @@ const EventCompo = () => {
                         </p>
                         <a
                           className="text-blue-700 font-bold underline"
-                          href={`/${event.notice}`}
+                          href={`http://localhost:8000/${event.notice}`}
                           target="_blank"
                           rel="noopener noreferrer"
                         >

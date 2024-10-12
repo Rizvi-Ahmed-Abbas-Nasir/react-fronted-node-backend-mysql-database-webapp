@@ -11,6 +11,7 @@ module.exports = (req, res, next) => {
     isPaid,
     cost,
   } = req.body;
+  console.log(req.body)
 
   isPaid = isPaid === "true";
   if (!isPaid && cost !== null) {

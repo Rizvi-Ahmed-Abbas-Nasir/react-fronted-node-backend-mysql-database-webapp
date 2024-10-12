@@ -18,6 +18,8 @@ function EditEventForm() {
     department: [],
     eligible_degree_year: [],
     isPaid: false,
+    isOnline: false,
+    eventLink: null,
     cost: "",
     banner: null,
     paymentQR:null,
@@ -94,6 +96,8 @@ function EditEventForm() {
       data.append("time", formData.time);
       data.append("department", formData.department);
       data.append("eligible_degree_year", formData.eligible_degree_year);
+      data.append("isOnline", formData.isOnline);
+      data.append("eventLink", formData.isOnline ? formData.eventLink : null);
       data.append("isPaid", formData.isPaid);
       data.append("cost", formData.isPaid ? parseInt(formData.cost, 10) : null);
       if (formData.banner) {
@@ -169,19 +173,91 @@ function EditEventForm() {
       time: event.time,
       department: event.department,
       eligible_degree_year: event.eligible_degree_year,
+      isOnline: event.isOnline,
+      eventLink: event.isOnline? event.eventLink : "",
       isPaid: event.isPaid,
       cost: event.isPaid ? event.cost : "",
       banner: null,
       paymentQR:null
     });
     setEditEventId(event.eventId);
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    window.scrollTo({ bottom: 0, behavior : "smooth" });
 
   };
 
   return (
     <div className="lg:ml-72 lg:mt-32 w-full mt-10 lg:w-[80%] p-8 border border-gray-300 shadow-md rounded-lg text-black">
-      <h2 className="text-2xl mb-6 text-center">Edit Event</h2>
+
+{/* Event list */}
+<div>
+        <h3 className="text-xl mt-8 mb-4">Existing Events</h3>
+        {events.length > 0 ? (
+          <div className="overflow-x-auto h-72">
+            <table className="table-auto w-full  text-left min-w-[600px]">
+              <thead>
+                <tr className="bg-white text-black">
+                  <th className="p-4">Event Name</th>
+                  <th className="p-4">Speaker</th>
+                  <th className="p-4">Date</th>
+                  <th className="p-4">Paid</th>
+                  <th className="p-4">Cost</th>
+                  <th className="p-4">Mode</th>
+                  <th className="p-4">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {events.map((event) => !event.isDeleted && (
+                  <tr key={event.eventId} className="border-b border-gray-600">
+                    <td className="p-4">{event.eventName}</td>
+                    <td className="p-4">{event.nameOfSpeaker}</td>
+                    <td className="p-4">
+                      {new Date(event.date).toLocaleDateString()}
+                    </td>
+                    <td className="p-4">{event.isPaid ? "Paid" : "Free"}</td>
+                    <td className="p-4">{event.cost ? event.cost : "N/A"}</td>
+                    <td className="p-4">{event.isOnline ? "Online" : "Offline"}</td>
+                    <td className="p-4 flex space-x-4">
+                      <button
+                        onClick={() => handleEdit(event)}
+                        className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => handleDelete(event.eventId)}
+                        className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600"
+                      >
+                        Delete
+                      </button>
+                      <button
+                        onClick={() => handleRemove(event.eventId)}
+                        className="bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-600"
+                      >
+                        Remove
+                      </button>
+                      {event.loaOfSpeaker && (
+                        <a
+                          href={`http://localhost:8000/${event.loaOfSpeaker}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600"
+                        >
+                          View LOA
+                        </a>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <p>No events found.</p>
+        )}
+      </div>
+
+
+      <h2 className="text-2xl mb-6 text-center mt-4">Edit Event</h2>
 
       {error && <div className="text-red-500 text-center mb-4">{error}</div>}
 
@@ -349,7 +425,49 @@ function EditEventForm() {
             className="w-2/3 p-2 rounded-lg bg-gray-100 text-black border border-gray-300 focus:border-blue-400"
           />
         </div>
-
+            <div className="flex items-center">
+          <label className="w-1/3 font-semibold">Is the event Online?</label>
+          <div className="flex w-2/3 border border-gray-300 p-4 rounded-lg">
+            <label className="flex items-center">
+              <input
+                type="radio"
+                name="isOnline"
+                value={true}
+                checked={formData.isOnline === true}
+                onChange={handleChange}
+                className="mr-2 custom-radio-input"
+                style={{ width: "24px", height: "24px" }} // Apply size
+              />
+              Online
+            </label>
+            <label className="flex items-center ml-6">
+              <input
+                type="radio"
+                name="isOnline"
+                value={false}
+                checked={formData.isOnline === false}
+                onChange={handleChange}
+                className="mr-2 custom-radio-input"
+                style={{ width: "24px", height: "24px" }} // Apply size
+              />
+              Offline
+            </label>
+          </div>
+        </div>
+        {formData.isOnline && (
+          <div>
+            <div className="flex items-center ">
+              <label className="w-1/3 font-semibold">Event Link:</label>
+              <input
+                type="text"
+                name="eventLink"
+                value={formData.eventLink}
+                onChange={handleChange}
+                className="w-2/3 p-2 rounded-lg bg-gray-100 text-black border border-gray-300 focus:border-blue-400"
+              />
+            </div>
+          </div>
+        )}
         <div className="flex items-center">
           <label className="w-1/3 font-semibold">Is the event paid?</label>
           <div className="flex w-2/3 border border-gray-300 p-4 rounded-lg">
@@ -421,71 +539,7 @@ function EditEventForm() {
         </div>
       </form>
 
-      {/* Event list */}
-      <div>
-        <h3 className="text-xl mt-8 mb-4">Existing Events</h3>
-        {events.length > 0 ? (
-          <div className="overflow-x-auto">
-            <table className="table-auto w-full text-left min-w-[600px]">
-              <thead>
-                <tr className="bg-white text-black">
-                  <th className="p-4">Event Name</th>
-                  <th className="p-4">Speaker</th>
-                  <th className="p-4">Date</th>
-                  <th className="p-4">Paid</th>
-                  <th className="p-4">Cost</th>
-                  <th className="p-4">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {events.map((event) => !event.isDeleted && (
-                  <tr key={event.eventId} className="border-b border-gray-600">
-                    <td className="p-4">{event.eventName}</td>
-                    <td className="p-4">{event.nameOfSpeaker}</td>
-                    <td className="p-4">
-                      {new Date(event.date).toLocaleDateString()}
-                    </td>
-                    <td className="p-4">{event.isPaid ? "Paid" : "Free"}</td>
-                    <td className="p-4">{event.cost ? event.cost : "N/A"}</td>
-                    <td className="p-4 flex space-x-4">
-                      <button
-                        onClick={() => handleEdit(event)}
-                        className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600"
-                      >
-                        Edit
-                      </button>
-                      <button
-                        onClick={() => handleDelete(event.eventId)}
-                        className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600"
-                      >
-                        Delete
-                      </button>
-                      <button
-                        onClick={() => handleRemove(event.eventId)}
-                        className="bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-600"
-                      >
-                        Remove
-                      </button>
-                      {event.loaOfSpeaker && (
-                        <a
-                          href={`/${event.loaOfSpeaker}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600"
-                        >
-                          View LOA
-                        </a>
-                      )}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        ) : (
-          <p>No events found.</p>
-        )}
-      </div>
+      
       <style jsx>{`
      
      .custom-checkbox {

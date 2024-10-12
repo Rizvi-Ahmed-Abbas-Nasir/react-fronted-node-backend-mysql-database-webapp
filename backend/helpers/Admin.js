@@ -4,7 +4,7 @@ const Event = require("./Event");
 exports.getAllRegistrations = async (eventId) => {
   try {
     const [result] = await connection.query(
-      `SELECT
+      ` SELECT
       er.reg_id,
       sd.student_id,
       sd.clg_id,
@@ -15,15 +15,21 @@ exports.getAllRegistrations = async (eventId) => {
       er.isApproved,
       er.attended,
       er.timeOfAttendance,
-      er.transaction_id
+      er.transaction_id,
+      te.isOnline,
+      te.eventLink
       FROM
       tpo_event_registrations er
       JOIN
       tpo_student_details sd
       ON
       er.student_id = sd.student_id
+      JOIN
+      tpo_events te
+      ON
+      er.event_id = te.eventId
       WHERE
-      er.event_id = ${eventId};`
+      er.event_id = ${eventId}`
     );
     return result;
   } catch (error) {
@@ -155,7 +161,7 @@ exports.markAsAttended = async (eventId, studentId) => {
       [eventId, studentId]
     );
 
-    const result = await this.changeAttendanceFlag(eventId)
+    const result = await this.changeAttendanceFlag(eventId);
 
     return rows, rows1, result;
   } catch (error) {
@@ -181,7 +187,7 @@ exports.deleteRegistration = async (eventId, student_id) => {
 exports.getAllAttendance = async () => {
   try {
     const events = await Event.getEventHistory();
-  
+
     // Define how to infer the academic year of a student based on degree_year and batch
     // const inferYear = `
     //   CASE
@@ -192,7 +198,7 @@ exports.getAllAttendance = async () => {
     //     ELSE 'UNKNOWN'
     //   END
     // `;
-  
+
     // Create a query for each event to determine eligibility (E), registration (R), and participation (P)
     let selectColumns = events
       .map(
@@ -220,12 +226,16 @@ exports.getAllAttendance = async () => {
               THEN 1 ELSE 0 
             END
           ) AS \`${e.eventName}(${e.date.toLocaleDateString()})_P\`,
-          '${e.date.toLocaleDateString()}' AS \`${e.eventName}(${e.date.toLocaleDateString()})_Date\`,
-          '${e.batch}' AS \`${e.eventName}(${e.date.toLocaleDateString()})_Batch\`
+          '${e.date.toLocaleDateString()}' AS \`${
+          e.eventName
+        }(${e.date.toLocaleDateString()})_Date\`,
+          '${e.batch}' AS \`${
+          e.eventName
+        }(${e.date.toLocaleDateString()})_Batch\`
         `
       )
       .join(", ");
-  
+
     let query = `
       SELECT 
         s.student_id, 
@@ -242,17 +252,27 @@ exports.getAllAttendance = async () => {
       LEFT JOIN tpo_events e ON r.event_id = e.eventId
       GROUP BY s.student_id, s.clg_id;
     `;
-  
+
     const result = await connection.query(query);
-  
+
     // Format the result to have the desired structure
     const formattedResult = result[0].map((student) => {
-      const { student_id, clg_id, first_name, middle_name, last_name, branch, ac_yr, degree_year, ...events } = student;
-      
+      const {
+        student_id,
+        clg_id,
+        first_name,
+        middle_name,
+        last_name,
+        branch,
+        ac_yr,
+        degree_year,
+        ...events
+      } = student;
+
       // Organize events into the new structure
       let eventDetails = {};
       Object.keys(events).forEach((key) => {
-        const [eventName, type] = key.split('_');
+        const [eventName, type] = key.split("_");
         if (!eventDetails[eventName]) {
           eventDetails[eventName] = { E: 0, R: 0, P: 0, Date: "", Batch: "" };
         }
@@ -264,7 +284,7 @@ exports.getAllAttendance = async () => {
           eventDetails[eventName][type] = events[key];
         }
       });
-  
+
       return {
         student_id,
         clg_id,
@@ -277,25 +297,20 @@ exports.getAllAttendance = async () => {
         events: eventDetails,
       };
     });
-  
+
     return formattedResult;
   } catch (error) {
     console.log(error);
   }
-  
-  
-  
 };
 
 exports.changeAttendanceFlag = async (eventId) => {
-
   try {
-    
     const [result] = await connection.query(
       `SELECT * FROM tpo_event_registrations WHERE event_id=? AND attended = true;`,
       [eventId]
     );
-  
+
     if (result.length === 0) {
       //keep the flag false
       const isUpdated = await connection.query(
@@ -309,21 +324,22 @@ exports.changeAttendanceFlag = async (eventId) => {
         `UPDATE tpo_events SET attendanceFlag = true WHERE eventId = ?;`,
         [eventId]
       );
-      return isUpdated
+      return isUpdated;
     }
   } catch (error) {
-    console.log(error)
+    console.log(error);
   }
 };
 
 exports.getStudentData = async (student_id) => {
   try {
-    const student = await connection.query(`SELECT * FROM tpo_student_details WHERE student_id = ?`, 
-      [student_id])
+    const student = await connection.query(
+      `SELECT * FROM tpo_student_details WHERE student_id = ?`,
+      [student_id]
+    );
 
-      return student[0]
+    return student[0];
   } catch (error) {
-    console.log(error)
-    
+    console.log(error);
   }
-}
+};

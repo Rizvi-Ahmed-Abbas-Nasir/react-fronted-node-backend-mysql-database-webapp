@@ -17,6 +17,8 @@ function CreateEvent() {
     department: [],
     eligible_degree_year: [],
     isPaid: false,
+    isOnline: false,
+    eventLink : null,
     cost: null,
     banner: null,
     paymentQR: null,
@@ -96,6 +98,8 @@ function CreateEvent() {
       data.append("department", formData.department);
       data.append("eligible_degree_year", formData.eligible_degree_year);
       data.append("isPaid", formData.isPaid);
+      data.append("isOnline", formData.isOnline);
+      data.append("eventLink", formData.isOnline ? formData.eventLink : null);
       data.append("cost", formData.isPaid ? parseInt(formData.cost, 10) : null);
       if (formData.banner) {
         data.append("banner", formData.banner);
@@ -129,6 +133,8 @@ function CreateEvent() {
         department: [],
         eligible_degree_year: [],
         isPaid: false,
+        isOnline: false,
+        eventLink: null,
         cost: null,
         banner: null,
         paymentQR: null,
@@ -314,6 +320,50 @@ function CreateEvent() {
             className="w-2/3 p-2 rounded-lg bg-gray-100 text-black border border-gray-300 focus:border-blue-400"
           />
         </div>
+
+        <div className="flex items-center">
+          <label className="w-1/3 font-semibold">Is the event Online?</label>
+          <div className="flex w-2/3 border border-gray-300 p-4 rounded-lg">
+            <label className="flex items-center">
+              <input
+                type="radio"
+                name="isOnline"
+                value={true}
+                checked={formData.isOnline === true}
+                onChange={handleChange}
+                className="mr-2 custom-radio-input"
+                style={{ width: "24px", height: "24px" }} // Apply size
+              />
+              Online
+            </label>
+            <label className="flex items-center ml-6">
+              <input
+                type="radio"
+                name="isOnline"
+                value={false}
+                checked={formData.isOnline === false}
+                onChange={handleChange}
+                className="mr-2 custom-radio-input"
+                style={{ width: "24px", height: "24px" }} // Apply size
+              />
+              Offline
+            </label>
+          </div>
+        </div>
+        {formData.isOnline && (
+          <div>
+            <div className="flex items-center ">
+              <label className="w-1/3 font-semibold">Event Link:</label>
+              <input
+                type="text"
+                name="eventLink"
+                value={formData.eventLink}
+                onChange={handleChange}
+                className="w-2/3 p-2 rounded-lg bg-gray-100 text-black border border-gray-300 focus:border-blue-400"
+              />
+            </div>
+          </div>
+        )}
 
         <div className="flex items-center">
           <label className="w-1/3 font-semibold">Is the event paid?</label>
