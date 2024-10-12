@@ -28,19 +28,31 @@ function RegistrationPage() {
     fetchRegistrations();
   }, [eventId]);
 
-  const approveStudent = async (studentId, emailId) => {
+  const approveStudent = async (studentId, emailId, isOnline, eventLink) => {
     setActionStatus({ ...actionStatus, [studentId]: 'approving' });
     try {
-      const qrCodeData = JSON.stringify({ event_id: eventId, student_id: studentId });
-      const qrCodeUrl = await QRCode.toDataURL(qrCodeData);
+      if (isOnline === 1 && eventLink != null){
+        await nodeApi.put(`/approveStudent/${eventId}`, { student_id: studentId });
+        await nodeApi.post(`/sendAttendanceQrcode`, { email: emailId, src: eventLink, isOnline: true});
+  
+        setRegistrations(registrations.map(reg =>
+          reg.student_id === studentId ? { ...reg, isApproved: true } : reg
+        ));
+        alert("Student approved successfully!");
 
-      await nodeApi.put(`/approveStudent/${eventId}`, { student_id: studentId });
-      await nodeApi.post(`/sendAttendanceQrcode`, { email: emailId, src: qrCodeUrl });
-
-      setRegistrations(registrations.map(reg =>
-        reg.student_id === studentId ? { ...reg, isApproved: true } : reg
-      ));
-      alert("Student approved successfully!");
+      } else {
+        
+        const qrCodeData = JSON.stringify({ event_id: eventId, student_id: studentId });
+        const qrCodeUrl = await QRCode.toDataURL(qrCodeData);
+  
+        await nodeApi.put(`/approveStudent/${eventId}`, { student_id: studentId });
+        await nodeApi.post(`/sendAttendanceQrcode`, { email: emailId, src: qrCodeUrl, isOnline: false });
+  
+        setRegistrations(registrations.map(reg =>
+          reg.student_id === studentId ? { ...reg, isApproved: true } : reg
+        ));
+        alert("Student approved successfully!");
+      }
     } catch (err) {
       setError("Error approving student");
     } finally {
@@ -65,21 +77,36 @@ function RegistrationPage() {
     setBulkActionStatus('approving');
     try {
       for (const reg of registrations.filter(r => !r.isApproved)) {
-        const qrCodeData = JSON.stringify({ event_id: eventId, student_id: reg.student_id });
-        const qrCodeUrl = await QRCode.toDataURL(qrCodeData);
 
-        await nodeApi.put(`/approveStudent/${eventId}`, { student_id: reg.student_id });
-        await nodeApi.post(`/sendAttendanceQrcode`, { email: reg.email_id, src: qrCodeUrl });
-
+        if (reg.isOnline === 1 && reg.eventLink != null){
+          await nodeApi.put(`/approveStudent/${eventId}`, { student_id: reg.student_id });
+        await nodeApi.post(`/sendAttendanceQrcode`, { email: reg.email_id, src: reg.eventLink, isOnline: true});
+  
         setRegistrations(prevRegs =>
           prevRegs.map(r =>
             r.student_id === reg.student_id ? { ...r, isApproved: true } : r
           )
         );
+
+        } else {
+          
+          const qrCodeData = JSON.stringify({ event_id: eventId, student_id: reg.student_id });
+          const qrCodeUrl = await QRCode.toDataURL(qrCodeData);
+  
+          await nodeApi.put(`/approveStudent/${eventId}`, { student_id: reg.student_id });
+          await nodeApi.post(`/sendAttendanceQrcode`, { email: reg.email_id, src: qrCodeUrl, isOnline: false });
+  
+          setRegistrations(prevRegs =>
+            prevRegs.map(r =>
+              r.student_id === reg.student_id ? { ...r, isApproved: true } : r
+            )
+          );
+        }
       }
       alert("All students approved successfully!");
     } catch (err) {
       setError("Error approving all students");
+      console.log(err)
     } finally {
       setBulkActionStatus(null);
     }
@@ -145,7 +172,7 @@ function RegistrationPage() {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {registrations.map(({ student_id, clg_id, email_id, first_name, last_name, transaction_id, isApproved }) => (
+                {registrations.map(({ student_id, clg_id, email_id, first_name, last_name, transaction_id, isApproved, isOnline, eventLink }) => (
                   <tr key={student_id} className="hover:bg-gray-50">
                     <td className="px-4 py-2 text-sm text-gray-700">{clg_id}</td>
                     <td className="px-4 py-2 text-sm text-gray-700">{email_id}</td>
@@ -156,7 +183,7 @@ function RegistrationPage() {
                       {!isApproved && (
                         <div className='flex'>
                           <button
-                            onClick={() => approveStudent(student_id, email_id)}
+                            onClick={() => approveStudent(student_id, email_id, isOnline, eventLink)}
                             disabled={actionStatus[student_id] === 'approving'}
                             className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition mr-2"
                           >

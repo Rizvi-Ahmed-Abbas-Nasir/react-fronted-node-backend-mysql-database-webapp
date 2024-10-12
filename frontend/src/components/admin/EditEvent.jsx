@@ -229,7 +229,7 @@ function EditEventForm() {
                       </button>
                       {event.loaOfSpeaker && (
                         <a
-                          href={`/${event.loaOfSpeaker}`}
+                          href={`http://localhost:8000/${event.loaOfSpeaker}`}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600"

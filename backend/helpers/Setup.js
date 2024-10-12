@@ -19,6 +19,8 @@ exports.createTables = async () => {
       batch varchar(25) DEFAULT NULL, 
       isPaid bool DEFAULT NULL, 
       cost int DEFAULT NULL,
+      isOnline bool DEFAULT false,
+      eventLink varchar(255) DEFAULT NULL,
       paymentQR text,
       banner text,
       loaOfSpeaker text,

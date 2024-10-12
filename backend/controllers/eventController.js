@@ -41,7 +41,7 @@ exports.createEvent = async (req, res) => {
     }
     const paymentQR = req.body.paymentQR
 
-    const {
+    let {
       eventName,
       eventDescription,
       nameOfSpeaker,
@@ -54,10 +54,17 @@ exports.createEvent = async (req, res) => {
       eligible_degree_year,
       isPaid,
       cost,
+      isOnline,
+      eventLink,
       banner,
       eventNotice,
       eventDeadline
     } = req.body;
+
+    isOnline = isOnline === "true";
+    if (!isOnline && eventLink !== null) {
+      eventLink = null;
+    }
 
     //-------------------------------------------------notice-------------------------------
     if (eventNotice && eventNotice.trim() !== "") {
@@ -117,6 +124,8 @@ exports.createEvent = async (req, res) => {
       currentBatch,
       isPaid,
       cost,
+      isOnline,
+      eventLink,
       paymentQR,
       banner,
       loaOfSpeaker,
@@ -273,7 +282,7 @@ exports.updateEvent = async (req, res) => {
       // console.log("keeping the previous banner: ", req.body.banner);
     }
 
-    const {
+    let {
       eventName,
       eventDescription,
       nameOfSpeaker,
@@ -286,10 +295,18 @@ exports.updateEvent = async (req, res) => {
       eligible_degree_year,
       isPaid,
       cost,
+      isOnline,
+      eventLink,
       banner,
       eventNotice,
       eventDeadline
     } = await req.body;
+
+    isOnline = isOnline === "true";
+    if (!isOnline && eventLink !== null) {
+      eventLink = null;
+    }
+
 
     //if notice is modified, update it, and delete the previous in the process
     // console.log("Event Notice: "+ eventNotice);
@@ -447,6 +464,8 @@ exports.updateEvent = async (req, res) => {
       eligible_degree_year,
       isPaid,
       cost,
+      isOnline,
+      eventLink,
       paymentQR,
       banner,
       loaOfSpeaker,
