@@ -28,6 +28,8 @@ exports.createTables = async () => {
       eventDeadline DATETIME DEFAULT '3000-01-01',
       attendanceFlag bool DEFAULT false,
       photosUploaded bool DEFAULT false,
+      attendanceReport text,
+      signedLOA text,
       isDeleted bool DEFAULT false,
       isDead bool DEFAULT false,
       eventPhotos text

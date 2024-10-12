@@ -292,6 +292,18 @@ exports.deleteBanner = async (id) => {
   }
 };
 
+exports.deleteSLOA = async (id) => {
+  try {
+    const result = await connection.query(
+      `UPDATE tpo_events SET signedLOA = null WHERE eventId = ?`,
+      [id]
+    );
+    return result;
+  } catch (error) {
+    throw new Error("Error making signedLOA null: " + error.message);
+  }
+};
+
 // Handle event deadlines, remove the event if the deadline is met
 // exports.handleDeadline = async (eventDeadline) => {
 //   try {
@@ -370,6 +382,20 @@ exports.storePhoto = async (eventId, path) => {
     throw new Error("Error storing event photos: " + error.message);
   }
 };
+
+exports.storeSignedLOA = async (eventId, path) => {
+  try {
+    const result = await connection.query(
+      `UPDATE tpo_events SET signedLOA = ? WHERE eventId = ?`,
+      [path, eventId]
+    );
+
+    return result;
+  } catch (error) {
+    throw new Error("Error storing signedLOA: " + error.message);
+  }
+};
+
 
 exports.changePhotosUploadStatus = async (eventId) => {
   try {

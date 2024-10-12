@@ -129,14 +129,20 @@ exports.getStatus = async (req, res) => {
       statusCode = Math.max(statusCode, 2); // Update statusCode to 2
     }
 
-    if (event[0].attendanceFlag == true) {
-      status.push("Minimum attendance achieved");
+    if (event[0].signedLOA != null) {
+      status.push("Signed Loa Uploaded");
       statusCode = Math.max(statusCode, 3); // Update statusCode to 3
+    }
+    //signed loa
+    //if online=> attendance file
+    if (event[0].attendanceReport != null) {
+      status.push("Attendance Report Uploaded");
+      statusCode = Math.max(statusCode, 4); // Update statusCode to 3
     }
 
     if (event[0].photosUploaded == true) {
       status.push("Event photos are uploaded");
-      statusCode = Math.max(statusCode, 4); // Update statusCode to 4
+      statusCode = Math.max(statusCode, 5); // Update statusCode to 4
     }
 
     // If no status is updated, it means only event is created
