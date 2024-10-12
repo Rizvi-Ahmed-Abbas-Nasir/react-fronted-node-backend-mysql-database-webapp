@@ -3,10 +3,18 @@ const path = require("path");
 const fs = require("fs");
 const loaController = require("../controllers/loaController");
 const noticeController = require("../controllers/noticeController");
+
+exports.viewEventDoc = (req, res) => {
+  console.log("called");
+  const fileName = req.params.fileName;
+  const filePath = path.join(__dirname, "../../public/assets/files", fileName);
+  console.log(filePath);
+  res.sendFile(filePath);
+};
+
 //runs after middleware data cleaning
 exports.createEvent = async (req, res) => {
   try {
-
     //banner
     if (req.files && req.files.banner) {
       // console.log("Flie received, saving");
@@ -39,7 +47,7 @@ exports.createEvent = async (req, res) => {
       fileName = "assets/PaymentQR/" + fileName;
       req.body.paymentQR = fileName;
     }
-    const paymentQR = req.body.paymentQR
+    const paymentQR = req.body.paymentQR;
 
     let {
       eventName,
@@ -58,7 +66,7 @@ exports.createEvent = async (req, res) => {
       eventLink,
       banner,
       eventNotice,
-      eventDeadline
+      eventDeadline,
     } = req.body;
 
     isOnline = isOnline === "true";
@@ -94,7 +102,7 @@ exports.createEvent = async (req, res) => {
       recipientLocation: locationOfSpeaker,
       subject: eventName,
       activity: eventDescription,
-      serverUrl: process.env.NODE_APP_URL
+      serverUrl: process.env.NODE_APP_URL,
     };
     // console.log("serverUrl: ", data.serverUrl)
 
@@ -108,7 +116,7 @@ exports.createEvent = async (req, res) => {
     }
 
     const loaOfSpeaker = await req.body.loaOfSpeaker;
-    const currentBatch = await Event.getCurrentBatch()
+    const currentBatch = await Event.getCurrentBatch();
     // console.log(currentBatch)
     const result = await Event.createEvent(
       eventName,
@@ -142,7 +150,6 @@ exports.createEvent = async (req, res) => {
 //get all events whose deadline is not met
 exports.getAllEvents = async (req, res) => {
   try {
-    
     const events = await Event.getAllEvents();
     if (events.length === 0) {
       res.status(200).json({ message: "No Events yet" });
@@ -162,7 +169,6 @@ exports.getAllEvents = async (req, res) => {
       //   }
       // })
 
-
       res.status(200).json(events);
     }
   } catch (error) {
@@ -173,7 +179,7 @@ exports.getAllEvents = async (req, res) => {
 //get all events
 exports.getEventHistory = async (req, res) => {
   try {
-    const events = await Event.getEventHistory()
+    const events = await Event.getEventHistory();
     if (events.length === 0) {
       res.status(200).json({ message: "No Events yet" });
     } else {
@@ -182,12 +188,12 @@ exports.getEventHistory = async (req, res) => {
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
-}
+};
 
 //get all events
 exports.getDeadEvents = async (req, res) => {
   try {
-    const events = await Event.getDeadEvents()
+    const events = await Event.getDeadEvents();
     if (events.length === 0) {
       res.status(200).json({ message: "No Dead Events yet" });
     } else {
@@ -196,26 +202,25 @@ exports.getDeadEvents = async (req, res) => {
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
-}
+};
 
 //get user's eligible events only:
 exports.getEligibleEvents = async (req, res) => {
-try {
-  const student_id = req.params.student_id
+  try {
+    const student_id = req.params.student_id;
 
-  const result = await Event.getEligibleEvents(student_id)
-  
-  if (result.length > 0 ){
-    res.status(200).json({ result: result})
-  } else {
-    res.status(200).json({ result: result})
+    const result = await Event.getEligibleEvents(student_id);
+
+    if (result.length > 0) {
+      res.status(200).json({ result: result });
+    } else {
+      res.status(200).json({ result: result });
+    }
+  } catch (error) {
+    console.log(error.message);
+    res.status(500).json({ message: error.message });
   }
-} catch (error) {
-  console.log(error.message)
-  res.status(500).json({ message: error.message });  
-}
-
-}
+};
 
 exports.updateEvent = async (req, res) => {
   try {
@@ -225,8 +230,6 @@ exports.updateEvent = async (req, res) => {
     const loa = event[0].loaOfSpeaker;
     const eNotice = await event[0].notice;
     const prevQR = await event[0].paymentQR;
-
-        
 
     // -----------------------------------------banner --------------------------------------------
     if (req.files && req.files.banner) {
@@ -299,7 +302,7 @@ exports.updateEvent = async (req, res) => {
       eventLink,
       banner,
       eventNotice,
-      eventDeadline
+      eventDeadline,
     } = await req.body;
 
     isOnline = isOnline === "true";
@@ -307,11 +310,10 @@ exports.updateEvent = async (req, res) => {
       eventLink = null;
     }
 
-
     //if notice is modified, update it, and delete the previous in the process
     // console.log("Event Notice: "+ eventNotice);
     // console.log("Previous notice: "+ eNotice);
-    
+
     // ------------------------------------NOTICE------------------------------------------------------
     //notice here
     if (eventNotice && eventNotice.trim() !== "") {
@@ -339,7 +341,7 @@ exports.updateEvent = async (req, res) => {
         date: date,
         eventName: eventName,
         eventNotice: eventNotice,
-        serverUrl: process.env.NODE_APP_URL
+        serverUrl: process.env.NODE_APP_URL,
       };
 
       const isNoticeGenerated = await noticeController.createPDF(noticeData);
@@ -352,14 +354,11 @@ exports.updateEvent = async (req, res) => {
       }
     } else {
       // console.log("No notice defined");
-      req.body.notice = eNotice
+      req.body.notice = eNotice;
     }
     const notice = await req.body.notice;
 
-
     // -------------------------------------------LOA--------------------------------------------------
-
-
 
     //if loa is present previously, delete it
     if (loa) {
@@ -379,7 +378,6 @@ exports.updateEvent = async (req, res) => {
     } else {
       // console.log("there was no loa to delete");
     }
-
 
     //generate a new loa based on the data
     const data = {
@@ -404,10 +402,9 @@ exports.updateEvent = async (req, res) => {
     // ------------------------------------------------------- Payment QR -----------------------------------------------
 
     //checking if file is selected
-    if (req.files && req.files.paymentQR){
-
+    if (req.files && req.files.paymentQR) {
       //first delete the previous file
-      if (prevQR){
+      if (prevQR) {
         //delete code
         // console.log("Deleting Previous file: ", prevQR);
 
@@ -422,7 +419,6 @@ exports.updateEvent = async (req, res) => {
             // console.log("payment QR deleted successfully!");
           }
         });
-
       } else {
         // console.log("No paymentQR file to delete")
       }
@@ -440,14 +436,12 @@ exports.updateEvent = async (req, res) => {
       // console.log("file saved in the server");
       fileName = "assets/PaymentQR/" + fileName;
       req.body.paymentQR = fileName;
-      
     } else {
       //no payment qr file specified, keeping the prev one
-      req.body.paymentQR = prevQR
+      req.body.paymentQR = prevQR;
     }
 
-    const paymentQR = req.body.paymentQR
-
+    const paymentQR = req.body.paymentQR;
 
     // --------------------------------------------------Actual UPDATE QUERY -----------------------------------------
     const result = await Event.updateEvent(
@@ -542,7 +536,6 @@ exports.removeEvent = async (req, res) => {
   }
 };
 
-
 exports.undoEvent = async (req, res) => {
   try {
     const id = req.params.eventId;
@@ -551,7 +544,7 @@ exports.undoEvent = async (req, res) => {
     // const isSet = await Event.changeDeadStatus(id, false)
 
     //make the deadline default to 3000
-    await Event.makeDefault(id)
+    await Event.makeDefault(id);
 
     res
       .status(200)
@@ -572,6 +565,7 @@ exports.deleteEvent = async (req, res) => {
     const event = await Event.getAEvent(id);
     const prevFile = event[0].banner;
     const loa = event[0].loaOfSpeaker;
+    const sLOA = event[0].signedLOA;
     if (prevFile) {
       // checks if the previous file is present to perform the deletion
       // console.log("Deleting Previous file: ", prevFile);
@@ -638,12 +632,32 @@ exports.deleteEvent = async (req, res) => {
       // console.log("No previous notice to delete");
     }
 
+    //delete the signed LOA as well:
+    if (sLOA){
+      const prevPath = path.join(__dirname, "../public", "assets", "files", sLOA);
+      // console.log(prevPath)
+
+      // ------------------------ Cautious code begins ---------------------------------------
+      fs.unlink(prevPath, (err) => {
+        if (err) {
+          console.log("Error deleting the file:", err);
+        } else {
+          console.log("File deleted successfully!");
+        }
+      });
+      // ------------------------ Cautious code ends ---------------------------------------
+      const result = await Event.deleteSLOA(id);
+
+    } else {
+
+    }
+
     const result = await Event.deleteEvent(id);
 
-//deleting the event photos if they exist
-    const prevZipFile = await event[0].eventPhotos
-    
-    if(prevZipFile){
+    //deleting the event photos if they exist
+    const prevZipFile = await event[0].eventPhotos;
+
+    if (prevZipFile) {
       //previous file exists, delete it
       // console.log("Deleting Previous file: ", prevZipFile);
       const prevPath = path.join(__dirname, "../public", prevZipFile);
@@ -654,11 +668,9 @@ exports.deleteEvent = async (req, res) => {
           // console.log("Previous photos deleted successfully!");
         }
       });
-
     } else {
       // console.log("No previous photos to delete")
     }
-
 
     res.status(200).json({ message: "Event Deleted Successfully", result });
   } catch (error) {
@@ -666,17 +678,16 @@ exports.deleteEvent = async (req, res) => {
   }
 };
 
-
 //upload event photos:
-exports.uploadEventPhotos = async (req, res)=> {
+exports.uploadEventPhotos = async (req, res) => {
   try {
-    const eventId = req.params.eventId
+    const eventId = req.params.eventId;
 
     //check if previous file exists
     const event = await Event.getAEvent(eventId);
-    const prevFile = await event[0].eventPhotos
-    
-    if(prevFile){
+    const prevFile = await event[0].eventPhotos;
+
+    if (prevFile) {
       //previous file exists, delete it
       // console.log("Deleting Previous file: ", prevFile);
       const prevPath = path.join(__dirname, "../public", prevFile);
@@ -687,7 +698,6 @@ exports.uploadEventPhotos = async (req, res)=> {
           // console.log("Previous photos deleted successfully!");
         }
       });
-
     } else {
       // console.log("No previous photos to delete")
     }
@@ -707,20 +717,102 @@ exports.uploadEventPhotos = async (req, res)=> {
       fileName = "assets/uploads/" + fileName;
       req.body.photos = fileName;
 
-      const result = await Event.storePhoto(eventId, req.body.photos)
-      const isStored = await Event.changePhotosUploadStatus(eventId)
-      res.status(200).json({message: "Successfully stored the event photos", result: result});
-
-
+      const result = await Event.storePhoto(eventId, req.body.photos);
+      const isStored = await Event.changePhotosUploadStatus(eventId);
+      res
+        .status(200)
+        .json({
+          message: "Successfully stored the event photos",
+          result: result,
+        });
     } else {
       // console.log("no file received")
-      res.status(400).json({ message: "No file received"})
+      res.status(400).json({ message: "No file received" });
     }
-    
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+//upload signedLOA:
+exports.uploadSignedLOA = async (req, res) => {
+  try {
+    const eventId = req.params.eventId;
+
+    //check if previous file exists
+    const event = await Event.getAEvent(eventId);
+    const prevFile = await event[0].signedLOA;
+
+    if (prevFile) {
+      //previous file exists, delete it
+      // console.log("Deleting Previous file: ", prevFile);
+      const prevPath = path.join(__dirname, "../public", "assets", "files", prevFile);
+      fs.unlink(prevPath, (err) => {
+        if (err) {
+          console.log("Error deleting previous Signed LOA:", err);
+        } else {
+          console.log("Previous Signed LOA deleted successfully!");
+        }
+      });
+    } else {
+      console.log("No previous signed LOA to delete");
+    }
+    // console.log(req.files);
+    if (req.files && req.files.signedLOA) {
+      console.log("Signed LOA Received, saving");
+
+      let file = req.files.signedLOA;
+      let fileName = "sLOA" + new Date().getTime().toString() + "-" + file.name;
+      const savePath = path.join(
+        __dirname,
+        "../public/assets/",
+        "files",
+        fileName
+      );
+      await file.mv(savePath);
+      req.body.signedLOA = fileName;
+
+      const result = await Event.storeSignedLOA(eventId, req.body.signedLOA);
+      res.status(200).json({ message: "Successfully something" });
+    } else {
+      console.log("no file received");
+      res.status(400).json({ message: "No file received" });
+    }
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+exports.deleteSignedLOA = async (req, res) => {
+  try {
+    const eventId = req.params.eventId;
+
+    const event = await Event.getAEvent(eventId);
+    const prevFile = await event[0].signedLOA;
+
+    if (prevFile) {
+      //previous file exists, delete it
+      // console.log("Deleting Previous file: ", prevFile);
+      const prevPath = path.join(__dirname, "../public", "assets", "files", prevFile);
+      fs.unlink(prevPath, (err) => {
+        if (err) {
+          console.log("Error deleting previous Signed LOA:", err);
+          res.status(500).json({message: "Error deleting previous Signed LOA:", error: err})
+
+        } else {
+          console.log("Previous Signed LOA deleted successfully!");
+          res.status(200).json({message: "Previous Signed LOA deleted successfully!"})
+        }
+      });
+      
+      await Event.deleteSLOA(eventId) 
+    } else {
+      console.log("No previous signed LOA to delete");
+      res.status(200).json({message: "No previous signed LOA to delete"})
+
+    }
+
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 }
-
-
-

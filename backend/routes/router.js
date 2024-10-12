@@ -49,6 +49,10 @@ router.post('/sendAttendanceQrcode',qrCodeController.sendAttendanceQrcode)
 //test routes:
 router.get('/setup', setupController.createTables)
 
+//eventUpload:
+router.post('/uploadSignedLOA/:eventId', eventController.uploadSignedLOA)
+router.delete('/deleteSignedLOA/:eventId', eventController.deleteSignedLOA)
+
 
 
 

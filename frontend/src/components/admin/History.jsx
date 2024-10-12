@@ -19,8 +19,10 @@ function History() {
       case 2:
         return 40;
       case 3:
-        return 70;
+        return 60;
       case 4:
+        return 80;
+      case 5:
         return 100;
       default:
         return 0;
