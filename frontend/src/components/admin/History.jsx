@@ -231,9 +231,7 @@ function History() {
                 <th className="p-4 font-semibold">Progress</th>
                 <th className="p-4 font-semibold">Actions</th>
                 <th className="p-4 font-semibold"></th>
-                <th className="p-4 font-semibold"></th>
                 <th className="p-4 font-semibold">File Uploads</th>
-                <th className="p-4 font-semibold"></th>
               </tr>
             </thead>
             <tbody>
@@ -307,7 +305,7 @@ function History() {
                     </button>
                   </td>
                   {event.isDeleted === 0 ? (
-                    <td>
+                    <td className="p-4">
                       <button
                         onClick={() => handleRemove(event.eventId)}
                         className="bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-600 transition duration-200"
@@ -316,7 +314,7 @@ function History() {
                       </button>
                     </td>
                   ) : (
-                    <td>
+                    <td className="p-4">
                       <button
                         onClick={() => handleUndo(event.eventId)}
                         className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition duration-200"
@@ -325,17 +323,30 @@ function History() {
                       </button>
                     </td>
                   )}
-                  <td className="p-4">
+                  <td className="flex  items-center p-4 gap-2">
+                  {event.isOnline ?
+                    <button
+                    onClick={() =>
+                      handleOpenDialog(
+                        event.eventId,
+                        event.onlineAttendance,
+                        "onlineAttendance"
+                      )
+                    }
+                    className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition duration-200"
+                    >
+                      Attendance
+                    </button>
+                  :<></>}
+
                     <button
                       onClick={() =>
                         handleOpenDialog(event.eventId, event.photos, "photos")
                       }
                       className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition duration-200"
-                    >
-                      Upload Photos
+                      >
+                       Photos
                     </button>
-                  </td>
-                  <td>
                     <button
                       onClick={() =>
                         handleOpenDialog(
@@ -345,24 +356,11 @@ function History() {
                         )
                       }
                       className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition duration-200"
-                    >
-                      Signed LOA
+                      >
+                       LOA
                     </button>
-                  </td>
-                  <td>
-                    <button
-                      onClick={() =>
-                        handleOpenDialog(
-                          event.eventId,
-                          event.onlineAttendance,
-                          "onlineAttendance"
-                        )
-                      }
-                      className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition duration-200"
-                    >
-                      Attendance
-                    </button>
-                  </td>
+                  
+                      </td>
                 </tr>
               ))}
             </tbody>
