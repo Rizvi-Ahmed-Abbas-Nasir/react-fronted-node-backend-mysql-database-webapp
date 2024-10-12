@@ -531,6 +531,9 @@ exports.undoEvent = async (req, res) => {
     const result = await Event.flagEventAsNotDeleted(id);
     // const isSet = await Event.changeDeadStatus(id, false)
 
+    //make the deadline default to 3000
+    await Event.makeDefault(id)
+
     res
       .status(200)
       .json({ message: "Successful undo of event details", result });

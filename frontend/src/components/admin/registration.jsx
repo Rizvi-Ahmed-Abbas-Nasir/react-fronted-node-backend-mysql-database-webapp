@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import axios from 'axios';
+import nodeApi from '../../axiosConfig';
 import Header from '../header';
 import AdminHeader from './AdminHeader';
 import QRCode from 'qrcode';
@@ -17,7 +17,7 @@ function RegistrationPage() {
   useEffect(() => {
     const fetchRegistrations = async () => {
       try {
-        const response = await axios.get(`${process.env.REACT_APP_URL}/getAllRegistrations/${eventId}`);
+        const response = await nodeApi.get(`/getAllRegistrations/${eventId}`);
         setRegistrations(response.data || []);
       } catch (err) {
         setError("Error fetching registration data");
@@ -34,8 +34,8 @@ function RegistrationPage() {
       const qrCodeData = JSON.stringify({ event_id: eventId, student_id: studentId });
       const qrCodeUrl = await QRCode.toDataURL(qrCodeData);
 
-      await axios.put(`${process.env.REACT_APP_URL}/approveStudent/${eventId}`, { student_id: studentId });
-      await axios.post(`${process.env.REACT_APP_URL}/sendAttendanceQrcode`, { email: emailId, src: qrCodeUrl });
+      await nodeApi.put(`/approveStudent/${eventId}`, { student_id: studentId });
+      await nodeApi.post(`/sendAttendanceQrcode`, { email: emailId, src: qrCodeUrl });
 
       setRegistrations(registrations.map(reg =>
         reg.student_id === studentId ? { ...reg, isApproved: true } : reg
@@ -51,7 +51,7 @@ function RegistrationPage() {
   const declineStudent = async (studentId) => {
     setActionStatus({ ...actionStatus, [studentId]: 'declining' });
     try {
-      await axios.delete(`${process.env.REACT_APP_URL}/deleteRegistration/${eventId}`, { data: { student_id: studentId } });
+      await nodeApi.delete(`/deleteRegistration/${eventId}`, { data: { student_id: studentId } });
       setRegistrations(registrations.filter(reg => reg.student_id !== studentId));
       alert("Student declined successfully!");
     } catch (err) {
@@ -68,8 +68,8 @@ function RegistrationPage() {
         const qrCodeData = JSON.stringify({ event_id: eventId, student_id: reg.student_id });
         const qrCodeUrl = await QRCode.toDataURL(qrCodeData);
 
-        await axios.put(`${process.env.REACT_APP_URL}/approveStudent/${eventId}`, { student_id: reg.student_id });
-        await axios.post(`${process.env.REACT_APP_URL}/sendAttendanceQrcode`, { email: reg.email_id, src: qrCodeUrl });
+        await nodeApi.put(`/approveStudent/${eventId}`, { student_id: reg.student_id });
+        await nodeApi.post(`/sendAttendanceQrcode`, { email: reg.email_id, src: qrCodeUrl });
 
         setRegistrations(prevRegs =>
           prevRegs.map(r =>
@@ -90,7 +90,7 @@ function RegistrationPage() {
     try {
       await Promise.all(
         registrations.map(reg =>
-          axios.delete(`${process.env.REACT_APP_URL}/deleteRegistration/${eventId}`, { data: { student_id: reg.student_id } })
+          nodeApi.delete(`/deleteRegistration/${eventId}`, { data: { student_id: reg.student_id } })
         )
       );
       setRegistrations([]);

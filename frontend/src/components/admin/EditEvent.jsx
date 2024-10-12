@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import nodeApi from "../../axiosConfig";
 import ClipLoader from "react-spinners/ClipLoader";
 
 
@@ -34,7 +34,7 @@ function EditEventForm() {
   // Fetch all existing events
   const fetchAllEvents = async () => {
     try {
-      const response = await axios.get(`${process.env.REACT_APP_URL}/event`);
+      const response = await nodeApi.get(`/event`);
       setEvents(response.data);
     } catch (error) {
       setError("Failed to load events.");
@@ -103,8 +103,8 @@ function EditEventForm() {
         data.append("paymentQR", formData.paymentQR);
       }
       if (editEventId) {
-        const response = await axios.put(
-          `${process.env.REACT_APP_URL}/event/${editEventId}`,
+        const response = await nodeApi.put(
+          `/event/${editEventId}`,
           data
         );
         setEditEventId(null);
@@ -127,7 +127,7 @@ function EditEventForm() {
   // Handle event deletion
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`${process.env.REACT_APP_URL}/event/${id}`);
+      await nodeApi.delete(`/event/${id}`);
       alert("Event deleted successfully");
       fetchAllEvents(); // Refresh the event list after delete
     } catch (error) {
@@ -139,8 +139,8 @@ function EditEventForm() {
       window.confirm("Are you sure you want to mark this event as removed?")
     ) {
       try {
-        const data = await axios.delete(
-          `${process.env.REACT_APP_URL}/removeEvent/${id}`
+        const data = await nodeApi.delete(
+          `/removeEvent/${id}`
         );
         fetchAllEvents();
         alert(data.data.message);
@@ -468,7 +468,7 @@ function EditEventForm() {
                       </button>
                       {event.loaOfSpeaker && (
                         <a
-                          href={`${process.env.REACT_APP_URL}/${event.loaOfSpeaker}`}
+                          href={`/${event.loaOfSpeaker}`}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600"

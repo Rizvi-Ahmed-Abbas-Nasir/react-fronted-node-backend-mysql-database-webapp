@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import nodeApi from "../../axiosConfig";
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
 let converter = require('json-2-csv');
@@ -15,7 +15,7 @@ function AttendanceTable() {
   useEffect(() => {
     const fetchAttendanceData = async () => {
       try {
-        const response = await axios.get("http://localhost:8000/getAllAttendance");
+        const response = await nodeApi.get("/getAllAttendance");
         setAttendanceData(response.data.result);
         setFilteredData(response.data.result); // Initialize filteredData
       } catch (err) {
