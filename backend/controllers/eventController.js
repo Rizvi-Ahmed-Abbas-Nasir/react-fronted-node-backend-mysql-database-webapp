@@ -4,12 +4,12 @@ const fs = require("fs");
 const loaController = require("../controllers/loaController");
 const noticeController = require("../controllers/noticeController");
 
-exports.viewEventDoc = (req, res) => {
+exports.downloadEventDoc = (req, res) => {
   console.log("called");
   const fileName = req.params.fileName;
-  const filePath = path.join(__dirname, "../../public/assets/files", fileName);
+  const filePath = path.join(__dirname, "../public/assets/files", fileName);
   console.log(filePath);
-  res.sendFile(filePath);
+  res.download(filePath);
 };
 
 //runs after middleware data cleaning
@@ -176,6 +176,19 @@ exports.getAllEvents = async (req, res) => {
   }
 };
 
+exports.getAEvent = async (req, res) => {
+  try {
+    const eventId = req.params.eventId
+    const events = await Event.getAEvent(eventId);
+    if (events.length === 0) {
+      res.status(200).json({ message: "No Events found" });
+    } else {
+      res.status(200).json(events);
+    }
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
 //get all events
 exports.getEventHistory = async (req, res) => {
   try {
@@ -711,7 +724,7 @@ exports.uploadEventPhotos = async (req, res) => {
     if (prevFile) {
       //previous file exists, delete it
       // console.log("Deleting Previous file: ", prevFile);
-      const prevPath = path.join(__dirname, "../public", prevFile);
+      const prevPath = path.join(__dirname, "../public", "files", prevFile);
       fs.unlink(prevPath, (err) => {
         if (err) {
           // console.error("Error deleting previous event photos:", err);
@@ -731,11 +744,10 @@ exports.uploadEventPhotos = async (req, res) => {
       const savePath = path.join(
         __dirname,
         "../public/assets/",
-        "uploads",
+        "files",
         fileName
       );
       await file.mv(savePath);
-      fileName = "assets/uploads/" + fileName;
       req.body.photos = fileName;
 
       const result = await Event.storePhoto(eventId, req.body.photos);
@@ -754,6 +766,41 @@ exports.uploadEventPhotos = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+//delete eventPhotos:
+exports.deleteEventPhotos = async (req, res) => {
+  try {
+    const eventId = req.params.eventId;
+
+    const event = await Event.getAEvent(eventId);
+    const prevFile = await event[0].eventPhotos;
+
+    if (prevFile) {
+      //previous file exists, delete it
+      // console.log("Deleting Previous file: ", prevFile);
+      const prevPath = path.join(__dirname, "../public", "assets", "files", prevFile);
+      fs.unlink(prevPath, (err) => {
+        if (err) {
+          console.log("Error deleting previous event photos:", err);
+          res.status(500).json({message: "Error deleting previous event photos:", error: err})
+
+        } else {
+          console.log("Previous event photos deleted successfully!");
+          res.status(200).json({message: "Previous Event photos deleted successfully!"})
+        }
+      });
+      
+      await Event.deleteEventPhotos(eventId) 
+    } else {
+      console.log("No previous event photos to delete");
+      res.status(200).json({message: "No previous event photos to delete"})
+
+    }
+
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+}
 
 //upload signedLOA:
 exports.uploadSignedLOA = async (req, res) => {

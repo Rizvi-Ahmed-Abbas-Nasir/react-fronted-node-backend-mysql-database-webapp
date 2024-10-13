@@ -316,6 +316,18 @@ exports.deleteAR = async (id) => {
   }
 };
 
+exports.deleteEventPhotos = async (id) => {
+  try {
+    const result = await connection.query(
+      `UPDATE tpo_events SET eventPhotos = null WHERE eventId = ?`,
+      [id]
+    );
+    return result;
+  } catch (error) {
+    throw new Error("Error making eventPhotos null: " + error.message);
+  }
+};
+
 // Handle event deadlines, remove the event if the deadline is met
 // exports.handleDeadline = async (eventDeadline) => {
 //   try {

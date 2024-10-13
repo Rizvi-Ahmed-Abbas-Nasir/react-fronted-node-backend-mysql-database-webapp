@@ -56,6 +56,10 @@ router.delete('/deleteSignedLOA/:eventId', eventController.deleteSignedLOA)
 router.post('/uploadAttendanceReport/:eventId', eventController.uploadAttendanceReport)
 router.delete('/deleteAttendanceReport/:eventId', eventController.deleteAttendanceReport)
 
+router.delete('/deletePhotos/:eventId', eventController.deleteEventPhotos)
+router.get('/getFile/:fileName', eventController.downloadEventDoc)
+
+router.get('/getEventById/:eventId', eventController.getAEvent)
 
 
 

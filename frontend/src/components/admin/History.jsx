@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import nodeApi from "../../axiosConfig";
+import { saveAs } from "file-saver";
 import {
   CircularProgress,
   Box,
@@ -26,6 +27,22 @@ function History() {
       case 1:
         return 20;
       case 2:
+        return 45;
+      case 3:
+        return 70;
+      case 4:
+        return 100;
+      default:
+        return 0;
+    }
+  };
+
+  //for online events seperate progress logic:
+  const getOnlineProgressValue = (value) => {
+    switch (value) {
+      case 1:
+        return 20;
+      case 2:
         return 40;
       case 3:
         return 60;
@@ -42,7 +59,12 @@ function History() {
     try {
       const response = await nodeApi.get(`/eventStatus/${id}`);
       const progressStatus = response.data.status;
-      const mappedValue = getProgressValue(progressStatus);
+      const isOnline = response.data.isOnline;
+
+      let mappedValue;
+      isOnline
+        ? (mappedValue = getOnlineProgressValue(progressStatus))
+        : (mappedValue = getProgressValue(progressStatus));
       setProgresses((prevProgresses) => ({
         ...prevProgresses,
         [id]: mappedValue,
@@ -178,11 +200,11 @@ function History() {
     }
 
     const formData = new FormData();
-    formData.append("onlineAttendance", file);
+    formData.append("attendanceReport", file);
 
     try {
       const response = await nodeApi.post(
-        `/uploadOnlineAttendance/${currentEventId}`,
+        `/uploadAttendanceReport/${currentEventId}`,
         formData,
         {
           headers: {
@@ -195,6 +217,46 @@ function History() {
       window.location.reload();
     } catch (error) {
       setError("Failed to upload the Online Attendance.");
+    }
+  };
+
+  const handleDownload = async (fieldname) => {
+    try {
+      const response = await nodeApi.get(`/getEventById/${currentEventId}`);
+
+      const filename = response.data[0][fieldname];
+
+      const getFile = await nodeApi.get(`/getFile/${filename}`, {
+        responseType: "blob",
+      });
+
+      // Create a new Blob object using the response data
+      const blob = new Blob([getFile.data], {
+        type: response.headers["content-type"],
+      });
+      saveAs(blob, filename);
+    } catch (error) {
+      setError("failed to download");
+    }
+  };
+
+  const handleFileDelete = async (fieldname) => {
+    try {
+      let uri = "";
+      if (fieldname === "attendanceReport") {
+        uri = `/deleteAttendanceReport/${currentEventId}`;
+      } else if (fieldname === "eventPhotos") {
+        uri = `/deletePhotos/${currentEventId}`;
+      } else if (fieldname === "signedLOA") {
+        uri = `/deleteSignedLOA/${currentEventId}`;
+      }
+
+      const response = await nodeApi.delete(uri);
+      alert(response.data.message);
+      window.location.reload();
+    } catch (error) {
+      setError("failed to download");
+      alert();
     }
   };
 
@@ -228,9 +290,11 @@ function History() {
                 <th className="p-4 font-semibold">DeadLine</th>
                 <th className="p-4 font-semibold">Paid</th>
                 <th className="p-4 font-semibold">Cost</th>
+                <th className="p-4 font-semibold">Mode</th>
+              
                 <th className="p-4 font-semibold">Progress</th>
                 <th className="p-4 font-semibold">Actions</th>
-                <th className="p-4 font-semibold"></th>
+                {/* <th className="p-4 font-semibold"></th> */}
                 <th className="p-4 font-semibold">File Uploads</th>
               </tr>
             </thead>
@@ -251,6 +315,8 @@ function History() {
                   <td className="p-4 text-gray-800">
                     {event.cost ? event.cost : "Free"}
                   </td>
+                  <td className="p-4 text-gray-800">{event.isOnline === 1? 'Online': "Offline"}</td>
+
                   <td className="p-4">
                     <div className="flex items-center">
                       <Box
@@ -297,55 +363,65 @@ function History() {
                     </div>
                   </td>
                   <td className="p-4">
+                    <div className="flex items-center gap-2"> 
+
                     <button
                       onClick={() => handleDelete(event.eventId)}
                       className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition duration-200"
-                    >
+                      >
                       Delete
                     </button>
-                  </td>
-                  {event.isDeleted === 0 ? (
-                    <td className="p-4">
+                    {event.isDeleted === 0 ? (
                       <button
                         onClick={() => handleRemove(event.eventId)}
                         className="bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-600 transition duration-200"
                       >
                         Remove
                       </button>
-                    </td>
-                  ) : (
-                    <td className="p-4">
+                    ) : (
                       <button
-                        onClick={() => handleUndo(event.eventId)}
-                        className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition duration-200"
+                      onClick={() => handleUndo(event.eventId)}
+                      className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition duration-200"
                       >
                         Undo
                       </button>
-                    </td>
-                  )}
-                  <td className="flex  items-center p-4 gap-2">
-                  {event.isOnline ?
-                    <button
-                    onClick={() =>
-                      handleOpenDialog(
-                        event.eventId,
-                        event.onlineAttendance,
-                        "onlineAttendance"
-                      )
-                    }
-                    className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition duration-200"
-                    >
-                      Attendance
-                    </button>
-                  :<></>}
+                    )}
+                    </div>
+                  </td>
+                  <td className="p-4">
+                  <div className="flex items-center gap-2"> 
+                    {event.isOnline ? (
+                      <button
+                        onClick={() =>
+                          handleOpenDialog(
+                            event.eventId,
+                            event.onlineAttendance,
+                            "onlineAttendance"
+                          )
+                        }
+                        className={`${
+                          event.attendanceReport === null
+                            ? `bg-blue-500  hover:bg-blue-600`
+                            : `bg-green-500  hover:bg-green-600`
+                        } text-white px-4 py-2 rounded-lg transition duration-200`}
+                      >
+                        Attendance
+                      </button>
+                    ) : (
+                      <></>
+                    )}
 
                     <button
                       onClick={() =>
                         handleOpenDialog(event.eventId, event.photos, "photos")
                       }
-                      className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition duration-200"
-                      >
-                       Photos
+                      className={`${
+                        event.eventPhotos === null
+                          ? `bg-blue-500  hover:bg-blue-600`
+                          : `bg-green-500  hover:bg-green-600`
+                      } text-white px-4 py-2 rounded-lg transition duration-200`}
+                    >
+                      Photos
                     </button>
                     <button
                       onClick={() =>
@@ -355,12 +431,16 @@ function History() {
                           "signedLOA"
                         )
                       }
-                      className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition duration-200"
-                      >
-                       LOA
+                      className={`${
+                        event.signedLOA === null
+                          ? `bg-blue-500  hover:bg-blue-600`
+                          : `bg-green-500  hover:bg-green-600`
+                      } text-white px-4 py-2 rounded-lg transition duration-200`}
+                    >
+                      LOA
                     </button>
-                  
-                      </td>
+                    </div>
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -375,7 +455,7 @@ function History() {
         <DialogContent>
           <input
             type="file"
-            accept=".zip" // Adjust file types as needed
+            accept=".pdf,.zip" // Adjust file types as needed
             onChange={(e) => handleFileSelect(e.target.files[0])}
           />
         </DialogContent>
@@ -388,7 +468,18 @@ function History() {
               <Button onClick={handleFileUpload} color="primary">
                 Upload
               </Button>
-              <Button color="primary">Download</Button>
+              <Button
+                color="primary"
+                onClick={() => handleDownload("eventPhotos")}
+              >
+                Download
+              </Button>
+              <Button
+                color="secondary"
+                onClick={() => handleFileDelete("eventPhotos")}
+              >
+                Delete
+              </Button>
             </>
           )}
           {currentFileType === "signedLOA" && (
@@ -396,7 +487,18 @@ function History() {
               <Button onClick={handleSignedLOAUpload} color="primary">
                 Upload Signed LOA
               </Button>
-              <Button color="primary">Download</Button>
+              <Button
+                color="primary"
+                onClick={() => handleDownload("signedLOA")}
+              >
+                Download
+              </Button>
+              <Button
+                color="secondary"
+                onClick={() => handleFileDelete("signedLOA")}
+              >
+                Delete
+              </Button>
             </>
           )}
           {currentFileType === "onlineAttendance" && (
@@ -404,7 +506,18 @@ function History() {
               <Button onClick={handleOnlineAttendanceUpload} color="primary">
                 Upload Online Attendance
               </Button>
-              <Button color="primary">Download</Button>
+              <Button
+                color="primary"
+                onClick={() => handleDownload("attendanceReport")}
+              >
+                Download
+              </Button>
+              <Button
+                color="secondary"
+                onClick={() => handleFileDelete("attendanceReport")}
+              >
+                Delete
+              </Button>
             </>
           )}
         </DialogActions>
