@@ -49,9 +49,12 @@ router.post('/sendAttendanceQrcode',qrCodeController.sendAttendanceQrcode)
 //test routes:
 router.get('/setup', setupController.createTables)
 
-//eventUpload:
+//event history uploads:
 router.post('/uploadSignedLOA/:eventId', eventController.uploadSignedLOA)
 router.delete('/deleteSignedLOA/:eventId', eventController.deleteSignedLOA)
+
+router.post('/uploadAttendanceReport/:eventId', eventController.uploadAttendanceReport)
+router.delete('/deleteAttendanceReport/:eventId', eventController.deleteAttendanceReport)
 
 
 

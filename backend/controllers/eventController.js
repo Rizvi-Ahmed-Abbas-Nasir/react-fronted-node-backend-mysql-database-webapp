@@ -566,6 +566,7 @@ exports.deleteEvent = async (req, res) => {
     const prevFile = event[0].banner;
     const loa = event[0].loaOfSpeaker;
     const sLOA = event[0].signedLOA;
+    const aR = event[0].attendanceReport; 
     if (prevFile) {
       // checks if the previous file is present to perform the deletion
       // console.log("Deleting Previous file: ", prevFile);
@@ -632,7 +633,7 @@ exports.deleteEvent = async (req, res) => {
       // console.log("No previous notice to delete");
     }
 
-    //delete the signed LOA as well:
+    //delete the signed loa if present:
     if (sLOA){
       const prevPath = path.join(__dirname, "../public", "assets", "files", sLOA);
       // console.log(prevPath)
@@ -647,6 +648,26 @@ exports.deleteEvent = async (req, res) => {
       });
       // ------------------------ Cautious code ends ---------------------------------------
       const result = await Event.deleteSLOA(id);
+
+    } else {
+
+    }
+
+    //delete the attendance report as well:
+    if (aR){
+      const prevPath = path.join(__dirname, "../public", "assets", "files", aR);
+      // console.log(prevPath)
+
+      // ------------------------ Cautious code begins ---------------------------------------
+      fs.unlink(prevPath, (err) => {
+        if (err) {
+          console.log("Error deleting the file:", err);
+        } else {
+          console.log("File deleted successfully!");
+        }
+      });
+      // ------------------------ Cautious code ends ---------------------------------------
+      const result = await Event.deleteAR(id);
 
     } else {
 
@@ -773,7 +794,7 @@ exports.uploadSignedLOA = async (req, res) => {
       req.body.signedLOA = fileName;
 
       const result = await Event.storeSignedLOA(eventId, req.body.signedLOA);
-      res.status(200).json({ message: "Successfully something" });
+      res.status(200).json({ message: "Successfully stored signed LOA" });
     } else {
       console.log("no file received");
       res.status(400).json({ message: "No file received" });
@@ -816,3 +837,87 @@ exports.deleteSignedLOA = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 }
+
+//upload attendance report
+exports.uploadAttendanceReport = async (req, res) => {
+  try {
+    const eventId = req.params.eventId;
+
+    //check if previous file exists
+    const event = await Event.getAEvent(eventId);
+    const prevFile = await event[0].attendanceReport;
+
+    if (prevFile) {
+      //previous file exists, delete it
+      // console.log("Deleting Previous file: ", prevFile);
+      const prevPath = path.join(__dirname, "../public", "assets", "files", prevFile);
+      fs.unlink(prevPath, (err) => {
+        if (err) {
+          console.log("Error deleting previous attendance report:", err);
+        } else {
+          console.log("Previous Signed attendance report deleted successfully!");
+        }
+      });
+    } else {
+      console.log("No previous attendance report to delete");
+    }
+    // console.log(req.files);
+    if (req.files && req.files.attendanceReport) {
+      console.log("attendance report Received, saving");
+
+      let file = req.files.attendanceReport;
+      let fileName = "AR_" + new Date().getTime().toString() + "-" + file.name;
+      const savePath = path.join(
+        __dirname,
+        "../public/assets/",
+        "files",
+        fileName
+      );
+      await file.mv(savePath);
+      req.body.attendanceReport = fileName;
+
+      const result = await Event.storeAttendanceR(eventId, req.body.attendanceReport);
+      res.status(200).json({ message: "Successfully saved attendance report" });
+    } else {
+      console.log("no file received");
+      res.status(400).json({ message: "No file received" });
+    }
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+exports.deleteAttendanceReport = async (req, res) => {
+  try {
+    const eventId = req.params.eventId;
+
+    const event = await Event.getAEvent(eventId);
+    const prevFile = await event[0].attendanceReport
+
+    if (prevFile) {
+      //previous file exists, delete it
+      // console.log("Deleting Previous file: ", prevFile);
+      const prevPath = path.join(__dirname, "../public", "assets", "files", prevFile);
+      fs.unlink(prevPath, (err) => {
+        if (err) {
+          console.log("Error deleting previous AR:", err);
+          res.status(500).json({message: "Error deleting previous attendanc report for this event:", error: err})
+
+        } else {
+          console.log("Previous AR successfully!");
+          res.status(200).json({message: "Previous Attendance Report deleted successfully!"})
+        }
+      });
+      
+      await Event.deleteAR(eventId) 
+    } else {
+      console.log("No previous AR to delete");
+      res.status(200).json({message: "No previous Attendance report to delete"})
+
+    }
+
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+}
+

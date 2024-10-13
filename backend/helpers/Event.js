@@ -304,6 +304,18 @@ exports.deleteSLOA = async (id) => {
   }
 };
 
+exports.deleteAR = async (id) => {
+  try {
+    const result = await connection.query(
+      `UPDATE tpo_events SET attendanceReport = null WHERE eventId = ?`,
+      [id]
+    );
+    return result;
+  } catch (error) {
+    throw new Error("Error making AR null: " + error.message);
+  }
+};
+
 // Handle event deadlines, remove the event if the deadline is met
 // exports.handleDeadline = async (eventDeadline) => {
 //   try {
@@ -393,6 +405,19 @@ exports.storeSignedLOA = async (eventId, path) => {
     return result;
   } catch (error) {
     throw new Error("Error storing signedLOA: " + error.message);
+  }
+};
+
+exports.storeAttendanceR = async (eventId, path) => {
+  try {
+    const result = await connection.query(
+      `UPDATE tpo_events SET attendanceReport = ? WHERE eventId = ?`,
+      [path, eventId]
+    );
+
+    return result;
+  } catch (error) {
+    throw new Error("Error storing attendance report: " + error.message);
   }
 };
 
