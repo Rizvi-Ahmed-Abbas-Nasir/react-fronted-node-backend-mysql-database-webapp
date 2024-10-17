@@ -1,8 +1,7 @@
-const Admin = require("../models/Admin");
-const Event = require("../models/Event");
-// const Attendance = require("../models/Attendance");
-//get all the registered students for a particular event (even not attended)
+const Admin = require("../helpers/Admin");
+const Event = require("../helpers/Event");
 
+//get all the registered students for a particular event (even not attended)
 exports.getAllRegistrations = async (req, res) => {
   try {
     const eventId = req.params.eventId;
@@ -56,6 +55,7 @@ exports.approveStudent = async (req, res) => {
   try {
     const eventId = req.params.eventId;
     const { student_id } = req.body;
+    console.log("sid: ",student_id," Event id: ",eventId);
 
     //check if the student is already approved
     const isApproved = await Admin.isApproved(eventId, student_id);
@@ -119,32 +119,40 @@ exports.getAllAttendance = async (req, res) => {
 exports.getStatus = async (req, res) => {
   try {
     const eventId = req.params.eventId;
-
+  
     const event = await Event.getAEvent(eventId);
     const status = [];
-    let statusCode = 1; // Default status code
-
+    let statusCode = 0; // Default status code
+  
+    if (event[0]) {
+      status.push("Event is created")
+      statusCode += 1
+    }
     if (event[0].banner != null) {
       status.push("Banner is uploaded");
-      statusCode = Math.max(statusCode, 2); // Update statusCode to 2
+      statusCode += 1; // Increment statusCode by 1
     }
-
-    if (event[0].attendanceFlag == true) {
-      status.push("Minimum attendance achieved");
-      statusCode = Math.max(statusCode, 3); // Update statusCode to 3
+  
+    if (event[0].signedLOA != null) {
+      status.push("Signed LOA Uploaded");
+      statusCode += 1; // Increment statusCode by 1
     }
-
-    if (event[0].photosUploaded == true) {
+  
+    if (event[0].attendanceReport != null) {
+      status.push("Attendance Report Uploaded");
+      statusCode += 1; // Increment statusCode by 1
+    }
+  
+    if (event[0].eventPhotos != null) {
       status.push("Event photos are uploaded");
-      statusCode = Math.max(statusCode, 4); // Update statusCode to 4
+      statusCode += 1; // Increment statusCode by 1
     }
 
-    // If no status is updated, it means only event is created
-    if (status.length === 0) {
-      status.push("Event is created");
-    }
-
-    res.status(200).json({ status: statusCode, message: status.join(", ") });
+  
+    const isOnline = event[0].isOnline === 1;
+    // console.log("Is the event online: ", isOnline);
+  
+    res.status(200).json({ status: statusCode, message: status.join(", "), isOnline: isOnline });
   } catch (error) {
     res.status(400).json({ message: error.message });
   }

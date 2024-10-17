@@ -1,39 +1,27 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import nodeApi from "../axiosConfig";
 import CustomAlert from "../components/customAlert";
 
 const EventCompo = () => {
   const [openPayBoxes, setOpenPayBoxes] = useState([]);
   const [openPaymentBoxes, setOpenPaymentBoxes] = useState([]); // New state for payment section
   const [data, setData] = useState([]);
-  const [filteredEvents, setFilteredEvents] = useState([]); // Store the filtered events here
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [transactionIds, setTransactionIds] = useState({});
   const [transactionErrors, setTransactionErrors] = useState({});
   const [alertMessage, setAlertMessage] = useState(""); // State for custom alert message
   const [showAlert, setShowAlert] = useState(false); // State to show or hide the custom alert
-  const [student, setStudent] = useState(null); // Store student details here
 
   const StdID = "3"; // Placeholder student ID, adjust as needed
 
 
   useEffect(() => {
-    const fetchStudentData = async () => {
-      try {
-        const studentResponse = await axios.get(
-          `${process.env.REACT_APP_URL}/getStudentDetail/${StdID}`
-        );
-        setStudent(studentResponse.data.result[0]);
-      } catch (err) {
-        setError("Error fetching student data");
-      }
-    };
-
     const fetchData = async () => {
       try {
-        const response = await axios.get(`${process.env.REACT_APP_URL}/event`);
-        setData(response.data);
+        const response = await nodeApi.get(`/getEligibleEvents/${StdID}`);
+        setData(response.data.result);
+        console.log(response.data)
         setOpenPayBoxes(new Array(response.data.length).fill(false));
         setOpenPaymentBoxes(new Array(response.data.length).fill(false)); // Initialize payment state
       } catch (err) {
@@ -42,34 +30,9 @@ const EventCompo = () => {
         setLoading(false);
       }
     };
-
-    fetchStudentData();
     fetchData();
   }, []);
 
-  useEffect(() => {
-    // Filter events after student data is fetched
-    if (student && data.length > 0) {
-      const eligibleEvents = data.filter((event) => {
-        // Add null checks for department and eligible_degree_year fields
-        const eventDepartments = event.department
-          ? event.department.split(",").map(dept => dept.trim())
-          : [];
-        const eventYears = event.eligible_degree_year
-          ? event.eligible_degree_year.split(",").map(year => year.trim())
-          : [];
-        // Check if the student's department is included in the event's department list
-        const isEligibleDepartment = eventDepartments.includes(student.branch);
-  
-        // Check if the student's degree year matches any of the eligible years for the event
-        const isEligibleYear = eventYears.includes(student.degree_year.toString());
-  
-        return isEligibleDepartment && isEligibleYear;
-      });
-  
-      setFilteredEvents(eligibleEvents);
-    }
-  }, [student, data]);
   
 
   const handleTogglePay = (index) => {
@@ -115,8 +78,8 @@ const EventCompo = () => {
     const transactionId = isPaid ? transactionIds[eventId].trim() : null;
 
     try {
-      const response = await axios.post(
-        `${process.env.REACT_APP_URL}/userEventReg/${eventId}`,
+      const response = await nodeApi.post(
+        `/userEventReg/${eventId}`,
         {
           student_id: StdID,
           transaction_id: transactionId,
@@ -150,9 +113,9 @@ const EventCompo = () => {
         />
       )}
 
-      {filteredEvents.length > 0 ? (
+      {data.length > 0 ? (
         <div className="flex w-full flex-wrap gap-4 items-start md:py-12  mt-16 md:pl-10 ">
-          {filteredEvents.map(
+          {data.map(
             (event, index) =>
               !event.isDeleted && (
                 <div
@@ -179,7 +142,7 @@ const EventCompo = () => {
                     {/* Event Details */}
                     {event.banner && (
                       <img
-                        src={`${process.env.REACT_APP_URL}/${event.banner}`}
+                        src={`http://localhost:8000/${event.banner}`}
                         alt="Event Banner"
                         className="w-full h-48 object-cover rounded-md mb-4"
                       />
@@ -197,13 +160,10 @@ const EventCompo = () => {
                     <p>
                       <strong>Time:</strong> {event.time}
                     </p>
-                    {event.cost > 0 ? (
-                      <p>
-                        <strong>Cost:</strong> {event.cost}
-                      </p>
-                    ) : (
-                      <p>Free</p>
-                    )}
+                    <p>
+                      <strong>Mode:</strong> {event.isOnline ? "online" : "offline"}
+                    </p>
+                    
 
                     {openPayBoxes[index] && (
                       <>
@@ -215,7 +175,7 @@ const EventCompo = () => {
                         </p>
                         <a
                           className="text-blue-700 font-bold underline"
-                          href={`${process.env.REACT_APP_URL}/${event.notice}`}
+                          href={`http://localhost:8000/${event.notice}`}
                           target="_blank"
                           rel="noopener noreferrer"
                         >
@@ -237,7 +197,7 @@ const EventCompo = () => {
                             {openPaymentBoxes[index] && (
                               <div className="mt-4">
                                 <img
-                                  src={`${process.env.REACT_APP_URL}/${event.paymentQR}`}
+                                  src={`/${event.paymentQR}`}
                                   alt="QR Code for Payment"
                                   className="w-full h-32 object-contain"
                                 />
