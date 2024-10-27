@@ -1,0 +1,11 @@
+backed env
+
+MYSQL_HOST = 'localhost'
+MYSQL_PORT = '3306'
+MYSQL_DATABASE = 'tpo_events'
+MYSQL_USER = 'root'
+MYSQL_PASSWORD = 'abbas313'
+PORT = '8000'
+
+NODEMAILER_EMAIL = 'RizviAhmedAbbas313@gmail.com'
+NODEMAILER_EMAIL_PASS = 'ComputerEngineer313'

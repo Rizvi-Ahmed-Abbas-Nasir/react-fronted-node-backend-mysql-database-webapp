@@ -1,0 +1,8 @@
+
+REACT_APP_URL = 'http://localhost:8000'
+MYSQL_HOST = 'localhost'
+MYSQL_PORT = '3306'
+MYSQL_DATABASE = 'tpo_events'
+MYSQL_USER = 'root'
+MYSQL_PASSWORD = 'abbas313'
+PORT = '8000'
